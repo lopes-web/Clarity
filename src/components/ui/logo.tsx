@@ -7,7 +7,7 @@ interface LogoProps extends React.HTMLAttributes<HTMLImageElement> {
 export function Logo({ size = 24, className, ...props }: LogoProps) {
   return (
     <img
-      src="/src/icons/logo.svg"
+      src="/logo.svg"
       alt="Clarity Logo"
       width={size}
       height={size}
