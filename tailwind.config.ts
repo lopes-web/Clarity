@@ -19,38 +19,38 @@ export default {
     },
     extend: {
       colors: {
-        border: "#D9CBCB",
-        input: "#D9CBCB",
-        ring: "#4A2828",
-        background: "#1A0F0F",
-        foreground: "#E7D5D5",
+        border: "#E2E8F0",
+        input: "#E2E8F0",
+        ring: "#94A3B8",
+        background: "#FFFFFF",
+        foreground: "#1E293B",
         primary: {
-          DEFAULT: "#E2C7C7",
-          foreground: "#1A0F0F",
+          DEFAULT: "#3B82F6",
+          foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "#D4B4B4",
-          foreground: "#1A0F0F",
+          DEFAULT: "#64748B",
+          foreground: "#FFFFFF",
         },
         destructive: {
-          DEFAULT: "#4A2828",
-          foreground: "#E7D5D5",
+          DEFAULT: "#EF4444",
+          foreground: "#FFFFFF",
         },
         muted: {
-          DEFAULT: "#4A2828",
-          foreground: "#E7D5D5",
+          DEFAULT: "#F1F5F9",
+          foreground: "#64748B",
         },
         accent: {
-          DEFAULT: "#E5B7B7",
-          foreground: "#1A0F0F",
+          DEFAULT: "#F8FAFC",
+          foreground: "#0F172A",
         },
         popover: {
-          DEFAULT: "#1A0F0F",
-          foreground: "#E7D5D5",
+          DEFAULT: "#FFFFFF",
+          foreground: "#0F172A",
         },
         card: {
-          DEFAULT: "#1A0F0F",
-          foreground: "#E7D5D5",
+          DEFAULT: "#FFFFFF",
+          foreground: "#0F172A",
         },
         pastel: {
           pink: "#FFDEE2",

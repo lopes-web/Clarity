@@ -57,21 +57,21 @@ export function AppSidebar() {
 
   return (
     <Sidebar 
-      className="w-64 shrink-0 border-r border-gray-200 bg-white/95 shadow-sm"
+      className="w-64 shrink-0 border-r border-gray-200 bg-white shadow-sm"
       collapsible="offcanvas"
       variant="sidebar"
     >
       <SidebarContent className="flex flex-col h-full">
         {/* Logo/Título */}
-        <div className="p-6 flex items-center justify-center border-b border-gray-200 bg-white">
+        <div className="p-6 flex items-center justify-center border-b border-gray-200">
           <Logo size={64} />
         </div>
 
         {/* Perfil do Usuário */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-full bg-[#C49ED7]/20 flex items-center justify-center">
-              <User className="h-4 w-4 text-[#C49ED7]" />
+            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+              <User className="h-4 w-4 text-blue-600" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
@@ -86,7 +86,7 @@ export function AppSidebar() {
 
         <div className="flex-1 py-6">
           <SidebarGroup>
-            <SidebarGroupLabel className="px-6 text-xs font-semibold uppercase tracking-wider text-gray-700">
+            <SidebarGroupLabel className="px-6 text-xs font-semibold uppercase tracking-wider text-gray-600">
               Menu
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -100,8 +100,8 @@ export function AppSidebar() {
                           "flex items-center gap-3 px-6 py-2.5 text-sm font-medium transition-all duration-200",
                           "relative",
                           location.pathname === item.url
-                            ? "text-[#C49ED7] bg-[#C49ED7]/10 border-r-2 border-[#C49ED7]"
-                            : "text-gray-700 hover:text-[#C49ED7] hover:bg-[#C49ED7]/10",
+                            ? "text-blue-600 bg-blue-50 border-r-2 border-blue-600"
+                            : "text-gray-700 hover:text-blue-600 hover:bg-blue-50/80",
                           "hover:translate-x-1"
                         )}
                       >
@@ -109,8 +109,8 @@ export function AppSidebar() {
                           className={cn(
                             "h-5 w-5 transition-colors",
                             location.pathname === item.url
-                              ? "text-[#C49ED7]"
-                              : "text-gray-500 group-hover:text-[#C49ED7]"
+                              ? "text-blue-600"
+                              : "text-gray-500 group-hover:text-blue-600"
                           )}
                         />
                         <span>{item.title}</span>
@@ -135,8 +135,8 @@ export function AppSidebar() {
                       "flex items-center gap-3 px-6 py-2.5 text-sm font-medium transition-all duration-200",
                       "relative",
                       location.pathname === item.url
-                        ? "text-purple-700 bg-purple-50 border-r-2 border-purple-600"
-                        : "text-gray-700 hover:text-purple-700 hover:bg-purple-50/80",
+                        ? "text-blue-600 bg-blue-50 border-r-2 border-blue-600"
+                        : "text-gray-700 hover:text-blue-600 hover:bg-blue-50/80",
                       "hover:translate-x-1"
                     )}
                   >
@@ -144,8 +144,8 @@ export function AppSidebar() {
                       className={cn(
                         "h-5 w-5 transition-colors",
                         location.pathname === item.url
-                          ? "text-purple-600"
-                          : "text-gray-500 group-hover:text-purple-600"
+                          ? "text-blue-600"
+                          : "text-gray-500 group-hover:text-blue-600"
                       )}
                     />
                     <span>{item.title}</span>
