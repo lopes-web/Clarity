@@ -106,11 +106,11 @@ export function AIAssistant() {
   };
 
   return (
-    <Card className="w-full h-full flex flex-col bg-background">
-      <CardHeader className="p-4 border-b space-y-1 flex-shrink-0">
+    <Card className="w-full h-full flex flex-col bg-background border-border">
+      <CardHeader className="p-4 border-b border-border space-y-1 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-semibold flex items-center gap-2">
-            <Microscope className="w-5 h-5 text-primary" />
+          <CardTitle className="text-xl font-semibold flex items-center gap-2 text-foreground">
+            <Microscope className="w-5 h-5 text-accent" />
             Assistente de Zootecnia
           </CardTitle>
         </div>
@@ -127,16 +127,16 @@ export function AIAssistant() {
                 )}
               >
                 {message.role === 'assistant' && (
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Microscope className="w-4 h-4 text-primary" />
+                  <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center">
+                    <Microscope className="w-4 h-4 text-accent" />
                   </div>
                 )}
                 <div
                   className={cn(
                     "rounded-lg px-3 py-2 max-w-[85%]",
                     message.role === 'assistant'
-                      ? 'bg-muted'
-                      : 'bg-primary text-primary-foreground'
+                      ? 'bg-muted text-muted-foreground'
+                      : 'bg-accent text-accent-foreground'
                   )}
                 >
                   {message.image && (
@@ -151,8 +151,8 @@ export function AIAssistant() {
                   </ReactMarkdown>
                 </div>
                 {message.role === 'user' && (
-                  <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                    <User className="w-4 h-4 text-primary-foreground" />
+                  <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center">
+                    <User className="w-4 h-4 text-accent-foreground" />
                   </div>
                 )}
               </div>
@@ -165,7 +165,7 @@ export function AIAssistant() {
           {!messages.length && (
             <div className="text-center space-y-6 p-8">
               <div className="space-y-2">
-                <h3 className="text-2xl font-bold">Sugestões de perguntas</h3>
+                <h3 className="text-2xl font-bold text-foreground">Sugestões de perguntas</h3>
                 <p className="text-sm text-muted-foreground">Selecione uma pergunta ou faça a sua própria</p>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-4xl mx-auto">
@@ -173,7 +173,7 @@ export function AIAssistant() {
                   <Button
                     key={index}
                     variant="outline"
-                    className="h-auto p-4 text-left break-words whitespace-normal hover:bg-primary/5 transition-colors"
+                    className="h-auto p-4 text-left break-words whitespace-normal bg-muted/10 hover:bg-muted/20 text-foreground border-border transition-colors"
                     onClick={() => handleSugestaoClick(sugestao)}
                     disabled={isLoading}
                   >
@@ -191,6 +191,7 @@ export function AIAssistant() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Digite sua mensagem..."
                 disabled={isLoading}
+                className="bg-muted/10 border-border text-foreground placeholder:text-muted-foreground"
               />
               <input
                 type="file"
@@ -207,14 +208,19 @@ export function AIAssistant() {
                 size="icon"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading || isPdfLoading}
+                className="border-border hover:bg-muted/20"
               >
                 {selectedImage ? (
-                  <X className="h-4 w-4" onClick={() => setSelectedImage(null)} />
+                  <X className="h-4 w-4 text-foreground" onClick={() => setSelectedImage(null)} />
                 ) : (
-                  <ImageIcon className="h-4 w-4" />
+                  <ImageIcon className="h-4 w-4 text-foreground" />
                 )}
               </Button>
-              <Button type="submit" disabled={isLoading || isPdfLoading}>
+              <Button 
+                type="submit" 
+                disabled={isLoading || isPdfLoading}
+                className="bg-accent hover:bg-accent/90 text-accent-foreground"
+              >
                 {isLoading || isPdfLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
