@@ -8,22 +8,15 @@ export function useGeminiChat(apiKey: string) {
   const geminiRef = useRef<GeminiService | null>(null);
 
   useEffect(() => {
-    if (apiKey && !geminiRef.current) {
-      try {
-        geminiRef.current = new GeminiService(apiKey);
-      } catch (err) {
-        console.error('Erro ao inicializar GeminiService:', err);
-        setError(err instanceof Error ? err.message : 'Erro ao inicializar o chat');
-      }
+    try {
+      geminiRef.current = new GeminiService(apiKey);
+    } catch (err) {
+      console.error('Erro ao inicializar GeminiService:', err);
+      setError(err instanceof Error ? err.message : 'Erro ao inicializar o chat');
     }
   }, [apiKey]);
 
   const sendMessage = useCallback(async (content: string, image?: File) => {
-    if (!apiKey) {
-      setError('Chave da API não configurada');
-      return;
-    }
-
     if (!geminiRef.current) {
       try {
         geminiRef.current = new GeminiService(apiKey);

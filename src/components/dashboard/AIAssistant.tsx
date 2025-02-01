@@ -40,12 +40,8 @@ export function AIAssistant() {
   const [sugestoesAtuais, setSugestoesAtuais] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!apiKey) {
-      toast.error('Chave da API não configurada. Configure a chave para usar o assistente.');
-      return;
-    }
     configurePdfWorker();
-  }, [apiKey]);
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -63,10 +59,6 @@ export function AIAssistant() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!apiKey) {
-      toast.error('Chave da API não configurada. Configure a chave para usar o assistente.');
-      return;
-    }
     if (!input.trim() || isLoading) return;
 
     try {
@@ -89,10 +81,6 @@ export function AIAssistant() {
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!apiKey) {
-      toast.error('Chave da API não configurada. Configure a chave para usar o assistente.');
-      return;
-    }
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -122,36 +110,11 @@ export function AIAssistant() {
   };
 
   const handleSugestaoClick = async (sugestao: string) => {
-    if (!apiKey) {
-      toast.error('Chave da API não configurada. Configure a chave para usar o assistente.');
-      return;
-    }
     if (!isLoading) {
       setInput(sugestao);
       await sendMessage(sugestao);
     }
   };
-
-  if (!apiKey) {
-    return (
-      <Card className="w-full h-full flex flex-col bg-background border-border">
-        <CardHeader className="p-4 border-b border-border space-y-1 flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl font-semibold flex items-center gap-2 text-foreground">
-              <Microscope className="w-5 h-5 text-accent" />
-              Assistente de Zootecnia
-            </CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="flex-1 p-4 flex flex-col items-center justify-center">
-          <div className="text-center space-y-4">
-            <h3 className="text-xl font-semibold text-foreground">Chave da API não configurada</h3>
-            <p className="text-muted-foreground">Configure a chave da API do Gemini para usar o assistente.</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card className="w-full h-full flex flex-col bg-background border-border">
@@ -200,7 +163,7 @@ export function AIAssistant() {
                 </div>
                 {message.role === 'user' && (
                   <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center">
-                    <User className="w-4 h-4 text-accent-foreground" />
+                    <User className="w-4 w-4 text-accent-foreground" />
                   </div>
                 )}
               </div>
