@@ -4,19 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useGeminiChat } from '@/hooks/useGeminiChat';
-import { Send, Loader2, Microscope, User, Settings, Image as ImageIcon, FileText, X } from 'lucide-react';
+import { Send, Loader2, Microscope, User, Image as ImageIcon, FileText, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import { extractTextFromPDF } from '@/lib/pdfService';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { configurePdfWorker } from '@/lib/pdfjs-config';
+import { useGemini } from '@/contexts/GeminiContext';
 
 const SUGESTOES_ZOOTECNIA = [
   "Como calcular a taxa de lotação ideal para pastagens?",
@@ -26,15 +20,10 @@ const SUGESTOES_ZOOTECNIA = [
   "Técnicas de reprodução em bovinos."
 ];
 
-const API_KEY_STORAGE = 'gemini_api_key';
-
 export function AIAssistant() {
-  const [apiKey, setApiKey] = useState<string>(() => {
-    return localStorage.getItem(API_KEY_STORAGE) || '';
-  });
+  const { apiKey } = useGemini();
   const [input, setInput] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isPdfLoading, setIsPdfLoading] = useState(false);
   const { messages, isLoading, error, sendMessage } = useGeminiChat(apiKey);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -53,11 +42,6 @@ export function AIAssistant() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-
-    if (!apiKey) {
-      setIsConfigOpen(true);
-      return;
-    }
 
     try {
       await sendMessage(input, selectedImage);
@@ -98,21 +82,9 @@ export function AIAssistant() {
   };
 
   const handleSugestaoClick = (sugestao: string) => {
-    if (!apiKey) {
-      setIsConfigOpen(true);
-      return;
-    }
-
     if (!isLoading) {
       sendMessage(sugestao);
     }
-  };
-
-  const handleApiKeySubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    localStorage.setItem(API_KEY_STORAGE, apiKey);
-    setIsConfigOpen(false);
-    toast.success("Chave da API configurada com sucesso!");
   };
 
   return (
@@ -123,54 +95,66 @@ export function AIAssistant() {
             <Microscope className="w-5 h-5 text-primary" />
             Assistente de Zootecnia
           </CardTitle>
-          <Dialog open={isConfigOpen} onOpenChange={setIsConfigOpen}>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Settings className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Configurar API Gemini</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleApiKeySubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <label htmlFor="apiKey" className="text-sm font-medium">
-                    Chave da API
-                  </label>
-                  <Input
-                    id="apiKey"
-                    type="password"
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    placeholder="Cole sua chave da API aqui"
-                    className="w-full"
-                    required
-                  />
-                </div>
-                <Button type="submit" className="w-full">
-                  Salvar Configuração
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
         </div>
       </CardHeader>
+      <CardContent className="flex-1 p-4 flex flex-col gap-4">
+        <ScrollArea className="flex-1 pr-4">
+          <div className="space-y-4">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "flex gap-3 text-sm",
+                  message.role === 'assistant' ? 'items-start' : 'items-start justify-end'
+                )}
+              >
+                {message.role === 'assistant' && (
+                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Microscope className="w-4 h-4 text-primary" />
+                  </div>
+                )}
+                <div
+                  className={cn(
+                    "rounded-lg px-3 py-2 max-w-[85%]",
+                    message.role === 'assistant'
+                      ? 'bg-muted'
+                      : 'bg-primary text-primary-foreground'
+                  )}
+                >
+                  {message.image && (
+                    <img
+                      src={message.image}
+                      alt="Imagem enviada"
+                      className="max-w-full h-auto rounded-lg mb-2"
+                    />
+                  )}
+                  <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
+                    {message.content}
+                  </ReactMarkdown>
+                </div>
+                {message.role === 'user' && (
+                  <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                    <User className="w-4 h-4 text-primary-foreground" />
+                  </div>
+                )}
+              </div>
+            ))}
+            <div ref={scrollRef} />
+          </div>
+        </ScrollArea>
 
-      <CardContent className="flex-1 p-0 flex flex-col min-h-0">
-        <ScrollArea className="flex-1 p-4">
-          {messages.length === 0 && (
-            <div className="space-y-4">
-              <p className="text-base text-center text-muted-foreground">
-                Olá! Como posso ajudar com suas dúvidas sobre Zootecnia?
-              </p>
-              <div className="grid grid-cols-1 gap-2">
+        <div className="space-y-4">
+          {!messages.length && (
+            <div className="text-center space-y-4">
+              <h3 className="font-semibold">Sugestões de perguntas:</h3>
+              <div className="flex flex-wrap gap-2 justify-center">
                 {SUGESTOES_ZOOTECNIA.map((sugestao, index) => (
                   <Button
                     key={index}
                     variant="outline"
-                    className="text-left h-auto p-3 text-sm"
+                    className="text-sm"
                     onClick={() => handleSugestaoClick(sugestao)}
+                    disabled={isLoading}
                   >
                     {sugestao}
                   </Button>
@@ -179,129 +163,38 @@ export function AIAssistant() {
             </div>
           )}
 
-          <div className="space-y-4">
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={cn(
-                  "flex gap-2",
-                  msg.role === 'user' ? 'justify-end' : 'justify-start'
-                )}
-              >
-                {msg.role === 'assistant' && (
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0">
-                    <div className="bg-muted rounded-full p-1">
-                      <Microscope className="w-4 h-4" />
-                    </div>
-                  </div>
-                )}
-                
-                <div
-                  className={cn(
-                    "rounded-lg p-3 text-sm leading-relaxed max-w-[85%] break-words",
-                    msg.role === 'user' 
-                      ? 'bg-primary text-primary-foreground ml-auto' 
-                      : 'bg-muted/50 text-foreground'
-                  )}
-                >
-                  {msg.image && (
-                    <img 
-                      src={msg.image} 
-                      alt="Imagem enviada"
-                      className="max-w-full h-auto rounded-lg mb-2"
-                    />
-                  )}
-                  <div className="prose prose-sm dark:prose-invert max-w-none overflow-hidden">
-                    <ReactMarkdown className="whitespace-pre-wrap">
-                      {msg.content}
-                    </ReactMarkdown>
-                  </div>
-                </div>
-
-                {msg.role === 'user' && (
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0">
-                    <div className="bg-primary rounded-full p-1">
-                      <User className="w-4 w-4 text-primary-foreground" />
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-            
-            {(isLoading || isPdfLoading) && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm">
-                  {isPdfLoading ? "Processando PDF..." : "Analisando..."}
-                </span>
-              </div>
-            )}
-            
-            {error && (
-              <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-                {error}
-              </div>
-            )}
-            
-            <div ref={scrollRef} />
-          </div>
-        </ScrollArea>
-
-        <div className="p-4 border-t mt-auto flex-shrink-0">
-          <form onSubmit={handleSubmit} className="space-y-2">
-            {selectedImage && (
-              <div className="flex items-center gap-2 p-2 bg-muted rounded-lg">
-                <ImageIcon className="h-4 w-4" />
-                <span className="text-sm truncate flex-1">
-                  {selectedImage.name}
-                </span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={() => setSelectedImage(null)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-            <div className="flex gap-2">
+          <form onSubmit={handleSubmit} className="flex gap-2">
+            <div className="flex-1 flex gap-2">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={apiKey ? "Faça uma pergunta sobre Zootecnia..." : "Configure a API para começar"}
-                disabled={isLoading || isPdfLoading || !apiKey}
-                className="text-sm"
+                placeholder="Digite sua mensagem..."
+                disabled={isLoading}
               />
               <input
                 type="file"
-                accept="image/*,application/pdf"
-                className="hidden"
                 ref={fileInputRef}
                 onChange={handleFileSelect}
+                accept="image/*,application/pdf"
+                className="hidden"
               />
+            </div>
+            <div className="flex gap-2">
               <Button
                 type="button"
                 variant="outline"
                 size="icon"
-                disabled={isLoading || isPdfLoading || !apiKey}
                 onClick={() => fileInputRef.current?.click()}
-                title="Enviar imagem ou PDF"
+                disabled={isLoading || isPdfLoading}
               >
                 {selectedImage ? (
-                  <ImageIcon className="h-4 w-4" />
+                  <X className="h-4 w-4" onClick={() => setSelectedImage(null)} />
                 ) : (
-                  <FileText className="h-4 w-4" />
+                  <ImageIcon className="h-4 w-4" />
                 )}
               </Button>
-              <Button 
-                type="submit" 
-                disabled={isLoading || isPdfLoading || !input.trim()}
-                size="icon"
-                className="shrink-0"
-              >
-                {(isLoading || isPdfLoading) ? (
+              <Button type="submit" disabled={isLoading || isPdfLoading}>
+                {isLoading || isPdfLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <Send className="h-4 w-4" />
