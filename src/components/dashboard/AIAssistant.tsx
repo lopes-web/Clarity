@@ -168,6 +168,23 @@ export function AIAssistant() {
                 )}
               </div>
             ))}
+            {isLoading && (
+              <div className="flex items-start gap-2">
+                <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center">
+                  <Microscope className="w-4 h-4 text-accent" />
+                </div>
+                <div className="bg-muted text-muted-foreground rounded-lg px-3 py-2 max-w-[85%]">
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1">
+                      <div className="w-2 h-2 rounded-full bg-accent/50 animate-bounce [animation-delay:-0.3s]" />
+                      <div className="w-2 h-2 rounded-full bg-accent/50 animate-bounce [animation-delay:-0.15s]" />
+                      <div className="w-2 h-2 rounded-full bg-accent/50 animate-bounce" />
+                    </div>
+                    <span className="text-sm">Gerando resposta...</span>
+                  </div>
+                </div>
+              </div>
+            )}
             <div ref={scrollRef} />
           </div>
         </ScrollArea>
