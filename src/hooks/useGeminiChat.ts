@@ -7,18 +7,23 @@ export function useGeminiChat(apiKey: string) {
   const [error, setError] = useState<string | null>(null);
   const geminiRef = useRef<GeminiService | null>(null);
 
+  // Inicializa o serviço assim que o hook é montado
   useEffect(() => {
-    try {
-      geminiRef.current = new GeminiService(apiKey);
-    } catch (err) {
-      console.error('Erro ao inicializar GeminiService:', err);
-      setError(err instanceof Error ? err.message : 'Erro ao inicializar o chat');
+    if (!geminiRef.current && apiKey) {
+      try {
+        console.log('Inicializando GeminiService com a chave:', apiKey);
+        geminiRef.current = new GeminiService(apiKey);
+      } catch (err) {
+        console.error('Erro ao inicializar GeminiService:', err);
+        setError(err instanceof Error ? err.message : 'Erro ao inicializar o chat');
+      }
     }
   }, [apiKey]);
 
   const sendMessage = useCallback(async (content: string, image?: File) => {
-    if (!geminiRef.current) {
+    if (!geminiRef.current && apiKey) {
       try {
+        console.log('Reinicializando GeminiService antes de enviar mensagem');
         geminiRef.current = new GeminiService(apiKey);
       } catch (err) {
         console.error('Erro ao inicializar GeminiService:', err);
@@ -34,6 +39,7 @@ export function useGeminiChat(apiKey: string) {
       // Se tiver imagem, converte para base64
       let imageDataUrl: string | undefined;
       if (image) {
+        console.log('Processando imagem...');
         const reader = new FileReader();
         imageDataUrl = await new Promise<string>((resolve) => {
           reader.onloadend = () => resolve(reader.result as string);
@@ -50,16 +56,27 @@ export function useGeminiChat(apiKey: string) {
       setMessages(prev => [...prev, userMessage]);
 
       // Envia a mensagem para o Gemini
-      const response = await geminiRef.current.sendMessage(content, image);
+      if (geminiRef.current) {
+        console.log('Enviando mensagem para o Gemini:', { content, hasImage: !!image });
+        const response = await geminiRef.current.sendMessage(content, image);
+        console.log('Resposta recebida do Gemini:', response);
 
-      // Adiciona a resposta do assistente
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: response
-      }]);
+        // Adiciona a resposta do assistente
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: response
+        }]);
+      } else {
+        throw new Error('Serviço Gemini não inicializado');
+      }
     } catch (err) {
       console.error('Erro ao enviar mensagem:', err);
       setError(err instanceof Error ? err.message : 'Erro ao processar sua mensagem');
+      // Adiciona mensagem de erro como resposta do assistente
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.'
+      }]);
     } finally {
       setIsLoading(false);
     }

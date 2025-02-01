@@ -59,10 +59,16 @@ export function AIAssistant() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if ((!input.trim() && !selectedImage) || isLoading) return;
 
     try {
-      await sendMessage(input, selectedImage);
+      // Se tiver imagem selecionada, envia mesmo sem texto
+      if (selectedImage) {
+        const defaultPrompt = "Por favor, analise esta imagem de acordo com os aspectos zootécnicos.";
+        await sendMessage(input.trim() || defaultPrompt, selectedImage);
+      } else {
+        await sendMessage(input);
+      }
       setInput('');
       setSelectedImage(null);
     } catch (err) {
@@ -106,6 +112,10 @@ export function AIAssistant() {
         return;
       }
       setSelectedImage(file);
+      // Adiciona um prompt padrão se não houver texto
+      if (!input.trim()) {
+        setInput("Por favor, analise esta imagem de acordo com os aspectos zootécnicos.");
+      }
     }
   };
 
