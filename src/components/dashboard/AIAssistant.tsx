@@ -99,9 +99,10 @@ export function AIAssistant() {
     }
   };
 
-  const handleSugestaoClick = (sugestao: string) => {
+  const handleSugestaoClick = async (sugestao: string) => {
     if (!isLoading) {
-      sendMessage(sugestao);
+      setInput(sugestao);
+      await sendMessage(sugestao);
     }
   };
 
@@ -115,7 +116,7 @@ export function AIAssistant() {
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 p-4 flex flex-col gap-4">
+      <CardContent className="flex-1 p-4 flex flex-col gap-4 overflow-hidden">
         <ScrollArea className="flex-1 pr-4">
           <div className="space-y-4">
             {messages.map((message, index) => (
@@ -161,7 +162,7 @@ export function AIAssistant() {
           </div>
         </ScrollArea>
 
-        <div className="space-y-4">
+        <div className="space-y-4 flex-shrink-0">
           {!messages.length && (
             <div className="text-center space-y-6 p-8">
               <div className="space-y-2">
@@ -184,14 +185,14 @@ export function AIAssistant() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="flex gap-2">
-            <div className="flex-1 flex gap-2">
+          <form onSubmit={handleSubmit} className="flex gap-2 flex-shrink-0">
+            <div className="flex-1 flex gap-2 min-w-0">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Digite sua mensagem..."
                 disabled={isLoading}
-                className="bg-muted/10 border-border text-foreground placeholder:text-muted-foreground"
+                className="bg-muted/10 border-border text-foreground placeholder:text-muted-foreground flex-1 min-w-0"
               />
               <input
                 type="file"
@@ -201,7 +202,7 @@ export function AIAssistant() {
                 className="hidden"
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-shrink-0">
               <Button
                 type="button"
                 variant="outline"
