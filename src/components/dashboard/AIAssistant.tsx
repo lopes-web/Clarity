@@ -118,22 +118,22 @@ export function AIAssistant() {
 
   return (
     <Card className="w-full h-full flex flex-col bg-background border-border">
-      <CardHeader className="p-4 border-b border-border space-y-1 flex-shrink-0">
+      <CardHeader className="p-2 border-b border-border space-y-1 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-semibold flex items-center gap-2 text-foreground">
-            <Microscope className="w-5 h-5 text-accent" />
+          <CardTitle className="text-lg font-semibold flex items-center gap-2 text-foreground">
+            <Microscope className="w-4 h-4 text-accent" />
             Assistente de Zootecnia
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 p-4 flex flex-col gap-4 overflow-hidden">
-        <ScrollArea className="flex-1 pr-4 min-h-[400px]">
-          <div className="space-y-4">
+      <CardContent className="flex-1 p-2 flex flex-col gap-2 overflow-hidden">
+        <ScrollArea className="flex-1 pr-2">
+          <div className="space-y-2">
             {messages.map((message, index) => (
               <div
                 key={index}
                 className={cn(
-                  "flex gap-3 text-sm",
+                  "flex gap-2 text-sm",
                   message.role === 'assistant' ? 'items-start' : 'items-start justify-end'
                 )}
               >
@@ -144,7 +144,7 @@ export function AIAssistant() {
                 )}
                 <div
                   className={cn(
-                    "rounded-lg px-3 py-2 max-w-[85%]",
+                    "rounded-lg px-2 py-1.5 max-w-[85%]",
                     message.role === 'assistant'
                       ? 'bg-muted text-muted-foreground'
                       : 'bg-accent text-accent-foreground'
@@ -172,23 +172,23 @@ export function AIAssistant() {
           </div>
         </ScrollArea>
 
-        <div className="space-y-4 flex-shrink-0">
+        <div className="space-y-2 flex-shrink-0">
           {!messages.length && (
-            <div className="text-center space-y-6 p-8">
-              <div className="space-y-2">
-                <h3 className="text-2xl font-bold text-foreground">Sugestões de perguntas</h3>
-                <p className="text-sm text-muted-foreground">Selecione uma pergunta ou faça a sua própria</p>
+            <div className="text-center space-y-4 p-4">
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-foreground">Sugestões de perguntas</h3>
+                <p className="text-xs text-muted-foreground">Selecione uma pergunta ou faça a sua própria</p>
               </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-4xl mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                 {sugestoesAtuais.map((sugestao, index) => (
                   <Button
                     key={index}
                     variant="outline"
-                    className="h-auto p-4 text-left break-words whitespace-normal bg-muted/10 hover:bg-muted/20 text-foreground border-border transition-colors"
+                    className="h-auto p-2 text-left break-words whitespace-normal bg-muted/10 hover:bg-muted/20 text-foreground border-border transition-colors"
                     onClick={() => handleSugestaoClick(sugestao)}
                     disabled={isLoading}
                   >
-                    <span className="text-sm">{sugestao}</span>
+                    <span className="text-xs">{sugestao}</span>
                   </Button>
                 ))}
               </div>
@@ -203,7 +203,7 @@ export function AIAssistant() {
                 onKeyPress={handleKeyPress}
                 placeholder="Digite sua mensagem..."
                 disabled={isLoading}
-                className="bg-muted/10 border-border text-foreground placeholder:text-muted-foreground flex-1 min-w-0 h-12"
+                className="bg-muted/10 border-border text-foreground placeholder:text-muted-foreground flex-1 min-w-0 h-10"
               />
               <input
                 type="file"
@@ -220,7 +220,7 @@ export function AIAssistant() {
                 size="icon"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading || isPdfLoading}
-                className="border-border hover:bg-muted/20 h-12 w-12"
+                className="border-border hover:bg-muted/20 h-10 w-10"
               >
                 {selectedImage ? (
                   <X className="h-4 w-4 text-foreground" onClick={() => setSelectedImage(null)} />
@@ -231,7 +231,7 @@ export function AIAssistant() {
               <Button 
                 type="submit" 
                 disabled={isLoading || isPdfLoading}
-                className="bg-accent hover:bg-accent/90 text-accent-foreground h-12 w-12"
+                className="bg-accent hover:bg-accent/90 text-accent-foreground h-10 w-10"
               >
                 {isLoading || isPdfLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

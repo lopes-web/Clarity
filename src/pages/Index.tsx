@@ -44,7 +44,7 @@ const Index = () => {
     { i: 'files', x: 0, y: 6, w: 1, h: 6 },
     { i: 'subjects', x: 1, y: 6, w: 1, h: 6 },
     { i: 'editor', x: 2, y: 6, w: 1, h: 6 },
-    { i: 'assistant', x: 0, y: 12, w: 3, h: 8 },
+    { i: 'assistant', x: 0, y: 12, w: 3, h: 12 },
   ]);
   const [isDraggable, setIsDraggable] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -119,7 +119,7 @@ const Index = () => {
                 containerPadding={[8, 8]}
                 resizeHandles={['s', 'se', 'e']}
                 minH={3}
-                maxH={16}
+                maxH={20}
               >
                 <div key="pomodoro">
                   <PomodoroTimer />
@@ -139,7 +139,7 @@ const Index = () => {
                 <div key="editor" className="h-full">
                   <QuickNotes />
                 </div>
-                <div key="assistant">
+                <div key="assistant" className="h-full overflow-hidden">
                   <AIAssistant />
                 </div>
               </GridLayout>
