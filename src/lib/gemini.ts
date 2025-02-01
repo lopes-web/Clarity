@@ -25,7 +25,7 @@ export class GeminiService {
   constructor(apiKey: string) {
     this.apiKey = apiKey;
     try {
-      console.log("Inicializando GeminiService especializado em Zootecnia...");
+      console.log("Inicializando GeminiService com a chave:", apiKey);
       const genAI = new GoogleGenerativeAI(apiKey);
       
       // Modelo principal
@@ -60,12 +60,16 @@ export class GeminiService {
 
       // Inicia o chat com o histórico
       this.chat = this.model.startChat({
-        history: this.chatHistory
+        history: this.chatHistory,
+        generationConfig: {
+          maxOutputTokens: 2000,
+          temperature: 0.7,
+        }
       });
 
       console.log("GeminiService inicializado com sucesso!");
     } catch (error) {
-      console.error("Erro ao inicializar GeminiService:", error);
+      console.error("Erro detalhado ao inicializar GeminiService:", error);
       throw this.handleError(error);
     }
   }
@@ -110,11 +114,22 @@ export class GeminiService {
   private async analyzeImage(image: File, prompt: string): Promise<string> {
     try {
       const imagePart = await this.fileToGenerativePart(image);
+      
+      // Adiciona contexto específico para análise de imagens de zootecnia
+      const contextualizedPrompt = `Como especialista em Zootecnia, analise esta imagem considerando:
+1. Espécie e raça do animal
+2. Características físicas visíveis
+3. Condição corporal
+4. Aspectos relevantes do ambiente
+5. Possíveis observações técnicas
+
+${prompt}`;
+
       const result = await this.visionModel.generateContent([
         {
           role: "user",
           parts: [
-            { text: prompt },
+            { text: contextualizedPrompt },
             {
               inlineData: {
                 mimeType: imagePart.mimeType,
@@ -124,6 +139,7 @@ export class GeminiService {
           ]
         }
       ]);
+      
       const response = await result.response;
       const text = response.text();
 
