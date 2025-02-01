@@ -7,7 +7,8 @@ interface GeminiContextType {
 const GeminiContext = createContext<GeminiContextType | undefined>(undefined);
 
 export function GeminiProvider({ children }: { children: ReactNode }) {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  // Chave da API pré-configurada
+  const apiKey = 'AIzaSyCBJMS1NRFyQ5qHEq0J9UGNP0yKifBP4CA';
 
   return (
     <GeminiContext.Provider value={{ apiKey }}>
