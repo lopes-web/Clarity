@@ -147,22 +147,19 @@ export function AIAssistant() {
           {!messages.length && (
             <div className="text-center space-y-6 p-8">
               <div className="space-y-2">
-                <h3 className="text-xl font-semibold text-primary">Sugestões de perguntas</h3>
+                <h3 className="text-2xl font-bold">Sugestões de perguntas</h3>
                 <p className="text-sm text-muted-foreground">Selecione uma pergunta ou faça a sua própria</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-4xl mx-auto">
                 {SUGESTOES_ZOOTECNIA.map((sugestao, index) => (
                   <Button
                     key={index}
                     variant="outline"
-                    className="h-auto p-4 text-left flex items-center gap-3 hover:bg-primary/5 transition-colors"
+                    className="h-auto p-4 text-left break-words whitespace-normal hover:bg-primary/5 transition-colors"
                     onClick={() => handleSugestaoClick(sugestao)}
                     disabled={isLoading}
                   >
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Microscope className="w-4 h-4 text-primary" />
-                    </div>
-                    <span className="text-sm font-medium">{sugestao}</span>
+                    <span className="text-sm">{sugestao}</span>
                   </Button>
                 ))}
               </div>
