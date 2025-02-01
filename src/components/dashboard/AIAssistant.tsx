@@ -12,13 +12,22 @@ import { toast } from "sonner";
 import { configurePdfWorker } from '@/lib/pdfjs-config';
 import { useGemini } from '@/contexts/GeminiContext';
 
-const SUGESTOES_ZOOTECNIA = [
+const TODAS_SUGESTOES_ZOOTECNIA = [
   "Como calcular a taxa de lotação ideal para pastagens?",
   "Quais são os principais indicadores de bem-estar animal?",
   "Explique o manejo nutricional de frangos de corte.",
   "Como avaliar a qualidade de uma silagem?",
-  "Técnicas de reprodução em bovinos."
+  "Técnicas de reprodução em bovinos.",
+  "Quais são as principais vacinas para gado de corte?",
+  "Como fazer o manejo sanitário de ovinos?",
+  "Explique os sistemas de pastejo rotacionado.",
+  "Quais são as principais raças leiteiras e suas características?",
+  "Como calcular a conversão alimentar em suínos?",
+  "Métodos de conservação de forragens.",
+  "Como avaliar a condição corporal do rebanho?"
 ];
+
+const NUMERO_SUGESTOES = 6;
 
 export function AIAssistant() {
   const { apiKey } = useGemini();
@@ -28,6 +37,7 @@ export function AIAssistant() {
   const { messages, isLoading, error, sendMessage } = useGeminiChat(apiKey);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [sugestoesAtuais, setSugestoesAtuais] = useState<string[]>([]);
 
   useEffect(() => {
     configurePdfWorker();
@@ -38,6 +48,14 @@ export function AIAssistant() {
       scrollRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
+
+  useEffect(() => {
+    // Embaralha e seleciona 6 sugestões aleatórias quando o componente monta
+    const sugestoesEmbaralhadas = [...TODAS_SUGESTOES_ZOOTECNIA]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, NUMERO_SUGESTOES);
+    setSugestoesAtuais(sugestoesEmbaralhadas);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,7 +169,7 @@ export function AIAssistant() {
                 <p className="text-sm text-muted-foreground">Selecione uma pergunta ou faça a sua própria</p>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-4xl mx-auto">
-                {SUGESTOES_ZOOTECNIA.map((sugestao, index) => (
+                {sugestoesAtuais.map((sugestao, index) => (
                   <Button
                     key={index}
                     variant="outline"
