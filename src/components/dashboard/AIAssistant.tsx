@@ -67,6 +67,16 @@ export function AIAssistant() {
       setSelectedImage(null);
     } catch (err) {
       console.error('Erro ao enviar mensagem:', err);
+      toast.error('Erro ao enviar mensagem. Tente novamente.');
+    }
+  };
+
+  const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (input.trim() && !isLoading) {
+        await handleSubmit(e as any);
+      }
     }
   };
 
@@ -117,7 +127,7 @@ export function AIAssistant() {
         </div>
       </CardHeader>
       <CardContent className="flex-1 p-4 flex flex-col gap-4 overflow-hidden">
-        <ScrollArea className="flex-1 pr-4">
+        <ScrollArea className="flex-1 pr-4 min-h-[400px]">
           <div className="space-y-4">
             {messages.map((message, index) => (
               <div
@@ -190,9 +200,10 @@ export function AIAssistant() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                onKeyPress={handleKeyPress}
                 placeholder="Digite sua mensagem..."
                 disabled={isLoading}
-                className="bg-muted/10 border-border text-foreground placeholder:text-muted-foreground flex-1 min-w-0"
+                className="bg-muted/10 border-border text-foreground placeholder:text-muted-foreground flex-1 min-w-0 h-12"
               />
               <input
                 type="file"
@@ -209,7 +220,7 @@ export function AIAssistant() {
                 size="icon"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading || isPdfLoading}
-                className="border-border hover:bg-muted/20"
+                className="border-border hover:bg-muted/20 h-12 w-12"
               >
                 {selectedImage ? (
                   <X className="h-4 w-4 text-foreground" onClick={() => setSelectedImage(null)} />
@@ -220,7 +231,7 @@ export function AIAssistant() {
               <Button 
                 type="submit" 
                 disabled={isLoading || isPdfLoading}
-                className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                className="bg-accent hover:bg-accent/90 text-accent-foreground h-12 w-12"
               >
                 {isLoading || isPdfLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
