@@ -12,6 +12,7 @@ import ReactMarkdown from 'react-markdown';
 import { toast } from "sonner";
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { AppSidebar } from '@/components/layout/AppSidebar';
 
 type ChatSession = {
   id: string;
@@ -111,39 +112,8 @@ export function AssistantPage() {
 
   return (
     <div className="flex h-screen bg-background">
-      {/* Sidebar com histórico de sessões */}
-      <div className="w-80 border-r border-border p-4 flex flex-col gap-4">
-        <Button 
-          onClick={createNewSession}
-          className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-        >
-          Nova Conversa
-        </Button>
-        <ScrollArea className="flex-1">
-          <div className="space-y-2">
-            {sessions.map(session => (
-              <Card 
-                key={session.id}
-                className={cn(
-                  "p-3 cursor-pointer hover:bg-muted/50 transition-colors",
-                  currentSession?.id === session.id && "bg-muted"
-                )}
-                onClick={() => setCurrentSession(session)}
-              >
-                <div className="flex flex-col gap-1">
-                  <div className="font-medium text-foreground">{session.title}</div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Calendar className="w-3 h-3" />
-                    {format(session.date, "d 'de' MMMM", { locale: ptBR })}
-                    <Clock className="w-3 h-3 ml-2" />
-                    {format(session.date, "HH:mm")}
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </ScrollArea>
-      </div>
+      {/* Menu principal na esquerda */}
+      <AppSidebar />
 
       {/* Área principal do chat */}
       <div className="flex-1 flex flex-col">
@@ -154,114 +124,150 @@ export function AssistantPage() {
           </h1>
         </div>
 
-        <div className="flex-1 flex flex-col p-4 gap-4">
-          <ScrollArea className="flex-1">
-            <div className="space-y-4 pb-4">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={cn(
-                    "flex gap-3",
-                    message.role === 'assistant' ? 'items-start' : 'items-start justify-end'
-                  )}
-                >
-                  {message.role === 'assistant' && (
-                    <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-                      <Microscope className="w-5 h-5 text-accent" />
-                    </div>
-                  )}
+        <div className="flex flex-1">
+          <div className="flex-1 flex flex-col p-4 gap-4">
+            <ScrollArea className="flex-1">
+              <div className="space-y-4 pb-4">
+                {messages.map((message, index) => (
                   <div
+                    key={index}
                     className={cn(
-                      "rounded-lg px-4 py-2 max-w-[80%]",
-                      message.role === 'assistant'
-                        ? 'bg-muted text-muted-foreground'
-                        : 'bg-accent text-accent-foreground'
+                      "flex gap-3",
+                      message.role === 'assistant' ? 'items-start' : 'items-start justify-end'
                     )}
                   >
-                    {message.image && (
-                      <img
-                        src={message.image}
-                        alt="Imagem enviada"
-                        className="max-w-full h-auto rounded-lg mb-2"
-                      />
-                    )}
-                    <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
-                      {message.content}
-                    </ReactMarkdown>
-                  </div>
-                  {message.role === 'user' && (
-                    <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
-                      <User className="w-5 h-5 text-accent-foreground" />
-                    </div>
-                  )}
-                </div>
-              ))}
-              {isLoading && (
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
-                    <Microscope className="w-5 h-5 text-accent" />
-                  </div>
-                  <div className="bg-muted text-muted-foreground rounded-lg px-4 py-2">
-                    <div className="flex items-center gap-2">
-                      <div className="flex gap-1">
-                        <div className="w-2 h-2 rounded-full bg-accent/50 animate-bounce [animation-delay:-0.3s]" />
-                        <div className="w-2 h-2 rounded-full bg-accent/50 animate-bounce [animation-delay:-0.15s]" />
-                        <div className="w-2 h-2 rounded-full bg-accent/50 animate-bounce" />
+                    {message.role === 'assistant' && (
+                      <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                        <Microscope className="w-5 h-5 text-accent" />
                       </div>
-                      <span className="text-sm">Gerando resposta...</span>
+                    )}
+                    <div
+                      className={cn(
+                        "rounded-lg px-4 py-2 max-w-[80%]",
+                        message.role === 'assistant'
+                          ? 'bg-muted text-muted-foreground'
+                          : 'bg-accent text-accent-foreground'
+                      )}
+                    >
+                      {message.image && (
+                        <img
+                          src={message.image}
+                          alt="Imagem enviada"
+                          className="max-w-full h-auto rounded-lg mb-2"
+                        />
+                      )}
+                      <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
+                        {message.content}
+                      </ReactMarkdown>
+                    </div>
+                    {message.role === 'user' && (
+                      <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+                        <User className="w-5 h-5 text-accent-foreground" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
+                      <Microscope className="w-5 h-5 text-accent" />
+                    </div>
+                    <div className="bg-muted text-muted-foreground rounded-lg px-4 py-2">
+                      <div className="flex items-center gap-2">
+                        <div className="flex gap-1">
+                          <div className="w-2 h-2 rounded-full bg-accent/50 animate-bounce [animation-delay:-0.3s]" />
+                          <div className="w-2 h-2 rounded-full bg-accent/50 animate-bounce [animation-delay:-0.15s]" />
+                          <div className="w-2 h-2 rounded-full bg-accent/50 animate-bounce" />
+                        </div>
+                        <span className="text-sm">Gerando resposta...</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-              <div ref={scrollRef} />
-            </div>
-          </ScrollArea>
+                )}
+                <div ref={scrollRef} />
+              </div>
+            </ScrollArea>
 
-          <form onSubmit={handleSubmit} className="flex gap-2">
-            <div className="flex-1 flex gap-2">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Digite sua mensagem..."
-                disabled={isLoading}
-                className="flex-1 bg-muted/10 border-border text-foreground placeholder:text-muted-foreground"
-              />
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileSelect}
-                accept="image/*"
-                className="hidden"
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isLoading}
-                className="border-border hover:bg-muted/20"
-              >
-                {selectedImage ? (
-                  <X className="h-4 w-4 text-foreground" onClick={() => setSelectedImage(null)} />
-                ) : (
-                  <ImageIcon className="h-4 w-4 text-foreground" />
-                )}
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={isLoading}
-                className="bg-accent hover:bg-accent/90 text-accent-foreground"
-              >
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Send className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-          </form>
+            <form onSubmit={handleSubmit} className="flex gap-2">
+              <div className="flex-1 flex gap-2">
+                <Input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Digite sua mensagem..."
+                  disabled={isLoading}
+                  className="flex-1 bg-muted/10 border-border text-foreground placeholder:text-muted-foreground"
+                />
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  accept="image/*"
+                  className="hidden"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isLoading}
+                  className="border-border hover:bg-muted/20"
+                >
+                  {selectedImage ? (
+                    <X className="h-4 w-4 text-foreground" onClick={() => setSelectedImage(null)} />
+                  ) : (
+                    <ImageIcon className="h-4 w-4 text-foreground" />
+                  )}
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </form>
+          </div>
+
+          {/* Histórico na direita */}
+          <div className="w-80 border-l border-border p-4 flex flex-col gap-4">
+            <Button 
+              onClick={createNewSession}
+              className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+            >
+              Nova Conversa
+            </Button>
+            <ScrollArea className="flex-1">
+              <div className="space-y-2">
+                {sessions.map(session => (
+                  <Card 
+                    key={session.id}
+                    className={cn(
+                      "p-3 cursor-pointer hover:bg-muted/50 transition-colors",
+                      currentSession?.id === session.id && "bg-muted"
+                    )}
+                    onClick={() => setCurrentSession(session)}
+                  >
+                    <div className="flex flex-col gap-1">
+                      <div className="font-medium text-foreground">{session.title}</div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Calendar className="w-3 h-3" />
+                        {format(session.date, "d 'de' MMMM", { locale: ptBR })}
+                        <Clock className="w-3 h-3 ml-2" />
+                        {format(session.date, "HH:mm")}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
         </div>
       </div>
     </div>
