@@ -52,7 +52,10 @@ function AppContent() {
           element={
             <PrivateRoute>
               <SidebarProvider defaultOpen={true}>
-                <AssistantPage />
+                <div className="flex h-screen w-screen overflow-hidden">
+                  <AppSidebar />
+                  <AssistantPage />
+                </div>
               </SidebarProvider>
             </PrivateRoute>
           } 
