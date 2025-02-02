@@ -72,12 +72,13 @@ export function SuggestedQuestions({ onSelectQuestion }: SuggestedQuestionsProps
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
+            className="flex"
           >
-            <Card className="relative h-full overflow-hidden group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50">
+            <Card className="relative w-full flex flex-col overflow-hidden group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
               
-              <div className="relative p-6 space-y-4">
-                <div className="space-y-2">
+              <div className="relative p-6 flex flex-col flex-1">
+                <div className="space-y-2 mb-4">
                   <span className="text-2xl">{categoria.icon}</span>
                   <h3 className="font-semibold text-xl text-gray-900">
                     {categoria.title}
@@ -87,7 +88,7 @@ export function SuggestedQuestions({ onSelectQuestion }: SuggestedQuestionsProps
                   </p>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 flex-1">
                   {categoria.questions.map((question) => (
                     <motion.div
                       key={question}
@@ -96,13 +97,13 @@ export function SuggestedQuestions({ onSelectQuestion }: SuggestedQuestionsProps
                     >
                       <Button
                         variant="ghost"
-                        className="w-full justify-between text-left hover:bg-blue-50/50 group/button p-3"
+                        className="w-full justify-between text-left hover:bg-blue-50/50 group/button p-3 whitespace-normal h-auto"
                         onClick={() => onSelectQuestion(question)}
                       >
                         <span className="text-sm text-gray-600 group-hover/button:text-blue-600 flex-1 mr-2">
                           {question}
                         </span>
-                        <ChevronRight className="w-4 h-4 shrink-0 text-gray-400 group-hover/button:text-blue-500 transition-transform group-hover/button:translate-x-1" />
+                        <ChevronRight className="w-4 h-4 shrink-0 text-gray-400 group-hover/button:text-blue-500 transition-transform group-hover/button:translate-x-1 mt-0.5" />
                       </Button>
                     </motion.div>
                   ))}
