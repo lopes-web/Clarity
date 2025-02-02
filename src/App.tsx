@@ -10,11 +10,12 @@ import Index from './pages/Index';
 import { FilesPage } from './pages/FilesPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { ChatPage } from './pages/ChatPage';
+import { AssistantPage } from '@/pages/AssistantPage';
 import { SidebarProvider } from './components/ui/sidebar';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { GeminiProvider } from './contexts/GeminiContext';
 import { useState } from 'react';
-import { AssistantPage } from '@/pages/AssistantPage';
 
 const queryClient = new QueryClient();
 
