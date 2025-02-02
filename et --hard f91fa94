@@ -1,0 +1,7 @@
+[33m49b5bb4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m style: Implementa nova paleta de cores rosa/marrom com alto contraste
+[33md1ec4df[m feat: Adiciona randomização das sugestões de perguntas e expande banco de perguntas
+[33m2823aef[m fix: Ajusta layout das sugestões (remove ícones, corrige overflow de texto e melhora contraste)
+[33mf91fa94[m style: Melhora a diagramação das sugestões de perguntas com layout em grid e melhor espaçamento
+[33mb998b7a[m Configuração global da API Gemini
+[33m5817493[m Add Vercel configuration for SPA routing
+[33mef181cf[m Initial commit: Project setup with React, TypeScript, Tailwind and Supabase
