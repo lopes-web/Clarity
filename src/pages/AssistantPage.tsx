@@ -6,12 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useGeminiChat } from '@/hooks/useGeminiChat';
-import { Send, Loader2, Microscope, User, Image as ImageIcon, X, ArrowLeft } from 'lucide-react';
+import { Send, Loader2, Microscope, User, Image as ImageIcon, X, ArrowLeft, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import { toast } from "sonner";
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { SuggestedQuestions } from '@/components/chat/SuggestedQuestions';
 
 type ChatSession = {
   id: string;
@@ -95,11 +96,11 @@ export function AssistantPage() {
     e.preventDefault();
     if ((!input.trim() && !selectedImage) || isLoading) return;
 
-    // Se não houver sessão atual, criar uma nova
+    // Se não houver sessão atual, criar uma nova com o título baseado na primeira mensagem
     if (!currentSession) {
       const newSession: ChatSession = {
         id: Date.now().toString(),
-        title: input.trim().slice(0, 30) + '...',
+        title: generateTitle(input.trim()),
         date: new Date(),
         messages: []
       };
@@ -179,6 +180,23 @@ export function AssistantPage() {
     setCurrentSession(session);
   };
 
+  const handleDeleteSession = (sessionId: string) => {
+    if (window.confirm('Tem certeza que deseja excluir esta conversa?')) {
+      const newSessions = sessions.filter(s => s.id !== sessionId);
+      setSessions(newSessions);
+      localStorage.setItem('chatSessions', JSON.stringify(newSessions));
+      
+      if (currentSession?.id === sessionId) {
+        setCurrentSession(newSessions[0] || null);
+      }
+    }
+  };
+
+  const generateTitle = (content: string) => {
+    // Limita o título a 40 caracteres e adiciona reticências se necessário
+    return content.length > 40 ? content.slice(0, 40) + '...' : content;
+  };
+
   return (
     <div className="flex-1 flex flex-col bg-background">
       {/* Cabeçalho */}
@@ -204,45 +222,51 @@ export function AssistantPage() {
         <div className="flex-1 flex flex-col p-4 gap-4">
           <ScrollArea className="flex-1">
             <div className="space-y-4 pb-4 px-4">
-              {currentSession?.messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={cn(
-                    "flex gap-3",
-                    message.role === 'assistant' ? 'items-start' : 'items-start justify-end'
-                  )}
-                >
-                  {message.role === 'assistant' && (
-                    <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-                      <Microscope className="w-5 h-5 text-accent" />
+              {currentSession?.messages.length === 0 ? (
+                <SuggestedQuestions onSelectQuestion={(question) => setInput(question)} />
+              ) : (
+                <>
+                  {currentSession?.messages.map((message, index) => (
+                    <div
+                      key={index}
+                      className={cn(
+                        "flex gap-3",
+                        message.role === 'assistant' ? 'items-start' : 'items-start justify-end'
+                      )}
+                    >
+                      {message.role === 'assistant' && (
+                        <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                          <Microscope className="w-5 h-5 text-accent" />
+                        </div>
+                      )}
+                      <div
+                        className={cn(
+                          "rounded-lg px-4 py-2 max-w-[80%]",
+                          message.role === 'assistant'
+                            ? 'bg-muted text-muted-foreground'
+                            : 'bg-accent text-accent-foreground'
+                        )}
+                      >
+                        {message.image && (
+                          <img
+                            src={message.image}
+                            alt="Imagem enviada"
+                            className="max-w-full h-auto rounded-lg mb-2"
+                          />
+                        )}
+                        <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
+                          {message.content}
+                        </ReactMarkdown>
+                      </div>
+                      {message.role === 'user' && (
+                        <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+                          <User className="w-5 h-5 text-accent-foreground" />
+                        </div>
+                      )}
                     </div>
-                  )}
-                  <div
-                    className={cn(
-                      "rounded-lg px-4 py-2 max-w-[80%]",
-                      message.role === 'assistant'
-                        ? 'bg-muted text-muted-foreground'
-                        : 'bg-accent text-accent-foreground'
-                    )}
-                  >
-                    {message.image && (
-                      <img
-                        src={message.image}
-                        alt="Imagem enviada"
-                        className="max-w-full h-auto rounded-lg mb-2"
-                      />
-                    )}
-                    <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
-                      {message.content}
-                    </ReactMarkdown>
-                  </div>
-                  {message.role === 'user' && (
-                    <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
-                      <User className="w-5 h-5 text-accent-foreground" />
-                    </div>
-                  )}
-                </div>
-              ))}
+                  ))}
+                </>
+              )}
               {isLoading && (
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
@@ -328,18 +352,35 @@ export function AssistantPage() {
               {sessions.map(session => (
                 <Card 
                   key={session.id}
-                  onClick={() => selectSession(session)}
                   className={cn(
-                    "p-3 cursor-pointer transition-colors hover:bg-muted/50",
+                    "p-3 transition-colors hover:bg-muted/50",
                     currentSession?.id === session.id && "bg-muted"
                   )}
                 >
-                  <h3 className="font-medium text-sm text-foreground truncate">
-                    {session.title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {format(session.date, "d 'de' MMMM 'às' HH:mm", { locale: ptBR })}
-                  </p>
+                  <div className="flex items-start justify-between gap-2">
+                    <div
+                      className="flex-1 cursor-pointer"
+                      onClick={() => selectSession(session)}
+                    >
+                      <h3 className="font-medium text-sm text-foreground truncate">
+                        {session.title}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {format(session.date, "d 'de' MMMM 'às' HH:mm", { locale: ptBR })}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-red-500"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteSession(session.id);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </Card>
               ))}
             </div>
