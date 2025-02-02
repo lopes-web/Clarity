@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const sugestoes = [
   {
     title: "Nutrição Animal",
     icon: "🍽️",
+    description: "Explore aspectos nutricionais e dietas balanceadas",
     questions: [
       "Quais são os principais nutrientes necessários na dieta de bovinos de corte?",
       "Como calcular a ração balanceada para frangos de corte?",
@@ -16,6 +17,7 @@ const sugestoes = [
   {
     title: "Reprodução",
     icon: "🧬",
+    description: "Aprenda sobre manejo reprodutivo e técnicas de reprodução",
     questions: [
       "Quais são os sinais de cio em vacas leiteiras?",
       "Como funciona o processo de inseminação artificial em ovinos?",
@@ -25,6 +27,7 @@ const sugestoes = [
   {
     title: "Sanidade",
     icon: "🏥",
+    description: "Saiba mais sobre saúde animal e prevenção de doenças",
     questions: [
       "Quais são as principais doenças que afetam aves de postura?",
       "Como prevenir a mastite em vacas leiteiras?",
@@ -40,59 +43,68 @@ interface SuggestedQuestionsProps {
 export function SuggestedQuestions({ onSelectQuestion }: SuggestedQuestionsProps) {
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 gap-8 max-w-7xl mx-auto"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="w-full max-w-5xl mx-auto px-4 py-8 md:py-12"
     >
       <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.2 }}
-        className="text-center space-y-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center space-y-4 mb-12"
       >
-        <div className="flex items-center justify-center">
-          <motion.div 
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center"
-          >
-            <Lightbulb className="w-8 h-8 text-accent" />
-          </motion.div>
+        <div className="inline-flex p-3 rounded-2xl bg-gradient-to-br from-blue-50 to-purple-50">
+          <div className="bg-white rounded-xl p-3 shadow-sm">
+            <Lightbulb className="w-6 h-6 text-blue-600" />
+          </div>
         </div>
-        <h2 className="text-2xl font-semibold text-foreground">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
           Como posso ajudar você hoje?
         </h2>
-        <p className="text-base text-muted-foreground max-w-lg mx-auto">
-          Escolha uma sugestão ou faça sua própria pergunta para começarmos nossa conversa
+        <p className="text-gray-500 max-w-2xl mx-auto">
+          Escolha uma das sugestões abaixo ou faça sua própria pergunta para começarmos nossa conversa
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+      <div className="grid gap-6 md:grid-cols-3">
         {sugestoes.map((categoria, index) => (
           <motion.div
             key={categoria.title}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 + 0.3 }}
+            transition={{ delay: index * 0.1 }}
           >
-            <Card className="h-full p-6 hover:shadow-lg transition-shadow duration-300">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
+            <Card className="relative h-full overflow-hidden group hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50/50 to-purple-50/50 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
+              
+              <div className="relative p-6 space-y-4">
+                <div className="space-y-2">
                   <span className="text-2xl">{categoria.icon}</span>
-                  <h3 className="font-semibold text-lg text-foreground">
+                  <h3 className="font-semibold text-xl text-gray-900">
                     {categoria.title}
                   </h3>
+                  <p className="text-sm text-gray-500">
+                    {categoria.description}
+                  </p>
                 </div>
+
                 <div className="space-y-2">
                   {categoria.questions.map((question) => (
-                    <Button
+                    <motion.div
                       key={question}
-                      variant="ghost"
-                      className="w-full justify-start text-sm text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors duration-200"
-                      onClick={() => onSelectQuestion(question)}
+                      whileHover={{ x: 4 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      {question}
-                    </Button>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-between text-left hover:bg-blue-50/50 group/button"
+                        onClick={() => onSelectQuestion(question)}
+                      >
+                        <span className="line-clamp-1 text-sm text-gray-600 group-hover/button:text-blue-600">
+                          {question}
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover/button:text-blue-500 transition-transform group-hover/button:translate-x-1" />
+                      </Button>
+                    </motion.div>
                   ))}
                 </div>
               </div>
