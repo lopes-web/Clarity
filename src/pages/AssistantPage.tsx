@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGemini } from '@/contexts/GeminiContext';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useGeminiChat } from '@/hooks/useGeminiChat';
-import { Send, Loader2, Microscope, User, Image as ImageIcon, FileText, X, Calendar, Clock, Save } from 'lucide-react';
+import { Send, Loader2, Microscope, User, Image as ImageIcon, X, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import { toast } from "sonner";
@@ -40,19 +40,27 @@ export function AssistantPage() {
   useEffect(() => {
     if (!apiKey) {
       navigate('/');
+      return;
     }
+
     // Carregar sessões do localStorage
     const savedSessions = localStorage.getItem('chatSessions');
     if (savedSessions) {
       const parsed = JSON.parse(savedSessions);
-      setSessions(parsed.map((s: any) => ({
+      const parsedSessions = parsed.map((s: any) => ({
         ...s,
         date: new Date(s.date),
         messages: s.messages.map((m: any) => ({
           ...m,
           timestamp: new Date(m.timestamp)
         }))
-      })));
+      }));
+      setSessions(parsedSessions);
+      
+      // Se não houver sessão atual, seleciona a mais recente
+      if (!currentSession && parsedSessions.length > 0) {
+        setCurrentSession(parsedSessions[0]);
+      }
     }
   }, [apiKey, navigate]);
 
@@ -75,6 +83,24 @@ export function AssistantPage() {
       }
       setInput('');
       setSelectedImage(null);
+
+      // Atualizar a sessão atual com a nova mensagem
+      if (currentSession) {
+        const updatedSession = {
+          ...currentSession,
+          messages: [
+            ...currentSession.messages,
+            {
+              role: 'user' as const,
+              content: input,
+              timestamp: new Date(),
+              ...(selectedImage && { image: URL.createObjectURL(selectedImage) })
+            }
+          ]
+        };
+        setCurrentSession(updatedSession);
+        updateSessions(updatedSession);
+      }
     } catch (err) {
       console.error('Erro ao enviar mensagem:', err);
       toast.error('Erro ao enviar mensagem. Tente novamente.');
@@ -106,8 +132,19 @@ export function AssistantPage() {
     };
     setSessions(prev => [newSession, ...prev]);
     setCurrentSession(newSession);
-    // Salvar no localStorage
     localStorage.setItem('chatSessions', JSON.stringify([newSession, ...sessions]));
+  };
+
+  const updateSessions = (updatedSession: ChatSession) => {
+    const newSessions = sessions.map(s => 
+      s.id === updatedSession.id ? updatedSession : s
+    );
+    setSessions(newSessions);
+    localStorage.setItem('chatSessions', JSON.stringify(newSessions));
+  };
+
+  const selectSession = (session: ChatSession) => {
+    setCurrentSession(session);
   };
 
   return (
@@ -117,18 +154,28 @@ export function AssistantPage() {
 
       {/* Área principal do chat */}
       <div className="flex-1 flex flex-col">
-        <div className="border-b border-border p-4">
-          <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
-            <Microscope className="w-6 h-6 text-accent" />
-            Assistente de Zootecnia
-          </h1>
+        <div className="border-b border-border p-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/')}
+              className="hover:bg-muted/20"
+            >
+              <ArrowLeft className="h-5 w-5 text-foreground" />
+            </Button>
+            <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
+              <Microscope className="w-6 h-6 text-accent" />
+              Assistente de Zootecnia
+            </h1>
+          </div>
         </div>
 
         <div className="flex flex-1">
           <div className="flex-1 flex flex-col p-4 gap-4">
             <ScrollArea className="flex-1">
               <div className="space-y-4 pb-4">
-                {messages.map((message, index) => (
+                {currentSession?.messages.map((message, index) => (
                   <div
                     key={index}
                     className={cn(
@@ -236,33 +283,32 @@ export function AssistantPage() {
           </div>
 
           {/* Histórico na direita */}
-          <div className="w-80 border-l border-border p-4 flex flex-col gap-4">
-            <Button 
-              onClick={createNewSession}
-              className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-            >
-              Nova Conversa
-            </Button>
-            <ScrollArea className="flex-1">
+          <div className="w-80 border-l border-border flex flex-col">
+            <div className="p-4 border-b border-border">
+              <Button 
+                onClick={createNewSession}
+                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+              >
+                Nova Conversa
+              </Button>
+            </div>
+            <ScrollArea className="flex-1 p-4">
               <div className="space-y-2">
                 {sessions.map(session => (
                   <Card 
                     key={session.id}
+                    onClick={() => selectSession(session)}
                     className={cn(
-                      "p-3 cursor-pointer hover:bg-muted/50 transition-colors",
+                      "p-3 cursor-pointer transition-colors hover:bg-muted/50",
                       currentSession?.id === session.id && "bg-muted"
                     )}
-                    onClick={() => setCurrentSession(session)}
                   >
-                    <div className="flex flex-col gap-1">
-                      <div className="font-medium text-foreground">{session.title}</div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
-                        {format(session.date, "d 'de' MMMM", { locale: ptBR })}
-                        <Clock className="w-3 h-3 ml-2" />
-                        {format(session.date, "HH:mm")}
-                      </div>
-                    </div>
+                    <h3 className="font-medium text-sm text-foreground truncate">
+                      {session.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {format(session.date, "d 'de' MMMM 'às' HH:mm", { locale: ptBR })}
+                    </p>
                   </Card>
                 ))}
               </div>
