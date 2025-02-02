@@ -172,9 +172,10 @@ export function AssistantPage() {
         </div>
 
         <div className="flex flex-1">
+          {/* Área do chat */}
           <div className="flex-1 flex flex-col p-4 gap-4">
             <ScrollArea className="flex-1">
-              <div className="space-y-4 pb-4">
+              <div className="space-y-4 pb-4 max-w-[800px] mx-auto">
                 {currentSession?.messages.map((message, index) => (
                   <div
                     key={index}
@@ -235,55 +236,57 @@ export function AssistantPage() {
               </div>
             </ScrollArea>
 
-            <form onSubmit={handleSubmit} className="flex gap-2">
-              <div className="flex-1 flex gap-2">
-                <Input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Digite sua mensagem..."
-                  disabled={isLoading}
-                  className="flex-1 bg-muted/10 border-border text-foreground placeholder:text-muted-foreground"
-                />
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileSelect}
-                  accept="image/*"
-                  className="hidden"
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isLoading}
-                  className="border-border hover:bg-muted/20"
-                >
-                  {selectedImage ? (
-                    <X className="h-4 w-4 text-foreground" onClick={() => setSelectedImage(null)} />
-                  ) : (
-                    <ImageIcon className="h-4 w-4 text-foreground" />
-                  )}
-                </Button>
-                <Button 
-                  type="submit" 
-                  disabled={isLoading}
-                  className="bg-accent hover:bg-accent/90 text-accent-foreground"
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </form>
+            <div className="max-w-[800px] mx-auto w-full">
+              <form onSubmit={handleSubmit} className="flex gap-2">
+                <div className="flex-1 flex gap-2">
+                  <Input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Digite sua mensagem..."
+                    disabled={isLoading}
+                    className="flex-1 bg-muted/10 border-border text-foreground placeholder:text-muted-foreground"
+                  />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileSelect}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isLoading}
+                    className="border-border hover:bg-muted/20"
+                  >
+                    {selectedImage ? (
+                      <X className="h-4 w-4 text-foreground" onClick={() => setSelectedImage(null)} />
+                    ) : (
+                      <ImageIcon className="h-4 w-4 text-foreground" />
+                    )}
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    disabled={isLoading}
+                    className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
 
           {/* Histórico na direita */}
-          <div className="w-80 border-l border-border flex flex-col">
+          <div className="w-64 border-l border-border flex flex-col bg-muted/5">
             <div className="p-4 border-b border-border">
               <Button 
                 onClick={createNewSession}
