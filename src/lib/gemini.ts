@@ -127,16 +127,13 @@ ${prompt}`;
 
       const result = await this.visionModel.generateContent([
         {
-          role: "user",
-          parts: [
-            { text: contextualizedPrompt },
-            {
-              inlineData: {
-                mimeType: imagePart.mimeType,
-                data: imagePart.data
-              }
-            }
-          ]
+          text: contextualizedPrompt
+        },
+        {
+          inlineData: {
+            mimeType: imagePart.mimeType,
+            data: imagePart.data
+          }
         }
       ]);
       
