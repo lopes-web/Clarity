@@ -12,7 +12,9 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { SidebarProvider } from './components/ui/sidebar';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { GeminiProvider } from './contexts/GeminiContext';
 import { useState } from 'react';
+import { AssistantPage } from '@/pages/AssistantPage';
 
 const queryClient = new QueryClient();
 
@@ -43,6 +45,8 @@ function AppContent() {
       <Routes>
         <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage />} />
         <Route path="/register" element={user ? <Navigate to="/" /> : <RegisterPage />} />
+        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/assistant" element={<AssistantPage />} />
         <Route
           path="*"
           element={
@@ -75,11 +79,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <AppContent />
-          <Toaster />
-          <Sonner />
-        </TooltipProvider>
+        <GeminiProvider>
+          <TooltipProvider>
+            <AppContent />
+            <Toaster />
+            <Sonner />
+          </TooltipProvider>
+        </GeminiProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
