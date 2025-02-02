@@ -175,7 +175,7 @@ export function AssistantPage() {
           {/* Área do chat */}
           <div className="flex-1 flex flex-col p-4 gap-4">
             <ScrollArea className="flex-1">
-              <div className="space-y-4 pb-4 max-w-[800px] mx-auto">
+              <div className="space-y-4 pb-4 px-4">
                 {currentSession?.messages.map((message, index) => (
                   <div
                     key={index}
@@ -236,7 +236,7 @@ export function AssistantPage() {
               </div>
             </ScrollArea>
 
-            <div className="max-w-[800px] mx-auto w-full">
+            <div className="px-4">
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <div className="flex-1 flex gap-2">
                   <Input
