@@ -18,6 +18,7 @@ import {
   Settings,
   LogOut,
   User,
+  Microscope,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocation, Link, useNavigate } from "react-router-dom";
@@ -33,6 +34,7 @@ const menuItems = [
   { title: "Pomodoro", icon: Clock, url: "/pomodoro" },
   { title: "Arquivos", icon: FolderOpen, url: "/files" },
   { title: "Tags", icon: Tag, url: "/tags" },
+  { title: "Assistente", icon: Microscope, url: "/assistant" },
 ];
 
 const bottomMenuItems = [
