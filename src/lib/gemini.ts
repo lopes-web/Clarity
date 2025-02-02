@@ -30,7 +30,7 @@ export class GeminiService {
       
       // Modelo principal
       this.model = genAI.getGenerativeModel({ 
-        model: "gemini-pro",
+        model: "gemini-2.0-flash-exp",
         generationConfig: {
           maxOutputTokens: 2000,
           temperature: 0.7,
@@ -39,7 +39,7 @@ export class GeminiService {
 
       // Modelo para análise de imagens
       this.visionModel = genAI.getGenerativeModel({ 
-        model: "gemini-pro-vision",
+        model: "gemini-2.0-flash-exp",
         generationConfig: {
           maxOutputTokens: 2000,
           temperature: 0.7,
