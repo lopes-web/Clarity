@@ -172,7 +172,7 @@ ${prompt}`;
       });
 
       // Envia a mensagem com todo o histórico
-      const result = await this.chat.sendMessage([
+      const result = await this.model.generateContent([
         { text: formattedMessage }
       ]);
       const response = await result.response;
