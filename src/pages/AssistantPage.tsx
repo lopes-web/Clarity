@@ -100,12 +100,13 @@ export function AssistantPage() {
     if (!currentSession) {
       const newSession: ChatSession = {
         id: Date.now().toString(),
-        title: generateTitle(input.trim()),
+        title: input.trim(),
         date: new Date(),
         messages: []
       };
       setCurrentSession(newSession);
       setSessions(prev => [newSession, ...prev]);
+      localStorage.setItem('chatSessions', JSON.stringify([newSession, ...sessions]));
     }
 
     try {
@@ -121,6 +122,12 @@ export function AssistantPage() {
         ...currentSession!,
         messages: [...currentSession!.messages, userMessage]
       };
+
+      // Se for a primeira mensagem, atualizar o título
+      if (updatedSession.messages.length === 1) {
+        updatedSession.title = generateTitle(input.trim());
+      }
+
       setCurrentSession(updatedSession);
       updateSessions(updatedSession);
 
@@ -193,8 +200,9 @@ export function AssistantPage() {
   };
 
   const generateTitle = (content: string) => {
-    // Limita o título a 40 caracteres e adiciona reticências se necessário
-    return content.length > 40 ? content.slice(0, 40) + '...' : content;
+    // Remove caracteres especiais e limita o título a 40 caracteres
+    const cleanContent = content.replace(/[^\w\s]/gi, '').trim();
+    return cleanContent.length > 40 ? cleanContent.slice(0, 40) + '...' : cleanContent;
   };
 
   return (
