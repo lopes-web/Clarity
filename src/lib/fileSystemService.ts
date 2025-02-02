@@ -16,6 +16,12 @@ interface Subject {
   folderId: string;
 }
 
+interface SubjectProgress {
+  totalFiles: number;
+  completedFiles: number;
+  progress: number;
+}
+
 const STORAGE_KEYS = {
   FILES: 'clarity_files',
   SUBJECTS: 'clarity_subjects'
@@ -170,6 +176,37 @@ class FileSystemService {
 
     this.saveToStorage();
     return true;
+  }
+
+  getSubjectProgress(subjectId: string): SubjectProgress {
+    const files = this.getSubjectFiles(subjectId);
+    const totalFiles = files.length;
+    const completedFiles = files.filter(file => {
+      // Considera um arquivo como "completo" se:
+      // 1. É uma nota com conteúdo
+      // 2. É um arquivo normal
+      if (file.type === "note") {
+        return file.content && file.content.trim().length > 0;
+      }
+      return file.type === "file";
+    }).length;
+
+    return {
+      totalFiles,
+      completedFiles,
+      progress: totalFiles > 0 ? Math.round((completedFiles / totalFiles) * 100) : 0
+    };
+  }
+
+  getAllSubjectsProgress(): Record<string, SubjectProgress> {
+    const subjects = this.getSubjects();
+    const progress: Record<string, SubjectProgress> = {};
+
+    subjects.forEach(subject => {
+      progress[subject.id] = this.getSubjectProgress(subject.id);
+    });
+
+    return progress;
   }
 }
 
