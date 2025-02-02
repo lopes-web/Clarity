@@ -131,3 +131,5 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull re
 ## 📄 Licença
 
 Este projeto está sob a licença MIT.
+
+[![Vercel](https://vercelbadge.vercel.app/api/lopes-web/Clarity)](https://clarity-lopes-web.vercel.app)
