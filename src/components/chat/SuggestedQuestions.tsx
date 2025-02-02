@@ -96,13 +96,13 @@ export function SuggestedQuestions({ onSelectQuestion }: SuggestedQuestionsProps
                     >
                       <Button
                         variant="ghost"
-                        className="w-full justify-between text-left hover:bg-blue-50/50 group/button"
+                        className="w-full justify-between text-left hover:bg-blue-50/50 group/button p-3"
                         onClick={() => onSelectQuestion(question)}
                       >
-                        <span className="line-clamp-1 text-sm text-gray-600 group-hover/button:text-blue-600">
+                        <span className="text-sm text-gray-600 group-hover/button:text-blue-600 flex-1 mr-2">
                           {question}
                         </span>
-                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover/button:text-blue-500 transition-transform group-hover/button:translate-x-1" />
+                        <ChevronRight className="w-4 h-4 shrink-0 text-gray-400 group-hover/button:text-blue-500 transition-transform group-hover/button:translate-x-1" />
                       </Button>
                     </motion.div>
                   ))}
