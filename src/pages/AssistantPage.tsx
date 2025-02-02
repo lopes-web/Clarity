@@ -69,37 +69,70 @@ export function AssistantPage() {
     }
   }, [messages]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if ((!input.trim() && !selectedImage) || isLoading) return;
-
-    try {
-      if (selectedImage) {
-        const defaultPrompt = "Por favor, analise esta imagem de acordo com os aspectos zootécnicos.";
-        await sendMessage(input.trim() || defaultPrompt, selectedImage);
-      } else {
-        await sendMessage(input);
-      }
-      setInput('');
-      setSelectedImage(null);
-
-      // Atualizar a sessão atual com a nova mensagem
-      if (currentSession) {
+  // Atualizar mensagens quando o Gemini responder
+  useEffect(() => {
+    if (messages.length > 0 && currentSession) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === 'assistant') {
         const updatedSession = {
           ...currentSession,
           messages: [
             ...currentSession.messages,
             {
-              role: 'user' as const,
-              content: input,
+              role: lastMessage.role,
+              content: lastMessage.content,
               timestamp: new Date(),
-              ...(selectedImage && { image: URL.createObjectURL(selectedImage) })
             }
           ]
         };
         setCurrentSession(updatedSession);
         updateSessions(updatedSession);
       }
+    }
+  }, [messages]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if ((!input.trim() && !selectedImage) || isLoading) return;
+
+    // Se não houver sessão atual, criar uma nova
+    if (!currentSession) {
+      const newSession: ChatSession = {
+        id: Date.now().toString(),
+        title: input.trim().slice(0, 30) + '...',
+        date: new Date(),
+        messages: []
+      };
+      setCurrentSession(newSession);
+      setSessions(prev => [newSession, ...prev]);
+    }
+
+    try {
+      // Adicionar mensagem do usuário primeiro
+      const userMessage = {
+        role: 'user' as const,
+        content: input,
+        timestamp: new Date(),
+        ...(selectedImage && { image: URL.createObjectURL(selectedImage) })
+      };
+
+      const updatedSession = {
+        ...currentSession!,
+        messages: [...currentSession!.messages, userMessage]
+      };
+      setCurrentSession(updatedSession);
+      updateSessions(updatedSession);
+
+      // Enviar mensagem para o Gemini
+      if (selectedImage) {
+        const defaultPrompt = "Por favor, analise esta imagem de acordo com os aspectos zootécnicos.";
+        await sendMessage(input.trim() || defaultPrompt, selectedImage);
+      } else {
+        await sendMessage(input);
+      }
+      
+      setInput('');
+      setSelectedImage(null);
     } catch (err) {
       console.error('Erro ao enviar mensagem:', err);
       toast.error('Erro ao enviar mensagem. Tente novamente.');
