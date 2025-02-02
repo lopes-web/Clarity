@@ -131,7 +131,7 @@ const Index = () => {
                   <SubjectProgress />
                 </div>
                 <div key="files">
-                  <FileSystem />
+                  <FileSystem isWidget={true} />
                 </div>
                 <div key="subjects">
                   <SubjectManager />
