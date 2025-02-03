@@ -30,16 +30,42 @@ export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Determine if current route is a tab route
+  // Check if current route is a tab route
   const isTabRoute = location.pathname.startsWith('/tab/');
   
-  // Use local state for active tab, updated on location change
-  const [activeTab, setActiveTab] = useState(localStorage.getItem('dashboard-active-tab') || '');
+  // Track active tab state
+  const [hasActiveTab, setHasActiveTab] = useState(false);
+
+  // Update active tab state whenever location or localStorage changes
   useEffect(() => {
-    setActiveTab(localStorage.getItem('dashboard-active-tab') || '');
+    const checkActiveTab = () => {
+      const activeTab = localStorage.getItem('app-tabs');
+      const isActive = activeTab ? JSON.parse(activeTab).length > 0 : false;
+      setHasActiveTab(isActive);
+    };
+
+    // Initial check
+    checkActiveTab();
+
+    // Setup storage event listener
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'app-tabs') {
+        checkActiveTab();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, [location]);
-  
-  const hasActiveTab = Boolean(activeTab);
+
+  const handleNavigation = (href: string) => {
+    if (href === '/' && location.pathname === '/') {
+      // Clear active tab state and force navigation to dashboard
+      localStorage.removeItem('app-tabs');
+      localStorage.removeItem('active-tab');
+      navigate('/', { state: { clearActiveTab: true }, replace: true });
+    }
+  };
 
   return (
     <nav className="flex flex-col p-4 space-y-2">
@@ -48,17 +74,12 @@ export function Sidebar() {
           key={item.href}
           to={item.href}
           end={item.href === '/'}
-          state={{ clearActiveTab: true }}
-          onClick={() => {
-            if (item.href === '/' && location.pathname === '/') {
-              // Force navigation to clear active tab
-              navigate('/', { state: { clearActiveTab: true }, replace: true });
-            }
-          }}
+          onClick={() => handleNavigation(item.href)}
           className={({ isActive }) =>
             cn(
               "flex items-center p-2 text-sm font-medium rounded-md hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent",
-              (hasActiveTab || isTabRoute) ? "" : (isActive ? "bg-accent" : "")
+              // Only show active state if there's no active tab and we're not in a tab route
+              (!hasActiveTab && !isTabRoute && isActive) ? "bg-accent" : ""
             )
           }
           aria-label={item.title}
