@@ -3,7 +3,7 @@ import { Plus, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NotionEditor } from '../editor/NotionEditor';
 import { useFileSystem } from '@/hooks/useFileSystem';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface Tab {
   id: string;
@@ -26,6 +26,7 @@ export function TabsManager({ onActiveTabChange }: TabsManagerProps) {
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
   const { createFile, updateFile } = useFileSystem();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     onActiveTabChange?.(activeTabId !== null);
@@ -56,15 +57,21 @@ export function TabsManager({ onActiveTabChange }: TabsManagerProps) {
   }, [activeTabId]);
 
   const createNewTab = () => {
+    const newTabId = crypto.randomUUID();
+    let newPath = location.pathname;
+    if (location.pathname === '/') {
+      newPath = `/tab/${newTabId}`;
+    }
     const newTab: Tab = {
-      id: crypto.randomUUID(),
+      id: newTabId,
       title: 'Sem título',
       content: '',
-      path: location.pathname,
+      path: newPath,
     };
     setTabs(prevTabs => [...prevTabs, newTab]);
-    if (location.pathname !== '/') {
-      setActiveTabId(newTab.id);
+    setActiveTabId(newTabId);
+    if (location.pathname === '/') {
+      navigate(newPath);
     }
   };
 
