@@ -63,7 +63,9 @@ export function TabsManager({ onActiveTabChange }: TabsManagerProps) {
       path: location.pathname,
     };
     setTabs(prevTabs => [...prevTabs, newTab]);
-    setActiveTabId(newTab.id);
+    if (location.pathname !== '/') {
+      setActiveTabId(newTab.id);
+    }
   };
 
   const closeTab = (tabId: string) => {
