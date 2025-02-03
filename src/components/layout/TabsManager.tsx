@@ -35,10 +35,11 @@ export function TabsManager({ onActiveTabChange }: TabsManagerProps) {
     if (location.state && (location.state as any).clearActiveTab) {
       setActiveTabId(null);
       window.history.replaceState({}, document.title);
+    } else if (location.pathname === '/') {
+      setActiveTabId(null);
     } else {
       const matchingTabs = tabs.filter(tab => tab.path === location.pathname);
       if (matchingTabs.length > 0) {
-        // Ativa a aba mais recente (última) com a rota atual
         setActiveTabId(matchingTabs[matchingTabs.length - 1].id);
       } else {
         setActiveTabId(null);
