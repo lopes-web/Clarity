@@ -18,10 +18,13 @@ interface TabsManagerProps {
 }
 
 export function TabsManager({ onActiveTabChange }: TabsManagerProps) {
-  const [tabs, setTabs] = useState<Tab[]>([]);
+  const [tabs, setTabs] = useState<Tab[]>(() => {
+    const savedTabs = localStorage.getItem('dashboard-tabs');
+    return savedTabs ? JSON.parse(savedTabs) : [];
+  });
+
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
   const { createFile, updateFile } = useFileSystem();
-
   const location = useLocation();
 
   useEffect(() => {
@@ -42,6 +45,14 @@ export function TabsManager({ onActiveTabChange }: TabsManagerProps) {
       }
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    localStorage.setItem('dashboard-tabs', JSON.stringify(tabs));
+  }, [tabs]);
+
+  useEffect(() => {
+    localStorage.setItem('dashboard-active-tab', activeTabId || '');
+  }, [activeTabId]);
 
   const createNewTab = () => {
     const newTab: Tab = {
