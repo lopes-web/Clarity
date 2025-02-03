@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Edit2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NotionEditor } from '../editor/NotionEditor';
 import { useFileSystem } from '@/hooks/useFileSystem';
@@ -27,6 +27,7 @@ export function TabsManager({ onActiveTabChange }: TabsManagerProps) {
   const { createFile, updateFile } = useFileSystem();
   const location = useLocation();
   const navigate = useNavigate();
+  const [editingTabId, setEditingTabId] = useState<string | null>(null);
 
   useEffect(() => {
     onActiveTabChange?.(activeTabId !== null);
@@ -140,13 +141,33 @@ export function TabsManager({ onActiveTabChange }: TabsManagerProps) {
               )}
               onClick={() => setActiveTabId(tab.id)}
             >
-              <input
-                type="text"
-                value={tab.title}
-                onChange={(e) => updateTabTitle(tab.id, e.target.value)}
-                onClick={(e) => e.stopPropagation()}
-                className="bg-transparent border-none outline-none text-sm max-w-[120px]"
-              />
+              {editingTabId === tab.id ? (
+                <input
+                  type="text"
+                  value={tab.title}
+                  onChange={(e) => updateTabTitle(tab.id, e.target.value)}
+                  onBlur={() => setEditingTabId(null)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { setEditingTabId(null); } }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-transparent border-b border-dotted outline-none text-sm max-w-[200px]"
+                />
+              ) : (
+                <div className="flex items-center gap-1">
+                  <span className="text-sm max-w-[150px] truncate">
+                    {tab.title}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingTabId(tab.id);
+                    }}
+                    className="p-1 hover:bg-muted rounded-md"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
