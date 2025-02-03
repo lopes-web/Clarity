@@ -30,10 +30,10 @@ export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Parse dashboard-tabs from localStorage and check if there are any tabs open
-  const tabsStr = localStorage.getItem('dashboard-tabs');
-  const tabs = tabsStr ? JSON.parse(tabsStr) : [];
-  const hasTabs = tabs.length > 0;
+  // Determine if current route is a tab route
+  const isTabRoute = location.pathname.startsWith('/tab/');
+  // Determine if there's an active tab from localStorage
+  const hasActiveTab = Boolean(localStorage.getItem('dashboard-active-tab'));
 
   return (
     <nav className="flex flex-col p-4 space-y-2">
@@ -41,6 +41,7 @@ export function Sidebar() {
         <NavLink
           key={item.href}
           to={item.href}
+          end={item.href === '/'}
           state={{ clearActiveTab: true }}
           onClick={() => {
             if (item.href === '/' && location.pathname === '/') {
@@ -51,8 +52,8 @@ export function Sidebar() {
           className={({ isActive }) =>
             cn(
               "flex items-center p-2 text-sm font-medium rounded-md hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent",
-              // Apply active style only if no tabs are open
-              (!hasTabs && isActive) ? "bg-accent" : ""
+              // If an active tab exists or the current route is a tab route, no active styling should be applied. Otherwise, apply active style if isActive.
+              (hasActiveTab || isTabRoute) ? "" : (isActive ? "bg-accent" : "")
             )
           }
           aria-label={item.title}
