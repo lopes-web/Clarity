@@ -90,8 +90,16 @@ export function NotionEditor({ content = '', onUpdate, className, currentPath, o
     return null;
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // Prevent default save shortcut which might trigger page reload
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+      e.preventDefault();
+    }
+    e.stopPropagation();
+  };
+
   return (
-    <div className={cn("flex flex-col w-full h-full bg-background", className)}>
+    <div onKeyDownCapture={handleKeyDown} className={cn("flex flex-col w-full h-full bg-background", className)}>
       <div className="flex items-center justify-between gap-1 p-2 border-b bg-muted/30">
         <div className="flex items-center gap-1">
           <Button

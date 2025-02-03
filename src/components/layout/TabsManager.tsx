@@ -35,13 +35,13 @@ export function TabsManager({ onActiveTabChange }: TabsManagerProps) {
     } else {
       const matchingTabs = tabs.filter(tab => tab.path === location.pathname);
       if (matchingTabs.length > 0) {
-        // Activate the most recent matching tab
+        // Ativa a aba mais recente (última) com a rota atual
         setActiveTabId(matchingTabs[matchingTabs.length - 1].id);
       } else {
         setActiveTabId(null);
       }
     }
-  }, [location.pathname, tabs]);
+  }, [location.pathname]);
 
   const createNewTab = () => {
     const newTab: Tab = {
@@ -159,7 +159,6 @@ export function TabsManager({ onActiveTabChange }: TabsManagerProps) {
             currentPath={tabs.find(tab => tab.id === activeTabId)?.path}
             onUpdate={(content) => {
               updateTabContent(activeTabId, content);
-              saveTab(activeTabId);
             }}
             onSave={(path) => saveTab(activeTabId, path)}
             className="h-full"
