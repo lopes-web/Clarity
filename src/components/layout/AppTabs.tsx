@@ -33,11 +33,16 @@ export function AppTabs() {
 
   // Atualiza a aba ativa quando a rota muda
   useEffect(() => {
-    const currentTab = tabs.find(tab => tab.path === location.pathname);
-    if (currentTab) {
-      setActiveTabId(currentTab.id);
-    } else {
+    // Se a navegação veio do Sidebar com clearActiveTab, desativa a aba
+    if (location.state && (location.state as any).clearActiveTab) {
       setActiveTabId(null);
+    } else {
+      const currentTab = tabs.find(tab => tab.path === location.pathname);
+      if (currentTab) {
+        setActiveTabId(currentTab.id);
+      } else {
+        setActiveTabId(null);
+      }
     }
   }, [location.pathname, tabs]);
 
