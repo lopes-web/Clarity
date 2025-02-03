@@ -31,9 +31,13 @@ export function TabsManager({ onActiveTabChange }: TabsManagerProps) {
   useEffect(() => {
     if (location.state && (location.state as any).clearActiveTab) {
       setActiveTabId(null);
+      window.history.replaceState({}, document.title);
     } else {
-      const tabMatchesRoute = tabs.find(tab => tab.path === location.pathname);
-      if (!tabMatchesRoute && activeTabId !== null) {
+      const matchingTabs = tabs.filter(tab => tab.path === location.pathname);
+      if (matchingTabs.length > 0) {
+        // Activate the most recent matching tab
+        setActiveTabId(matchingTabs[matchingTabs.length - 1].id);
+      } else {
         setActiveTabId(null);
       }
     }
@@ -44,6 +48,7 @@ export function TabsManager({ onActiveTabChange }: TabsManagerProps) {
       id: crypto.randomUUID(),
       title: 'Sem título',
       content: '',
+      path: location.pathname,
     };
     setTabs(prevTabs => [...prevTabs, newTab]);
     setActiveTabId(newTab.id);

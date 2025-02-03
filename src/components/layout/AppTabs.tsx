@@ -33,13 +33,15 @@ export function AppTabs() {
 
   // Atualiza a aba ativa quando a rota muda
   useEffect(() => {
-    // Se a navegação veio do Sidebar com clearActiveTab, desativa a aba
     if (location.state && (location.state as any).clearActiveTab) {
       setActiveTabId(null);
+      // Clear the location state without triggering navigation
+      window.history.replaceState({}, document.title);
     } else {
-      const currentTab = tabs.find(tab => tab.path === location.pathname);
-      if (currentTab) {
-        setActiveTabId(currentTab.id);
+      const matchingTabs = tabs.filter(tab => tab.path === location.pathname);
+      if (matchingTabs.length > 0) {
+        // Ativa a aba mais recente (última) com a rota atual
+        setActiveTabId(matchingTabs[matchingTabs.length - 1].id);
       } else {
         setActiveTabId(null);
       }
@@ -47,6 +49,8 @@ export function AppTabs() {
   }, [location.pathname, tabs]);
 
   const createNewTab = () => {
+    // Clear any lingering navigation state that may cause deactivation of the new tab
+    window.history.replaceState({}, document.title);
     const newTab: Tab = {
       id: crypto.randomUUID(),
       title: 'Nova aba',
@@ -81,7 +85,9 @@ export function AppTabs() {
 
   const handleTabClick = (tab: Tab) => {
     setActiveTabId(tab.id);
-    navigate(tab.path);
+    if (location.pathname !== tab.path) {
+      navigate(tab.path);
+    }
   };
 
   return (
@@ -105,6 +111,7 @@ export function AppTabs() {
             className="bg-transparent border-none outline-none text-sm max-w-[120px]"
           />
           <button
+            type="button"
             onClick={(e) => closeTab(tab.id, e)}
             className={cn(
               "p-1 rounded-sm hover:bg-muted",
@@ -119,6 +126,7 @@ export function AppTabs() {
         </div>
       ))}
       <button
+        type="button"
         onClick={createNewTab}
         className="p-2 hover:bg-accent rounded-md ml-1"
       >
