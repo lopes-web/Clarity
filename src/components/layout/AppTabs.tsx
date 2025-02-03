@@ -36,6 +36,8 @@ export function AppTabs() {
     const currentTab = tabs.find(tab => tab.path === location.pathname);
     if (currentTab) {
       setActiveTabId(currentTab.id);
+    } else {
+      setActiveTabId(null);
     }
   }, [location.pathname, tabs]);
 
