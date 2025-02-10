@@ -502,10 +502,8 @@ const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }) => (
     <Progress 
       value={(course.grade / 10) * 100} 
       className={cn(
-        "mb-2 [&>div]:bg-primary",
-        course.grade >= 7 ? "[&>div]:bg-green-500" : 
-        course.grade >= 5 ? "[&>div]:bg-yellow-500" : 
-        "[&>div]:bg-red-500"
+        "mb-2",
+        course.grade < 5 ? "[&>div]:bg-red-500" : "[&>div]:bg-primary"
       )}
     />
     <div className="flex justify-between items-center mt-4">
