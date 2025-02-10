@@ -167,25 +167,10 @@ const Dashboard = () => {
   const { events, toggleEventComplete } = useEvents();
   const statusInfo = getStatusInfo(events);
 
-  // Filtra eventos da semana atual (não concluídos)
-  const thisWeekEvents = events.filter(event => {
-    const eventDate = new Date(event.date);
-    const today = new Date();
-    const weekStart = startOfWeek(today, { locale: ptBR });
-    const weekEnd = endOfWeek(today, { locale: ptBR });
-    
-    return !event.completed && isWithinInterval(eventDate, { start: weekStart, end: weekEnd });
-  });
-
-  // Filtra e ordena os próximos eventos (não concluídos)
-  const upcomingActivities = events
-    .filter(event => {
-      const eventDate = new Date(event.date);
-      const today = startOfDay(new Date()); // Início do dia atual
-      return !event.completed && (isAfter(eventDate, today) || format(eventDate, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd'));
-    })
-    .sort((a, b) => compareAsc(new Date(a.date), new Date(b.date)))
-    .slice(0, 5);
+  // Filtra e ordena todos os eventos não concluídos por data
+  const sortedActivities = events
+    .filter(event => !event.completed)
+    .sort((a, b) => compareAsc(new Date(a.date), new Date(b.date)));
 
   const addCourse = (data: CourseFormData) => {
     const newCourse: Course = {
@@ -272,9 +257,9 @@ const Dashboard = () => {
           className="bg-secondary"
         />
         <MetricCard
-          title="Próximas Atividades"
-          value={thisWeekEvents.length.toString()}
-          subtitle={`Esta semana (${format(startOfWeek(new Date(), { locale: ptBR }), "dd/MM")} - ${format(endOfWeek(new Date(), { locale: ptBR }), "dd/MM")})`}
+          title="Atividades"
+          value={sortedActivities.length.toString()}
+          subtitle={`Total de atividades pendentes`}
           className="bg-primary text-white"
         />
         <MetricCard
@@ -381,7 +366,7 @@ const Dashboard = () => {
         </div>
         <div>
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold">Próximas Atividades</h2>
+            <h2 className="text-2xl font-semibold">Atividades</h2>
             <div className="flex items-center space-x-2">
               <Button 
                 variant="outline" 
@@ -395,7 +380,7 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="space-y-4">
-            {upcomingActivities.map((activity) => {
+            {sortedActivities.map((activity) => {
               const eventDate = new Date(activity.date);
               const priority = getEventPriority(eventDate);
               
@@ -472,7 +457,7 @@ const Dashboard = () => {
                 </div>
               );
             })}
-            {upcomingActivities.length === 0 && (
+            {sortedActivities.length === 0 && (
               <div className="text-center py-8">
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
                   <CalendarIcon className="w-6 h-6 text-gray-500" />
