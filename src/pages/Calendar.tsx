@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
 
 import Sidebar from "@/components/Sidebar";
 import { SidebarProvider } from "@/components/SidebarProvider";
+import { useEvents } from "@/components/EventProvider";
 
 interface Event {
   id: string;
@@ -51,8 +52,8 @@ interface EventFormData {
 
 const CalendarPage = () => {
   const [date, setDate] = useState<Date>(new Date());
-  const [events, setEvents] = useState<Event[]>([]);
   const [isAddingEvent, setIsAddingEvent] = useState(false);
+  const { events, addEvent } = useEvents();
 
   const form = useForm<EventFormData>({
     defaultValues: {
@@ -64,12 +65,8 @@ const CalendarPage = () => {
     },
   });
 
-  const addEvent = (data: EventFormData) => {
-    const newEvent: Event = {
-      id: Date.now().toString(),
-      ...data,
-    };
-    setEvents([...events, newEvent]);
+  const handleAddEvent = (data: EventFormData) => {
+    addEvent(data);
     setIsAddingEvent(false);
     form.reset();
   };
@@ -108,7 +105,7 @@ const CalendarPage = () => {
                     <DialogTitle>Adicionar Novo Evento</DialogTitle>
                   </DialogHeader>
                   <Form {...form}>
-                    <form onSubmit={form.handleSubmit(addEvent)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(handleAddEvent)} className="space-y-4">
                       <FormField
                         control={form.control}
                         name="title"

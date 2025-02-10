@@ -8,6 +8,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { useForm } from "react-hook-form";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import { useEvents } from "@/components/EventProvider";
+import { format, isFuture, compareAsc } from "date-fns";
 
 interface Course {
   id: number;
@@ -87,6 +89,14 @@ const Dashboard = () => {
     },
   });
 
+  const { events } = useEvents();
+
+  // Filtra e ordena os próximos eventos
+  const upcomingActivities = events
+    .filter(event => isFuture(event.date))
+    .sort((a, b) => compareAsc(a.date, b.date))
+    .slice(0, 3); // Pega apenas os 3 próximos eventos
+
   const addCourse = (data: CourseFormData) => {
     const newCourse: Course = {
       id: courses.length + 1,
@@ -159,30 +169,6 @@ const Dashboard = () => {
     setCourses(updatedCourses);
   };
 
-  const upcomingActivities = [
-    {
-      id: 1,
-      title: "Prova de Cálculo",
-      course: "Cálculo I",
-      date: "14/03/2024",
-      type: "Prova",
-    },
-    {
-      id: 2,
-      title: "Trabalho de Física",
-      course: "Física Básica",
-      date: "17/03/2024",
-      type: "Trabalho",
-    },
-    {
-      id: 3,
-      title: "Projeto Final",
-      course: "Programação",
-      date: "19/03/2024",
-      type: "Projeto",
-    },
-  ];
-
   return (
     <div className="container p-6 mx-auto animate-fadeIn">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-4 mb-8">
@@ -194,7 +180,7 @@ const Dashboard = () => {
         />
         <MetricCard
           title="Próximas Atividades"
-          value="3"
+          value={upcomingActivities.length.toString()}
           subtitle="Esta semana"
           className="bg-primary text-white"
         />
@@ -321,8 +307,22 @@ const Dashboard = () => {
           <h2 className="text-2xl font-semibold mb-4">Próximas Atividades</h2>
           <div className="space-y-4">
             {upcomingActivities.map((activity) => (
-              <ActivityCard key={activity.id} activity={activity} />
+              <ActivityCard
+                key={activity.id}
+                activity={{
+                  id: activity.id,
+                  title: activity.title,
+                  course: activity.disciplina || "",
+                  date: format(activity.date, "dd/MM/yyyy"),
+                  type: activity.type,
+                }}
+              />
             ))}
+            {upcomingActivities.length === 0 && (
+              <p className="text-sm text-gray-500">
+                Nenhuma atividade programada
+              </p>
+            )}
           </div>
           <div className="mt-6">
             <Calendar
