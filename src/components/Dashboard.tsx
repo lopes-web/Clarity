@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
-import { Plus, Edit2, Trash, Check, CheckCircle2 } from "lucide-react";
+import { Plus, Edit2, Trash, Check, CheckCircle2, Calendar as CalendarIcon, Clock, AlertCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +34,31 @@ interface GradeFormData {
   value: number;
   description: string;
 }
+
+const getEventTypeColor = (type: string) => {
+  switch (type) {
+    case "Prova":
+      return "bg-red-500";
+    case "Trabalho":
+      return "bg-blue-500";
+    case "Projeto":
+      return "bg-purple-500";
+    case "Aula":
+      return "bg-green-500";
+    default:
+      return "bg-gray-500";
+  }
+};
+
+const getEventPriority = (date: Date) => {
+  const today = new Date();
+  const diffTime = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  
+  if (diffTime === 0) return { color: "text-red-500", text: "Hoje" };
+  if (diffTime === 1) return { color: "text-orange-500", text: "Amanhã" };
+  if (diffTime <= 3) return { color: "text-yellow-500", text: "Em breve" };
+  return { color: "text-gray-500", text: "Programado" };
+};
 
 const Dashboard = () => {
   const [courses, setCourses] = useState<Course[]>([
@@ -319,64 +344,107 @@ const Dashboard = () => {
           </div>
         </div>
         <div>
-          <h2 className="text-2xl font-semibold mb-4">Próximas Atividades</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-semibold">Próximas Atividades</h2>
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" className="text-xs">
+                <CalendarIcon className="w-4 h-4 mr-1" />
+                Ver Calendário
+              </Button>
+            </div>
+          </div>
           <div className="space-y-4">
-            {upcomingActivities.map((activity) => (
-              <div
-                key={activity.id}
-                className={cn(
-                  "p-4 bg-white rounded-lg border transition-colors",
-                  activity.completed 
-                    ? "border-gray-200 bg-gray-50"
-                    : "border-gray-200 hover:border-primary"
-                )}
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className={cn(
-                      "font-medium",
-                      activity.completed && "line-through text-gray-500"
-                    )}>{activity.title}</h4>
-                    <p className="text-sm text-gray-600">{activity.disciplina}</p>
-                    {activity.description && (
-                      <p className="text-sm text-gray-500 mt-1">{activity.description}</p>
-                    )}
-                  </div>
-                  <div className="flex items-center">
-                    <div className="text-right mr-2">
-                      <p className="text-sm font-medium">
-                        {format(new Date(activity.date), "dd/MM/yyyy")}
-                      </p>
-                      <p className="text-xs text-primary">{activity.type}</p>
+            {upcomingActivities.map((activity) => {
+              const eventDate = new Date(activity.date);
+              const priority = getEventPriority(eventDate);
+              
+              return (
+                <div
+                  key={activity.id}
+                  className={cn(
+                    "group relative overflow-hidden bg-white rounded-lg border transition-all duration-200",
+                    activity.completed 
+                      ? "border-gray-200 bg-gray-50/50"
+                      : "border-gray-200 hover:border-primary hover:shadow-md"
+                  )}
+                >
+                  <div className="absolute top-0 left-0 w-1 h-full transition-colors duration-200"
+                    className={cn(getEventTypeColor(activity.type))} />
+                  <div className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <h4 className={cn(
+                            "font-medium transition-colors duration-200",
+                            activity.completed ? "line-through text-gray-500" : "text-gray-900"
+                          )}>{activity.title}</h4>
+                          <span className={cn(
+                            "px-2 py-0.5 rounded-full text-xs font-medium",
+                            priority.color
+                          )}>{priority.text}</span>
+                        </div>
+                        <div className="mt-1 space-y-1">
+                          {activity.disciplina && (
+                            <p className="text-sm text-gray-600 flex items-center">
+                              <span className={cn(
+                                "w-2 h-2 rounded-full mr-2",
+                                getEventTypeColor(activity.type)
+                              )} />
+                              {activity.disciplina}
+                            </p>
+                          )}
+                          {activity.description && (
+                            <p className="text-sm text-gray-500">{activity.description}</p>
+                          )}
+                          <div className="flex items-center text-sm text-gray-500">
+                            <Clock className="w-4 h-4 mr-1" />
+                            <span>{format(eventDate, "dd/MM/yyyy")}</span>
+                            <span className="mx-2">•</span>
+                            <span className="text-xs px-2 py-0.5 bg-gray-100 rounded-full">
+                              {activity.type}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                          "h-8 w-8 rounded-full transition-colors duration-200",
+                          activity.completed 
+                            ? "bg-primary/10 hover:bg-primary/20" 
+                            : "hover:bg-gray-100"
+                        )}
+                        onClick={() => toggleEventComplete(activity.id)}
+                      >
+                        <CheckCircle2 className={cn(
+                          "h-4 w-4 transition-colors duration-200",
+                          activity.completed ? "text-primary" : "text-gray-400 group-hover:text-gray-600"
+                        )} />
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={cn(
-                        "h-8 w-8",
-                        activity.completed && "bg-primary/10"
-                      )}
-                      onClick={() => toggleEventComplete(activity.id)}
-                    >
-                      <CheckCircle2 className={cn(
-                        "h-4 w-4",
-                        activity.completed ? "text-primary" : "text-gray-400"
-                      )} />
-                    </Button>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {upcomingActivities.length === 0 && (
-              <p className="text-sm text-gray-500">
-                Nenhuma atividade pendente
-              </p>
+              <div className="text-center py-8">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
+                  <CalendarIcon className="w-6 h-6 text-gray-500" />
+                </div>
+                <p className="text-sm text-gray-500">
+                  Nenhuma atividade pendente
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Adicione novas atividades no calendário
+                </p>
+              </div>
             )}
           </div>
           <div className="mt-6">
             <Calendar
               mode="single"
-              className="rounded-md border"
+              className="rounded-md border shadow-sm"
             />
           </div>
         </div>
