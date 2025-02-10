@@ -68,6 +68,7 @@ const Dashboard = () => {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isAddingGrade, setIsAddingGrade] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
 
   const form = useForm<CourseFormData>({
     defaultValues: {
@@ -142,6 +143,7 @@ const Dashboard = () => {
 
   const deleteCourse = (courseId: number) => {
     setCourses(courses.filter(course => course.id !== courseId));
+    setCourseToDelete(null);
   };
 
   const incrementAbsences = (courseId: number) => {
@@ -307,7 +309,9 @@ const Dashboard = () => {
                   setIsAddingGrade(true);
                 }}
                 onAddAbsence={() => incrementAbsences(course.id)}
-                onDelete={() => deleteCourse(course.id)}
+                onDelete={() => {
+                  setCourseToDelete(course);
+                }}
               />
             ))}
           </div>
@@ -446,6 +450,30 @@ const Dashboard = () => {
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog de Confirmação de Exclusão */}
+      <Dialog open={!!courseToDelete} onOpenChange={() => setCourseToDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmar Exclusão</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p>Tem certeza que deseja excluir a disciplina "{courseToDelete?.name}"?</p>
+            <p className="text-sm text-gray-500">Esta ação não pode ser desfeita.</p>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setCourseToDelete(null)}>
+                Cancelar
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={() => courseToDelete && deleteCourse(courseToDelete.id)}
+              >
+                Excluir
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
@@ -476,23 +504,39 @@ const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }) => (
         <p>Faltas: {course.absences}</p>
         <p>{course.progress}% concluído</p>
       </div>
-      <div className="space-x-2">
-        <Button variant="outline" size="sm" onClick={onAddAbsence}>
+      <div className="flex items-center space-x-2">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onAddAbsence}
+          className="flex items-center"
+        >
           +1 Falta
         </Button>
-        <Button variant="outline" size="sm" onClick={onAddGrade}>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onAddGrade}
+          className="flex items-center"
+        >
           Nova Nota
         </Button>
-        <Button variant="outline" size="sm" onClick={onEdit}>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onEdit}
+          className="flex items-center justify-center w-9 h-9 p-0"
+        >
           <Edit2 className="w-4 h-4" />
         </Button>
         <Button 
-          variant="destructive" 
+          variant="outline" 
           size="sm" 
           onClick={onDelete}
+          className="flex items-center justify-center w-9 h-9 p-0 border-red-200 hover:border-red-400 hover:bg-red-50"
           aria-label="Excluir disciplina"
         >
-          <Trash className="w-4 h-4" />
+          <Trash className="w-4 h-4 text-red-500" />
         </Button>
       </div>
     </div>
