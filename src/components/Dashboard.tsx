@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
-import { Plus, Edit2, Trash } from "lucide-react";
+import { Plus, Edit2, Trash, Check, CheckCircle2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,28 +90,23 @@ const Dashboard = () => {
     },
   });
 
-  const { events } = useEvents();
+  const { events, toggleEventComplete } = useEvents();
 
-  // Filtra eventos da semana atual
+  // Filtra eventos da semana atual (não concluídos)
   const thisWeekEvents = events.filter(event => {
     const eventDate = new Date(event.date);
     const today = new Date();
     const weekStart = startOfWeek(today, { locale: ptBR });
     const weekEnd = endOfWeek(today, { locale: ptBR });
     
-    return isWithinInterval(eventDate, { start: weekStart, end: weekEnd });
+    return !event.completed && isWithinInterval(eventDate, { start: weekStart, end: weekEnd });
   });
 
-  // Filtra e ordena os próximos eventos (para a lista)
+  // Filtra e ordena os próximos eventos (não concluídos)
   const upcomingActivities = events
-    .filter(event => {
-      const eventDate = new Date(event.date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return eventDate >= today;
-    })
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(0, 3);
+    .filter(event => !event.completed && isFuture(new Date(event.date)))
+    .sort((a, b) => compareAsc(new Date(a.date), new Date(b.date)))
+    .slice(0, 5);
 
   const addCourse = (data: CourseFormData) => {
     const newCourse: Course = {
@@ -325,25 +320,52 @@ const Dashboard = () => {
             {upcomingActivities.map((activity) => (
               <div
                 key={activity.id}
-                className="p-4 bg-white rounded-lg border border-gray-200 hover:border-primary transition-colors"
+                className={cn(
+                  "p-4 bg-white rounded-lg border transition-colors",
+                  activity.completed 
+                    ? "border-gray-200 bg-gray-50"
+                    : "border-gray-200 hover:border-primary"
+                )}
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-medium">{activity.title}</h4>
+                    <h4 className={cn(
+                      "font-medium",
+                      activity.completed && "line-through text-gray-500"
+                    )}>{activity.title}</h4>
                     <p className="text-sm text-gray-600">{activity.disciplina}</p>
+                    {activity.description && (
+                      <p className="text-sm text-gray-500 mt-1">{activity.description}</p>
+                    )}
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">
-                      {format(new Date(activity.date), "dd/MM/yyyy")}
-                    </p>
-                    <p className="text-xs text-primary">{activity.type}</p>
+                  <div className="flex items-center">
+                    <div className="text-right mr-2">
+                      <p className="text-sm font-medium">
+                        {format(new Date(activity.date), "dd/MM/yyyy")}
+                      </p>
+                      <p className="text-xs text-primary">{activity.type}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "h-8 w-8",
+                        activity.completed && "bg-primary/10"
+                      )}
+                      onClick={() => toggleEventComplete(activity.id)}
+                    >
+                      <CheckCircle2 className={cn(
+                        "h-4 w-4",
+                        activity.completed ? "text-primary" : "text-gray-400"
+                      )} />
+                    </Button>
                   </div>
                 </div>
               </div>
             ))}
             {upcomingActivities.length === 0 && (
               <p className="text-sm text-gray-500">
-                Nenhuma atividade programada
+                Nenhuma atividade pendente
               </p>
             )}
           </div>

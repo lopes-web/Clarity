@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calendar as CalendarIcon, Plus } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Check } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
@@ -40,6 +40,7 @@ interface Event {
   type: "Prova" | "Trabalho" | "Projeto" | "Aula" | "Outro";
   description?: string;
   disciplina?: string;
+  completed: boolean;
 }
 
 interface EventFormData {
@@ -53,7 +54,7 @@ interface EventFormData {
 const CalendarPage = () => {
   const [date, setDate] = useState<Date>(new Date());
   const [isAddingEvent, setIsAddingEvent] = useState(false);
-  const { events, addEvent } = useEvents();
+  const { events, addEvent, toggleEventComplete } = useEvents();
 
   const form = useForm<EventFormData>({
     defaultValues: {
@@ -69,6 +70,7 @@ const CalendarPage = () => {
     const eventData = {
       ...data,
       date: date,
+      completed: false,
     };
     addEvent(eventData);
     setIsAddingEvent(false);
@@ -229,24 +231,58 @@ const CalendarPage = () => {
                     {getDayEvents(date).map((event) => (
                       <div
                         key={event.id}
-                        className="p-3 rounded-lg border bg-secondary/20"
+                        className={cn(
+                          "p-3 rounded-lg border transition-colors",
+                          event.completed 
+                            ? "bg-gray-100 border-gray-200" 
+                            : "bg-secondary/20 hover:border-primary"
+                        )}
                       >
                         <div className="flex items-center justify-between">
-                          <h3 className="font-medium">{event.title}</h3>
-                          <span className="text-xs bg-primary text-white px-2 py-1 rounded">
-                            {event.type}
-                          </span>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <h3 className={cn(
+                                "font-medium",
+                                event.completed && "line-through text-gray-500"
+                              )}>
+                                {event.title}
+                              </h3>
+                              <span className="text-xs bg-primary text-white px-2 py-1 rounded">
+                                {event.type}
+                              </span>
+                            </div>
+                            {event.disciplina && (
+                              <p className={cn(
+                                "text-sm mt-1",
+                                event.completed ? "text-gray-400" : "text-gray-600"
+                              )}>
+                                {event.disciplina}
+                              </p>
+                            )}
+                            {event.description && (
+                              <p className={cn(
+                                "text-sm mt-1",
+                                event.completed ? "text-gray-400" : "text-gray-500"
+                              )}>
+                                {event.description}
+                              </p>
+                            )}
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className={cn(
+                              "ml-2 h-8 w-8",
+                              event.completed && "bg-primary/10"
+                            )}
+                            onClick={() => toggleEventComplete(event.id)}
+                          >
+                            <Check className={cn(
+                              "h-4 w-4",
+                              event.completed ? "text-primary" : "text-gray-400"
+                            )} />
+                          </Button>
                         </div>
-                        {event.disciplina && (
-                          <p className="text-sm text-gray-600 mt-1">
-                            {event.disciplina}
-                          </p>
-                        )}
-                        {event.description && (
-                          <p className="text-sm text-gray-500 mt-1">
-                            {event.description}
-                          </p>
-                        )}
                       </div>
                     ))}
                     {getDayEvents(date).length === 0 && (
@@ -262,7 +298,7 @@ const CalendarPage = () => {
                 <h2 className="font-semibold mb-4">Próximos Eventos</h2>
                 <div className="space-y-3">
                   {events
-                    .filter((event) => event.date >= new Date())
+                    .filter((event) => !event.completed && event.date >= new Date())
                     .sort((a, b) => a.date.getTime() - b.date.getTime())
                     .map((event) => (
                       <div
@@ -290,9 +326,17 @@ const CalendarPage = () => {
                             </p>
                           )}
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="ml-2 h-8 w-8"
+                          onClick={() => toggleEventComplete(event.id)}
+                        >
+                          <Check className="h-4 w-4 text-gray-400" />
+                        </Button>
                       </div>
                     ))}
-                  {events.filter((event) => event.date >= new Date()).length === 0 && (
+                  {events.filter((event) => !event.completed && event.date >= new Date()).length === 0 && (
                     <p className="text-sm text-gray-500">
                       Nenhum evento programado
                     </p>
