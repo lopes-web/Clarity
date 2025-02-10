@@ -63,10 +63,11 @@ const getEventPriority = (date: Date) => {
   const today = new Date();
   const diffTime = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   
-  if (diffTime === 0) return { color: "text-red-500", text: "Hoje" };
-  if (diffTime === 1) return { color: "text-orange-500", text: "Amanhã" };
-  if (diffTime <= 3) return { color: "text-yellow-500", text: "Em breve" };
-  return { color: "text-gray-500", text: "Programado" };
+  if (diffTime < 0) return { color: "text-white bg-red-500", text: "Atrasada" };
+  if (diffTime === 0) return { color: "text-white bg-orange-500", text: "Hoje" };
+  if (diffTime === 1) return { color: "text-white bg-yellow-500", text: "Amanhã" };
+  if (diffTime <= 3) return { color: "text-white bg-blue-500", text: "Em breve" };
+  return { color: "text-white bg-purple-500", text: "Programada" };
 };
 
 const getStatusInfo = (events: CalendarEvent[]) => {
