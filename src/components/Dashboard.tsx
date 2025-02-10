@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 interface Course {
   id: number;
@@ -498,7 +499,15 @@ const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }) => (
         <p className="text-sm text-gray-600">{course.status}</p>
       </div>
     </div>
-    <Progress value={course.progress} className="mb-2" />
+    <Progress 
+      value={(course.grade / 10) * 100} 
+      className={cn(
+        "mb-2 [&>div]:bg-primary",
+        course.grade >= 7 ? "[&>div]:bg-green-500" : 
+        course.grade >= 5 ? "[&>div]:bg-yellow-500" : 
+        "[&>div]:bg-red-500"
+      )}
+    />
     <div className="flex justify-between items-center mt-4">
       <div className="text-sm text-gray-600">
         <p>Faltas: {course.absences}</p>
