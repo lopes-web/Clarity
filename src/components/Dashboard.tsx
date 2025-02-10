@@ -20,14 +20,14 @@ interface Course {
   absences: number;
   progress: number;
   status: string;
+  credits: number;
   grades: { id: number; value: number; description: string }[];
 }
 
 interface CourseFormData {
   name: string;
   professor: string;
-  grade: number;
-  absences: number;
+  credits: number;
 }
 
 interface GradeFormData {
@@ -70,6 +70,7 @@ const Dashboard = () => {
       absences: 2,
       progress: 75,
       status: "Em dia",
+      credits: 4,
       grades: [{ id: 1, value: 8.5, description: "Prova 1" }],
     },
     {
@@ -80,6 +81,7 @@ const Dashboard = () => {
       absences: 1,
       progress: 60,
       status: "Atenção",
+      credits: 6,
       grades: [{ id: 1, value: 7.5, description: "Prova 1" }],
     },
     {
@@ -90,6 +92,7 @@ const Dashboard = () => {
       absences: 0,
       progress: 85,
       status: "Em dia",
+      credits: 4,
       grades: [{ id: 1, value: 9.0, description: "Prova 1" }],
     },
   ]);
@@ -103,8 +106,7 @@ const Dashboard = () => {
     defaultValues: {
       name: "",
       professor: "",
-      grade: 0,
-      absences: 0,
+      credits: 4,
     },
   });
 
@@ -141,6 +143,8 @@ const Dashboard = () => {
     const newCourse: Course = {
       id: courses.length + 1,
       ...data,
+      grade: 0,
+      absences: 0,
       progress: 0,
       status: "Em dia",
       grades: [],
@@ -225,9 +229,9 @@ const Dashboard = () => {
           className="bg-primary text-white"
         />
         <MetricCard
-          title="Média Geral"
-          value={(courses.reduce((acc, course) => acc + course.grade, 0) / courses.length).toFixed(1)}
-          subtitle="+0.3 vs último período"
+          title="Total de Créditos"
+          value={courses.reduce((acc, course) => acc + course.credits, 0).toString()}
+          subtitle="Créditos matriculados"
           className="bg-secondary-hover"
         />
         <MetricCard
@@ -281,34 +285,17 @@ const Dashboard = () => {
                     />
                     <FormField
                       control={form.control}
-                      name="grade"
+                      name="credits"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nota</FormLabel>
+                          <FormLabel>Créditos</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
                               type="number"
-                              min="0"
-                              max="10"
-                              step="0.1"
-                              onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="absences"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Faltas</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              type="number"
-                              min="0"
+                              min="1"
+                              max="12"
+                              placeholder="Ex: 4"
                               onChange={(e) => field.onChange(parseInt(e.target.value))}
                             />
                           </FormControl>
@@ -484,34 +471,17 @@ const Dashboard = () => {
               />
               <FormField
                 control={form.control}
-                name="grade"
+                name="credits"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nota</FormLabel>
+                    <FormLabel>Créditos</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="number"
-                        min="0"
-                        max="10"
-                        step="0.1"
-                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="absences"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Faltas</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="number"
-                        min="0"
+                        min="1"
+                        max="12"
+                        placeholder="Ex: 4"
                         onChange={(e) => field.onChange(parseInt(e.target.value))}
                       />
                     </FormControl>
