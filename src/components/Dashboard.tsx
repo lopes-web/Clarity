@@ -9,7 +9,8 @@ import { useForm } from "react-hook-form";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useEvents } from "@/components/EventProvider";
-import { format, isFuture, compareAsc } from "date-fns";
+import { format, isFuture, compareAsc, startOfWeek, endOfWeek, isWithinInterval } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface Course {
   id: number;
@@ -91,7 +92,17 @@ const Dashboard = () => {
 
   const { events } = useEvents();
 
-  // Filtra e ordena os próximos eventos
+  // Filtra eventos da semana atual
+  const thisWeekEvents = events.filter(event => {
+    const eventDate = new Date(event.date);
+    const today = new Date();
+    const weekStart = startOfWeek(today, { locale: ptBR });
+    const weekEnd = endOfWeek(today, { locale: ptBR });
+    
+    return isWithinInterval(eventDate, { start: weekStart, end: weekEnd });
+  });
+
+  // Filtra e ordena os próximos eventos (para a lista)
   const upcomingActivities = events
     .filter(event => {
       const eventDate = new Date(event.date);
@@ -185,8 +196,8 @@ const Dashboard = () => {
         />
         <MetricCard
           title="Próximas Atividades"
-          value={upcomingActivities.length.toString()}
-          subtitle="Esta semana"
+          value={thisWeekEvents.length.toString()}
+          subtitle={`Esta semana (${format(startOfWeek(new Date(), { locale: ptBR }), "dd/MM")} - ${format(endOfWeek(new Date(), { locale: ptBR }), "dd/MM")})`}
           className="bg-primary text-white"
         />
         <MetricCard
