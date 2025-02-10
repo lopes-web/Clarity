@@ -82,25 +82,25 @@ const getStatusInfo = (events: CalendarEvent[]) => {
     return {
       status: "Em dia",
       description: "Excelente desempenho",
-      className: "bg-green-600 text-white"
+      className: "bg-purple-400 text-white"
     };
   } else if (overdueCount <= 2) {
     return {
       status: "Atenção",
       description: `${overdueCount} atividade${overdueCount > 1 ? 's' : ''} atrasada${overdueCount > 1 ? 's' : ''}`,
-      className: "bg-yellow-500 text-white"
+      className: "bg-purple-500 text-white"
     };
   } else if (overdueCount <= 4) {
     return {
       status: "Preocupante",
       description: `${overdueCount} atividades atrasadas`,
-      className: "bg-orange-500 text-white"
+      className: "bg-purple-600 text-white"
     };
   } else {
     return {
       status: "Crítico",
       description: `${overdueCount} atividades atrasadas`,
-      className: "bg-red-500 text-white"
+      className: "bg-purple-700 text-white"
     };
   }
 };
