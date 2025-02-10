@@ -1,32 +1,54 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { getAuthUrl, setCredentials, loadSavedCredentials, syncEventsToGoogle } from "@/lib/googleCalendar";
+import { initGoogleCalendar, isAuthenticated, signIn, addEventToGoogleCalendar } from "@/lib/googleCalendar";
 import { useEvents } from "@/components/EventProvider";
 
 const GoogleCalendarButton = () => {
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const { toast } = useToast();
   const { events } = useEvents();
 
+  useEffect(() => {
+    initGoogleCalendar()
+      .then(() => setIsInitialized(true))
+      .catch((error) => {
+        console.error('Erro ao inicializar Google Calendar:', error);
+        toast({
+          variant: "destructive",
+          title: "Erro de inicialização",
+          description: "Não foi possível inicializar o Google Calendar.",
+        });
+      });
+  }, []);
+
   const handleGoogleAuth = async () => {
+    if (!isInitialized) {
+      toast({
+        variant: "destructive",
+        title: "Aguarde",
+        description: "O Google Calendar ainda está sendo inicializado.",
+      });
+      return;
+    }
+
     try {
       setIsSyncing(true);
 
-      // Verificar se já temos credenciais salvas
-      if (!loadSavedCredentials()) {
-        // Se não tiver credenciais, redirecionar para autenticação
-        const authUrl = getAuthUrl();
-        window.location.href = authUrl;
-        return;
+      // Se não estiver autenticado, fazer login
+      if (!isAuthenticated()) {
+        await signIn();
       }
 
       // Filtrar apenas eventos não completados
       const activeEvents = events.filter(event => !event.completed);
       
       // Sincronizar eventos com o Google Calendar
-      await syncEventsToGoogle(activeEvents);
+      for (const event of activeEvents) {
+        await addEventToGoogleCalendar(event);
+      }
 
       toast({
         title: "Sincronização concluída",
@@ -49,7 +71,7 @@ const GoogleCalendarButton = () => {
       variant="outline"
       size="sm"
       onClick={handleGoogleAuth}
-      disabled={isSyncing}
+      disabled={isSyncing || !isInitialized}
       className="text-xs"
     >
       <CalendarIcon className="w-4 h-4 mr-1" />
