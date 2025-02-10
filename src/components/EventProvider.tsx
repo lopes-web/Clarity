@@ -7,12 +7,14 @@ export interface Event {
   type: "Prova" | "Trabalho" | "Projeto" | "Aula" | "Outro";
   description?: string;
   disciplina?: string;
+  completed?: boolean;
 }
 
 interface EventContextType {
   events: Event[];
   addEvent: (event: Omit<Event, "id">) => void;
   removeEvent: (id: string) => void;
+  toggleEventComplete: (id: string) => void;
 }
 
 const EventContext = createContext<EventContextType | undefined>(undefined);
@@ -42,6 +44,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
   const addEvent = (eventData: Omit<Event, "id">) => {
     const newEvent: Event = {
       id: Date.now().toString(),
+      completed: false,
       ...eventData,
     };
     setEvents(prev => [...prev, newEvent]);
@@ -51,8 +54,16 @@ export function EventProvider({ children }: { children: ReactNode }) {
     setEvents(prev => prev.filter(event => event.id !== id));
   };
 
+  const toggleEventComplete = (id: string) => {
+    setEvents(prev => prev.map(event => 
+      event.id === id 
+        ? { ...event, completed: !event.completed }
+        : event
+    ));
+  };
+
   return (
-    <EventContext.Provider value={{ events, addEvent, removeEvent }}>
+    <EventContext.Provider value={{ events, addEvent, removeEvent, toggleEventComplete }}>
       {children}
     </EventContext.Provider>
   );
