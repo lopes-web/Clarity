@@ -93,9 +93,14 @@ const Dashboard = () => {
 
   // Filtra e ordena os próximos eventos
   const upcomingActivities = events
-    .filter(event => isFuture(event.date))
-    .sort((a, b) => compareAsc(a.date, b.date))
-    .slice(0, 3); // Pega apenas os 3 próximos eventos
+    .filter(event => {
+      const eventDate = new Date(event.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return eventDate >= today;
+    })
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 3);
 
   const addCourse = (data: CourseFormData) => {
     const newCourse: Course = {
@@ -307,16 +312,23 @@ const Dashboard = () => {
           <h2 className="text-2xl font-semibold mb-4">Próximas Atividades</h2>
           <div className="space-y-4">
             {upcomingActivities.map((activity) => (
-              <ActivityCard
+              <div
                 key={activity.id}
-                activity={{
-                  id: activity.id,
-                  title: activity.title,
-                  course: activity.disciplina || "",
-                  date: format(activity.date, "dd/MM/yyyy"),
-                  type: activity.type,
-                }}
-              />
+                className="p-4 bg-white rounded-lg border border-gray-200 hover:border-primary transition-colors"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-medium">{activity.title}</h4>
+                    <p className="text-sm text-gray-600">{activity.disciplina}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium">
+                      {format(new Date(activity.date), "dd/MM/yyyy")}
+                    </p>
+                    <p className="text-xs text-primary">{activity.type}</p>
+                  </div>
+                </div>
+              </div>
             ))}
             {upcomingActivities.length === 0 && (
               <p className="text-sm text-gray-500">
@@ -560,21 +572,6 @@ const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }) => (
         </div>
       </div>
     )}
-  </div>
-);
-
-const ActivityCard = ({ activity }) => (
-  <div className="p-4 bg-white rounded-lg border border-gray-200 hover:border-primary transition-colors">
-    <div className="flex justify-between items-start">
-      <div>
-        <h4 className="font-medium">{activity.title}</h4>
-        <p className="text-sm text-gray-600">{activity.course}</p>
-      </div>
-      <div className="text-right">
-        <p className="text-sm font-medium">{activity.date}</p>
-        <p className="text-xs text-primary">{activity.type}</p>
-      </div>
-    </div>
   </div>
 );
 
