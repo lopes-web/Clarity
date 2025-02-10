@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useEvents } from "@/components/EventProvider";
-import { format, isFuture, compareAsc, startOfWeek, endOfWeek, isWithinInterval } from "date-fns";
+import { format, isFuture, compareAsc, startOfWeek, endOfWeek, isWithinInterval, startOfDay, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 interface Course {
@@ -104,7 +104,11 @@ const Dashboard = () => {
 
   // Filtra e ordena os próximos eventos (não concluídos)
   const upcomingActivities = events
-    .filter(event => !event.completed && isFuture(new Date(event.date)))
+    .filter(event => {
+      const eventDate = new Date(event.date);
+      const today = startOfDay(new Date()); // Início do dia atual
+      return !event.completed && (isAfter(eventDate, today) || format(eventDate, 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd'));
+    })
     .sort((a, b) => compareAsc(new Date(a.date), new Date(b.date)))
     .slice(0, 5);
 
