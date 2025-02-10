@@ -9,7 +9,8 @@ import { useForm } from "react-hook-form";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useEvents } from "@/components/EventProvider";
-import { format, isFuture, compareAsc, startOfWeek, endOfWeek, isWithinInterval, startOfDay, isAfter } from "date-fns";
+import type { Event as CalendarEvent } from "@/components/EventProvider";
+import { format, isFuture, compareAsc, startOfWeek, endOfWeek, isWithinInterval, startOfDay, isAfter, isBefore } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
 
@@ -36,6 +37,13 @@ interface GradeFormData {
   description: string;
 }
 
+interface MetricCardProps {
+  title: string;
+  value: string;
+  subtitle: string;
+  className?: string;
+}
+
 const getEventTypeColor = (type: string) => {
   switch (type) {
     case "Prova":
@@ -59,6 +67,42 @@ const getEventPriority = (date: Date) => {
   if (diffTime === 1) return { color: "text-orange-500", text: "Amanhã" };
   if (diffTime <= 3) return { color: "text-yellow-500", text: "Em breve" };
   return { color: "text-gray-500", text: "Programado" };
+};
+
+const getStatusInfo = (events: CalendarEvent[]) => {
+  const today = new Date();
+  const overdueEvents = events.filter(event => {
+    const eventDate = new Date(event.date);
+    return !event.completed && isBefore(eventDate, today);
+  });
+
+  const overdueCount = overdueEvents.length;
+
+  if (overdueCount === 0) {
+    return {
+      status: "Em dia",
+      description: "Excelente desempenho",
+      className: "bg-green-600 text-white"
+    };
+  } else if (overdueCount <= 2) {
+    return {
+      status: "Atenção",
+      description: `${overdueCount} atividade${overdueCount > 1 ? 's' : ''} atrasada${overdueCount > 1 ? 's' : ''}`,
+      className: "bg-yellow-500 text-white"
+    };
+  } else if (overdueCount <= 4) {
+    return {
+      status: "Preocupante",
+      description: `${overdueCount} atividades atrasadas`,
+      className: "bg-orange-500 text-white"
+    };
+  } else {
+    return {
+      status: "Crítico",
+      description: `${overdueCount} atividades atrasadas`,
+      className: "bg-red-500 text-white"
+    };
+  }
 };
 
 const Dashboard = () => {
@@ -121,6 +165,7 @@ const Dashboard = () => {
   });
 
   const { events, toggleEventComplete } = useEvents();
+  const statusInfo = getStatusInfo(events);
 
   // Filtra eventos da semana atual (não concluídos)
   const thisWeekEvents = events.filter(event => {
@@ -240,9 +285,9 @@ const Dashboard = () => {
         />
         <MetricCard
           title="Status"
-          value="Em dia"
-          subtitle="Bom desempenho"
-          className="bg-primary text-white"
+          value={statusInfo.status}
+          subtitle={statusInfo.description}
+          className={statusInfo.className}
         />
       </div>
 
@@ -364,8 +409,12 @@ const Dashboard = () => {
                       : "border-gray-200 hover:border-primary hover:shadow-md"
                   )}
                 >
-                  <div className="absolute top-0 left-0 w-1 h-full transition-colors duration-200"
-                    className={cn(getEventTypeColor(activity.type))} />
+                  <div 
+                    className={cn(
+                      "absolute top-0 left-0 w-1 h-full transition-colors duration-200",
+                      getEventTypeColor(activity.type)
+                    )} 
+                  />
                   <div className="p-4">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
@@ -575,7 +624,7 @@ const Dashboard = () => {
   );
 };
 
-const MetricCard = ({ title, value, subtitle, className = "" }) => (
+const MetricCard = ({ title, value, subtitle, className = "" }: MetricCardProps) => (
   <div className={`p-6 rounded-xl ${className}`}>
     <h3 className="text-sm font-medium mb-2">{title}</h3>
     <p className="text-3xl font-bold mb-1">{value}</p>

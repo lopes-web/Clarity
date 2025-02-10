@@ -7,7 +7,7 @@ export interface Event {
   type: "Prova" | "Trabalho" | "Projeto" | "Aula" | "Outro";
   description?: string;
   disciplina?: string;
-  completed?: boolean;
+  completed: boolean;
 }
 
 interface EventContextType {
