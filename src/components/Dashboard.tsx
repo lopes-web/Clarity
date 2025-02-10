@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { useEvents } from "@/components/EventProvider";
 import { format, isFuture, compareAsc, startOfWeek, endOfWeek, isWithinInterval, startOfDay, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useNavigate } from "react-router-dom";
 
 interface Course {
   id: number;
@@ -61,6 +62,7 @@ const getEventPriority = (date: Date) => {
 };
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([
     {
       id: 1,
@@ -101,6 +103,7 @@ const Dashboard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isAddingGrade, setIsAddingGrade] = useState(false);
   const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
+  const [isAddingCourse, setIsAddingCourse] = useState(false);
 
   const form = useForm<CourseFormData>({
     defaultValues: {
@@ -151,6 +154,7 @@ const Dashboard = () => {
     };
     setCourses([...courses, newCourse]);
     form.reset();
+    setIsAddingCourse(false);
   };
 
   const editCourse = (data: CourseFormData) => {
@@ -246,7 +250,7 @@ const Dashboard = () => {
         <div className="lg:col-span-2">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">Disciplinas do Semestre</h2>
-            <Dialog>
+            <Dialog open={isAddingCourse} onOpenChange={setIsAddingCourse}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
                   <Plus className="w-4 h-4 mr-2" />
@@ -334,7 +338,12 @@ const Dashboard = () => {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold">Próximas Atividades</h2>
             <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" className="text-xs">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-xs"
+                onClick={() => navigate('/calendar')}
+              >
                 <CalendarIcon className="w-4 h-4 mr-1" />
                 Ver Calendário
               </Button>
