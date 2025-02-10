@@ -1,4 +1,10 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { 
+  addEventToGoogleCalendar, 
+  loadSavedCredentials, 
+  updateGoogleEvent,
+  deleteGoogleEvent
+} from "@/lib/googleCalendar";
 
 export interface Event {
   id: string;
@@ -8,6 +14,7 @@ export interface Event {
   description?: string;
   disciplina?: string;
   completed: boolean;
+  googleEventId?: string; // ID do evento no Google Calendar
 }
 
 interface EventContextType {
@@ -41,25 +48,68 @@ export function EventProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
   }, [events]);
 
-  const addEvent = (eventData: Omit<Event, "id">) => {
+  // Sincroniza com o Google Calendar quando houver mudanças
+  const syncWithGoogle = async (event: Omit<Event, "id">) => {
+    if (loadSavedCredentials()) {
+      try {
+        const googleEvent = await addEventToGoogleCalendar(event);
+        return googleEvent.id; // Retorna o ID do evento no Google Calendar
+      } catch (error) {
+        console.error('Erro ao sincronizar com Google Calendar:', error);
+      }
+    }
+    return null;
+  };
+
+  const addEvent = async (eventData: Omit<Event, "id">) => {
+    // Primeiro, tenta sincronizar com o Google Calendar
+    const googleEventId = await syncWithGoogle(eventData);
+    
     const newEvent: Event = {
       id: Date.now().toString(),
       completed: false,
       ...eventData,
+      googleEventId, // Salva o ID do evento do Google
     };
+    
     setEvents(prev => [...prev, newEvent]);
   };
 
-  const removeEvent = (id: string) => {
+  const removeEvent = async (id: string) => {
+    const event = events.find(e => e.id === id);
+    if (event?.googleEventId && loadSavedCredentials()) {
+      try {
+        await deleteGoogleEvent(event.googleEventId);
+      } catch (error) {
+        console.error('Erro ao remover evento do Google Calendar:', error);
+      }
+    }
     setEvents(prev => prev.filter(event => event.id !== id));
   };
 
-  const toggleEventComplete = (id: string) => {
-    setEvents(prev => prev.map(event => 
-      event.id === id 
-        ? { ...event, completed: !event.completed }
-        : event
-    ));
+  const toggleEventComplete = async (id: string) => {
+    setEvents(prev => prev.map(event => {
+      if (event.id === id) {
+        const updatedEvent = { ...event, completed: !event.completed };
+        
+        // Atualizar status no Google Calendar
+        if (event.googleEventId && loadSavedCredentials()) {
+          try {
+            updateGoogleEvent(event.googleEventId, {
+              title: event.title,
+              date: event.date,
+              description: event.description,
+              type: event.type,
+              completed: !event.completed
+            });
+          } catch (error) {
+            console.error('Erro ao atualizar evento no Google Calendar:', error);
+          }
+        }
+        return updatedEvent;
+      }
+      return event;
+    }));
   };
 
   return (

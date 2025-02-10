@@ -13,6 +13,7 @@ import type { Event as CalendarEvent } from "@/components/EventProvider";
 import { format, isFuture, compareAsc, startOfWeek, endOfWeek, isWithinInterval, startOfDay, isAfter, isBefore } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
+import GoogleCalendarButton from "./GoogleCalendarButton";
 
 interface Course {
   id: number;
@@ -47,15 +48,15 @@ interface MetricCardProps {
 const getEventTypeColor = (type: string) => {
   switch (type) {
     case "Prova":
-      return "bg-red-500";
+      return "bg-purple-700";
     case "Trabalho":
-      return "bg-blue-500";
+      return "bg-purple-600";
     case "Projeto":
       return "bg-purple-500";
     case "Aula":
-      return "bg-green-500";
+      return "bg-purple-400";
     default:
-      return "bg-gray-500";
+      return "bg-purple-300";
   }
 };
 
@@ -369,6 +370,7 @@ const Dashboard = () => {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold">Atividades</h2>
             <div className="flex items-center space-x-2">
+              <GoogleCalendarButton />
               <Button 
                 variant="outline" 
                 size="sm" 
