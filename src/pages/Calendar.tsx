@@ -66,7 +66,11 @@ const CalendarPage = () => {
   });
 
   const handleAddEvent = (data: EventFormData) => {
-    addEvent(data);
+    const eventData = {
+      ...data,
+      date: date,
+    };
+    addEvent(eventData);
     setIsAddingEvent(false);
     form.reset();
   };
@@ -100,10 +104,13 @@ const CalendarPage = () => {
                     Novo Evento
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent aria-describedby="event-form-description">
                   <DialogHeader>
                     <DialogTitle>Adicionar Novo Evento</DialogTitle>
                   </DialogHeader>
+                  <div id="event-form-description" className="text-sm text-gray-500 mb-4">
+                    Adicione um novo evento para o dia {format(date, "dd/MM/yyyy")}
+                  </div>
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleAddEvent)} className="space-y-4">
                       <FormField
