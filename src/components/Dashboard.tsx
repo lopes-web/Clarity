@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { Progress } from "@/components/ui/progress";
-import { Plus, Edit2 } from "lucide-react";
+import { Plus, Edit2, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -139,6 +138,10 @@ const Dashboard = () => {
     if (grades.length === 0) return 0;
     const sum = grades.reduce((acc, grade) => acc + grade.value, 0);
     return Number((sum / grades.length).toFixed(1));
+  };
+
+  const deleteCourse = (courseId: number) => {
+    setCourses(courses.filter(course => course.id !== courseId));
   };
 
   const incrementAbsences = (courseId: number) => {
@@ -304,6 +307,7 @@ const Dashboard = () => {
                   setIsAddingGrade(true);
                 }}
                 onAddAbsence={() => incrementAbsences(course.id)}
+                onDelete={() => deleteCourse(course.id)}
               />
             ))}
           </div>
@@ -454,7 +458,7 @@ const MetricCard = ({ title, value, subtitle, className = "" }) => (
   </div>
 );
 
-const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence }) => (
+const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }) => (
   <div className="p-6 bg-white rounded-xl border border-gray-200 hover:border-primary transition-colors">
     <div className="flex justify-between items-start mb-4">
       <div>
@@ -481,6 +485,14 @@ const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence }) => (
         </Button>
         <Button variant="outline" size="sm" onClick={onEdit}>
           <Edit2 className="w-4 h-4" />
+        </Button>
+        <Button 
+          variant="destructive" 
+          size="sm" 
+          onClick={onDelete}
+          aria-label="Excluir disciplina"
+        >
+          <Trash className="w-4 h-4" />
         </Button>
       </div>
     </div>
