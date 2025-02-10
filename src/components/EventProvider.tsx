@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 export interface Event {
   id: string;
@@ -17,8 +17,27 @@ interface EventContextType {
 
 const EventContext = createContext<EventContextType | undefined>(undefined);
 
+const STORAGE_KEY = "@clarity/events";
+
 export function EventProvider({ children }: { children: ReactNode }) {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<Event[]>(() => {
+    // Carrega os eventos do localStorage durante a inicialização
+    const storedEvents = localStorage.getItem(STORAGE_KEY);
+    if (storedEvents) {
+      const parsedEvents = JSON.parse(storedEvents);
+      // Converte as strings de data de volta para objetos Date
+      return parsedEvents.map((event: any) => ({
+        ...event,
+        date: new Date(event.date),
+      }));
+    }
+    return [];
+  });
+
+  // Salva os eventos no localStorage sempre que houver mudanças
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+  }, [events]);
 
   const addEvent = (eventData: Omit<Event, "id">) => {
     const newEvent: Event = {
