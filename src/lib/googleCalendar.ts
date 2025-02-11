@@ -108,11 +108,16 @@ export const addEventToGoogleCalendar = async (event: Omit<Event, "id">) => {
       dateTime: new Date(event.date.getTime() + 60 * 60 * 1000).toISOString(),
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
-    eventType: 'default',
-    transparency: 'transparent',
+    kind: "tasks#task",
+    status: event.completed ? "completed" : "needsAction",
+    eventType: "outOfOffice",
+    transparency: "transparent",
+    visibility: "private",
     extendedProperties: {
       private: {
-        completed: event.completed ? 'true' : 'false'
+        type: "task",
+        completed: event.completed ? 'true' : 'false',
+        taskType: event.type
       }
     }
   };
@@ -146,9 +151,16 @@ export const updateGoogleEvent = async (eventId: string, event: Partial<Event>) 
       dateTime: new Date(event.date.getTime() + 60 * 60 * 1000).toISOString(),
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
+    kind: "tasks#task",
+    status: event.completed ? "completed" : "needsAction",
+    eventType: "outOfOffice",
+    transparency: "transparent",
+    visibility: "private",
     extendedProperties: {
       private: {
-        completed: event.completed ? 'true' : 'false'
+        type: "task",
+        completed: event.completed ? 'true' : 'false',
+        taskType: event.type
       }
     }
   };
