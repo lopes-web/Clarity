@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { 
-  addEventToGoogleCalendar, 
-  loadSavedCredentials, 
+import {
+  addEventToGoogleCalendar,
   updateGoogleEvent,
-  deleteGoogleEvent
+  deleteGoogleEvent,
+  isAuthenticated
 } from "@/lib/googleCalendar";
 
 export interface Event {
@@ -14,7 +14,7 @@ export interface Event {
   description?: string;
   disciplina?: string;
   completed: boolean;
-  googleEventId?: string; // ID do evento no Google Calendar
+  googleEventId?: string;
 }
 
 interface EventContextType {
@@ -30,11 +30,9 @@ const STORAGE_KEY = "@clarity/events";
 
 export function EventProvider({ children }: { children: ReactNode }) {
   const [events, setEvents] = useState<Event[]>(() => {
-    // Carrega os eventos do localStorage durante a inicialização
     const storedEvents = localStorage.getItem(STORAGE_KEY);
     if (storedEvents) {
       const parsedEvents = JSON.parse(storedEvents);
-      // Converte as strings de data de volta para objetos Date
       return parsedEvents.map((event: any) => ({
         ...event,
         date: new Date(event.date),
@@ -43,41 +41,43 @@ export function EventProvider({ children }: { children: ReactNode }) {
     return [];
   });
 
-  // Salva os eventos no localStorage sempre que houver mudanças
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
   }, [events]);
 
-  // Sincroniza com o Google Calendar quando houver mudanças
-  const syncWithGoogle = async (event: Omit<Event, "id">) => {
-    if (loadSavedCredentials()) {
-      try {
-        const googleEvent = await addEventToGoogleCalendar(event);
-        return googleEvent.id; // Retorna o ID do evento no Google Calendar
-      } catch (error) {
-        console.error('Erro ao sincronizar com Google Calendar:', error);
-      }
-    }
-    return null;
-  };
-
   const addEvent = async (eventData: Omit<Event, "id">) => {
-    // Primeiro, tenta sincronizar com o Google Calendar
-    const googleEventId = await syncWithGoogle(eventData);
-    
-    const newEvent: Event = {
-      id: Date.now().toString(),
-      completed: false,
-      ...eventData,
-      googleEventId, // Salva o ID do evento do Google
-    };
-    
-    setEvents(prev => [...prev, newEvent]);
+    try {
+      let googleEventId = undefined;
+      
+      // Se estiver autenticado no Google, adiciona o evento lá também
+      if (isAuthenticated()) {
+        const googleEvent = await addEventToGoogleCalendar(eventData);
+        googleEventId = googleEvent.id;
+      }
+
+      const newEvent: Event = {
+        id: Date.now().toString(),
+        completed: false,
+        ...eventData,
+        googleEventId,
+      };
+
+      setEvents(prev => [...prev, newEvent]);
+    } catch (error) {
+      console.error('Erro ao adicionar evento:', error);
+      // Adiciona o evento localmente mesmo se falhar no Google Calendar
+      const newEvent: Event = {
+        id: Date.now().toString(),
+        completed: false,
+        ...eventData,
+      };
+      setEvents(prev => [...prev, newEvent]);
+    }
   };
 
   const removeEvent = async (id: string) => {
     const event = events.find(e => e.id === id);
-    if (event?.googleEventId && loadSavedCredentials()) {
+    if (event?.googleEventId && isAuthenticated()) {
       try {
         await deleteGoogleEvent(event.googleEventId);
       } catch (error) {
@@ -92,8 +92,7 @@ export function EventProvider({ children }: { children: ReactNode }) {
       if (event.id === id) {
         const updatedEvent = { ...event, completed: !event.completed };
         
-        // Atualizar status no Google Calendar
-        if (event.googleEventId && loadSavedCredentials()) {
+        if (event.googleEventId && isAuthenticated()) {
           try {
             updateGoogleEvent(event.googleEventId, {
               title: event.title,
