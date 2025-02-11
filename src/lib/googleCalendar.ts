@@ -98,7 +98,7 @@ export const addEventToGoogleCalendar = async (event: Omit<Event, "id">) => {
   console.log('Preparando evento para enviar ao Google Calendar:', event);
   
   const googleEvent = {
-    summary: event.title,
+    summary: `📋 ${event.title}`,
     description: `${event.type}${event.description ? `: ${event.description}` : ''}`,
     start: {
       dateTime: event.date.toISOString(),
@@ -108,16 +108,15 @@ export const addEventToGoogleCalendar = async (event: Omit<Event, "id">) => {
       dateTime: new Date(event.date.getTime() + 60 * 60 * 1000).toISOString(),
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
-    kind: "tasks#task",
-    status: event.completed ? "completed" : "needsAction",
-    eventType: "outOfOffice",
     transparency: "transparent",
     visibility: "private",
+    colorId: "8",
     extendedProperties: {
       private: {
         type: "task",
         completed: event.completed ? 'true' : 'false',
-        taskType: event.type
+        taskType: event.type,
+        isTask: 'true'
       }
     }
   };
@@ -141,7 +140,7 @@ export const addEventToGoogleCalendar = async (event: Omit<Event, "id">) => {
 
 export const updateGoogleEvent = async (eventId: string, event: Partial<Event>) => {
   const googleEvent = {
-    summary: event.title,
+    summary: `📋 ${event.title}`,
     description: `${event.type}${event.description ? `: ${event.description}` : ''}`,
     start: event.date && {
       dateTime: event.date.toISOString(),
@@ -151,16 +150,15 @@ export const updateGoogleEvent = async (eventId: string, event: Partial<Event>) 
       dateTime: new Date(event.date.getTime() + 60 * 60 * 1000).toISOString(),
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
-    kind: "tasks#task",
-    status: event.completed ? "completed" : "needsAction",
-    eventType: "outOfOffice",
     transparency: "transparent",
     visibility: "private",
+    colorId: "8",
     extendedProperties: {
       private: {
         type: "task",
         completed: event.completed ? 'true' : 'false',
-        taskType: event.type
+        taskType: event.type,
+        isTask: 'true'
       }
     }
   };
