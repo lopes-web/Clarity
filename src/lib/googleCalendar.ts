@@ -1,28 +1,38 @@
 import { Event } from "@/components/EventProvider";
 import { useGoogleLogin } from '@react-oauth/google';
+import { create } from 'zustand';
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+interface AuthState {
+  accessToken: string | null;
+  setAccessToken: (token: string | null) => void;
+}
 
-let accessToken: string | null = null;
+const useAuthStore = create<AuthState>((set) => ({
+  accessToken: null,
+  setAccessToken: (token) => set({ accessToken: token }),
+}));
 
 export const isAuthenticated = () => {
-  return !!accessToken;
+  return !!useAuthStore.getState().accessToken;
 };
 
 export const useGoogleAuth = () => {
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
+
   return useGoogleLogin({
     onSuccess: (response) => {
-      accessToken = response.access_token;
+      setAccessToken(response.access_token);
     },
     onError: (error) => {
       console.error('Login Failed:', error);
+      setAccessToken(null);
     },
     scope: 'https://www.googleapis.com/auth/calendar',
   });
 };
 
 const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
+  const accessToken = useAuthStore.getState().accessToken;
   if (!accessToken) throw new Error('Not authenticated');
 
   const response = await fetch(url, {
@@ -30,10 +40,15 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     headers: {
       ...options.headers,
       'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
     },
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      useAuthStore.getState().setAccessToken(null);
+      throw new Error('Authentication expired');
+    }
     throw new Error(`HTTP error! status: ${response.status}`);
   }
 
@@ -54,15 +69,10 @@ export const addEventToGoogleCalendar = async (event: Omit<Event, "id">) => {
     },
   };
 
-  const response = await fetchWithAuth('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+  return fetchWithAuth('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
     method: 'POST',
     body: JSON.stringify(googleEvent),
-    headers: {
-      'Content-Type': 'application/json',
-    },
   });
-
-  return response;
 };
 
 export const updateGoogleEvent = async (eventId: string, event: Partial<Event>) => {
@@ -79,15 +89,10 @@ export const updateGoogleEvent = async (eventId: string, event: Partial<Event>) 
     },
   };
 
-  const response = await fetchWithAuth(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
+  return fetchWithAuth(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
     method: 'PATCH',
     body: JSON.stringify(googleEvent),
-    headers: {
-      'Content-Type': 'application/json',
-    },
   });
-
-  return response;
 };
 
 export const deleteGoogleEvent = async (eventId: string) => {
@@ -96,16 +101,11 @@ export const deleteGoogleEvent = async (eventId: string) => {
   });
 };
 
-// Lista eventos do Google Calendar
 export const getGoogleCalendarEvents = async (timeMin: Date = new Date()) => {
   try {
-    const response = await fetchWithAuth('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
+    const response = await fetchWithAuth(
+      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin.toISOString()}&maxResults=100&singleEvents=true&orderBy=startTime`
+    );
     return response.items;
   } catch (error) {
     console.error('Erro ao buscar eventos:', error);
