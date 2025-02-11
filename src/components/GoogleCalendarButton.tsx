@@ -20,13 +20,22 @@ const GoogleCalendarButton = () => {
   const login = useGoogleAuth();
 
   useEffect(() => {
-    // Verifica se o Google OAuth está inicializado corretamente
-    if (window.google?.accounts?.oauth2) {
-      setIsReady(true);
-    } else {
-      console.error('Google OAuth não está inicializado corretamente');
-      toast.error('Erro ao inicializar Google OAuth');
-    }
+    const checkGoogleInit = () => {
+      if (typeof window !== 'undefined' && window.google?.accounts?.oauth2) {
+        setIsReady(true);
+      } else {
+        console.error('Google OAuth não está inicializado corretamente');
+        toast.error('Erro ao inicializar Google OAuth. Tente recarregar a página.');
+      }
+    };
+
+    // Verifica imediatamente
+    checkGoogleInit();
+
+    // Verifica novamente após um curto delay para dar tempo de carregar
+    const timer = setTimeout(checkGoogleInit, 2000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const handleClick = useCallback(async () => {
