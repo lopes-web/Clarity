@@ -2,6 +2,12 @@ import { Event } from "@/components/EventProvider";
 import { useGoogleLogin } from '@react-oauth/google';
 import { create } from 'zustand';
 
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+if (!GOOGLE_CLIENT_ID) {
+  throw new Error('VITE_GOOGLE_CLIENT_ID is not defined in environment variables');
+}
+
 interface AuthState {
   accessToken: string | null;
   setAccessToken: (token: string | null) => void;
@@ -28,6 +34,7 @@ export const useGoogleAuth = () => {
       setAccessToken(null);
     },
     scope: 'https://www.googleapis.com/auth/calendar',
+    flow: 'implicit',
   });
 };
 
