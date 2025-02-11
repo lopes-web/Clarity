@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { toast } from "sonner";
 import {
   addEventToGoogleCalendar,
   updateGoogleEvent,
@@ -46,13 +47,24 @@ export function EventProvider({ children }: { children: ReactNode }) {
   }, [events]);
 
   const addEvent = async (eventData: Omit<Event, "id">) => {
+    console.log('Iniciando adição de evento:', eventData);
+    
     try {
       let googleEventId = undefined;
       
       // Se estiver autenticado no Google, adiciona o evento lá também
       if (isAuthenticated()) {
-        const googleEvent = await addEventToGoogleCalendar(eventData);
-        googleEventId = googleEvent.id;
+        console.log('Usuário autenticado, adicionando ao Google Calendar');
+        try {
+          const googleEvent = await addEventToGoogleCalendar(eventData);
+          googleEventId = googleEvent.id;
+          console.log('Evento adicionado ao Google Calendar com ID:', googleEventId);
+        } catch (error) {
+          console.error('Erro ao adicionar evento ao Google Calendar:', error);
+          toast.error('Erro ao sincronizar com Google Calendar. O evento será salvo apenas localmente.');
+        }
+      } else {
+        console.log('Usuário não autenticado no Google Calendar');
       }
 
       const newEvent: Event = {
@@ -62,16 +74,12 @@ export function EventProvider({ children }: { children: ReactNode }) {
         googleEventId,
       };
 
+      console.log('Salvando evento localmente:', newEvent);
       setEvents(prev => [...prev, newEvent]);
+      toast.success('Evento adicionado com sucesso!');
     } catch (error) {
       console.error('Erro ao adicionar evento:', error);
-      // Adiciona o evento localmente mesmo se falhar no Google Calendar
-      const newEvent: Event = {
-        id: Date.now().toString(),
-        completed: false,
-        ...eventData,
-      };
-      setEvents(prev => [...prev, newEvent]);
+      toast.error('Erro ao adicionar evento. Tente novamente.');
     }
   };
 

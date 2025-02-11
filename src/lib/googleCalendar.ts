@@ -42,9 +42,15 @@ export const useGoogleAuth = () => {
 
 const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   const accessToken = useAuthStore.getState().accessToken;
-  if (!accessToken) throw new Error('Not authenticated');
+  if (!accessToken) {
+    console.error('Token de acesso não encontrado');
+    throw new Error('Not authenticated');
+  }
 
   try {
+    console.log('Iniciando requisição para:', url);
+    console.log('Método:', options.method);
+    
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -56,9 +62,10 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('API Error:', {
+      console.error('Erro na resposta da API:', {
         status: response.status,
         statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
         error: errorData
       });
 
@@ -69,14 +76,18 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
       throw new Error(`HTTP error! status: ${response.status} - ${JSON.stringify(errorData)}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('Resposta bem-sucedida:', data);
+    return data;
   } catch (error) {
-    console.error('Request failed:', error);
+    console.error('Falha na requisição:', error);
     throw error;
   }
 };
 
 export const addEventToGoogleCalendar = async (event: Omit<Event, "id">) => {
+  console.log('Preparando evento para enviar ao Google Calendar:', event);
+  
   const googleEvent = {
     summary: event.title,
     description: `${event.type}${event.description ? `: ${event.description}` : ''}`,
@@ -90,10 +101,21 @@ export const addEventToGoogleCalendar = async (event: Omit<Event, "id">) => {
     },
   };
 
-  return fetchWithAuth('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-    method: 'POST',
-    body: JSON.stringify(googleEvent),
-  });
+  console.log('Evento formatado para Google Calendar:', googleEvent);
+  console.log('Token de acesso presente:', !!useAuthStore.getState().accessToken);
+
+  try {
+    const response = await fetchWithAuth('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+      method: 'POST',
+      body: JSON.stringify(googleEvent),
+    });
+    
+    console.log('Resposta do Google Calendar:', response);
+    return response;
+  } catch (error) {
+    console.error('Erro detalhado ao adicionar evento:', error);
+    throw error;
+  }
 };
 
 export const updateGoogleEvent = async (eventId: string, event: Partial<Event>) => {
