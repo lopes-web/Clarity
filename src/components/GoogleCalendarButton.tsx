@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useGoogleAuth, isAuthenticated } from "@/lib/googleCalendar";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Calendar, LogOut } from "lucide-react";
 
 declare global {
   interface Window {
@@ -41,11 +41,9 @@ const GoogleCalendarButton = () => {
         return;
       }
 
-      // Aguarda um tempo antes de tentar novamente
       await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
       setRetryCount(prev => prev + 1);
       
-      // Verifica novamente
       if (!checkGoogleInit()) {
         initializeGoogleAuth();
       }
@@ -76,16 +74,46 @@ const GoogleCalendarButton = () => {
     }
   }, [isLoading, isReady, login]);
 
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem('@clarity/google_token');
+    window.location.reload();
+  }, []);
+
   if (!isReady) {
     return (
       <Button
         variant="outline"
-        className="w-full"
+        size="sm"
+        className="w-full max-w-xs"
         disabled
       >
-        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+        <Calendar className="w-4 h-4 mr-2 animate-spin" />
         {retryCount > 0 ? `Tentando novamente (${retryCount}/${MAX_RETRIES})...` : 'Inicializando...'}
       </Button>
+    );
+  }
+
+  if (isAuthenticated()) {
+    return (
+      <div className="flex gap-2 w-full max-w-xs">
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-1"
+          disabled
+        >
+          <Calendar className="w-4 h-4 mr-2 text-green-500" />
+          Conectado
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleLogout}
+          className="px-3"
+        >
+          <LogOut className="w-4 h-4" />
+        </Button>
+      </div>
     );
   }
 
@@ -93,16 +121,20 @@ const GoogleCalendarButton = () => {
     <Button
       onClick={handleClick}
       variant="outline"
-      className="w-full"
+      size="sm"
+      className="w-full max-w-xs"
       disabled={isLoading}
     >
       {isLoading ? (
         <>
-          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          <Calendar className="w-4 h-4 mr-2 animate-spin" />
           Conectando...
         </>
       ) : (
-        isAuthenticated() ? "Conectado ao Google Calendar" : "Sincronizar com Google"
+        <>
+          <Calendar className="w-4 h-4 mr-2" />
+          Sincronizar com Google
+        </>
       )}
     </Button>
   );

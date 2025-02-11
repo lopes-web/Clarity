@@ -13,9 +13,18 @@ interface AuthState {
   setAccessToken: (token: string | null) => void;
 }
 
+const STORAGE_KEY = '@clarity/google_token';
+
 const useAuthStore = create<AuthState>((set) => ({
-  accessToken: null,
-  setAccessToken: (token) => set({ accessToken: token }),
+  accessToken: localStorage.getItem(STORAGE_KEY),
+  setAccessToken: (token) => {
+    if (token) {
+      localStorage.setItem(STORAGE_KEY, token);
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+    set({ accessToken: token });
+  },
 }));
 
 export const isAuthenticated = () => {

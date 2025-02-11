@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import Sidebar from "@/components/Sidebar";
 import { SidebarProvider } from "@/components/SidebarProvider";
 import { useEvents } from "@/components/EventProvider";
+import GoogleCalendarButton from "@/components/GoogleCalendarButton";
 
 interface Event {
   id: string;
@@ -99,112 +100,115 @@ const CalendarPage = () => {
           <div className="container mx-auto p-6">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl font-bold">Calendário Acadêmico</h1>
-              <Dialog open={isAddingEvent} onOpenChange={setIsAddingEvent}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Novo Evento
-                  </Button>
-                </DialogTrigger>
-                <DialogContent aria-describedby="event-form-description">
-                  <DialogHeader>
-                    <DialogTitle>Adicionar Novo Evento</DialogTitle>
-                  </DialogHeader>
-                  <div id="event-form-description" className="text-sm text-gray-500 mb-4">
-                    Adicione um novo evento para o dia {format(date, "dd/MM/yyyy")}
-                  </div>
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleAddEvent)} className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="title"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Título</FormLabel>
-                            <FormControl>
-                              <Input {...field} placeholder="Ex: Prova de Cálculo" />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="type"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Tipo</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
+              <div className="flex items-center gap-4">
+                <GoogleCalendarButton />
+                <Dialog open={isAddingEvent} onOpenChange={setIsAddingEvent}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Novo Evento
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent aria-describedby="event-form-description">
+                    <DialogHeader>
+                      <DialogTitle>Adicionar Novo Evento</DialogTitle>
+                    </DialogHeader>
+                    <div id="event-form-description" className="text-sm text-gray-500 mb-4">
+                      Adicione um novo evento para o dia {format(date, "dd/MM/yyyy")}
+                    </div>
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(handleAddEvent)} className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="title"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Título</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Selecione o tipo" />
-                                </SelectTrigger>
+                                <Input {...field} placeholder="Ex: Prova de Cálculo" />
                               </FormControl>
-                              <SelectContent>
-                                <SelectItem value="Prova">Prova</SelectItem>
-                                <SelectItem value="Trabalho">Trabalho</SelectItem>
-                                <SelectItem value="Projeto">Projeto</SelectItem>
-                                <SelectItem value="Aula">Aula</SelectItem>
-                                <SelectItem value="Outro">Outro</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormItem>
-                        )}
-                      />
+                            </FormItem>
+                          )}
+                        />
 
-                      <FormField
-                        control={form.control}
-                        name="disciplina"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Disciplina</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
+                        <FormField
+                          control={form.control}
+                          name="type"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Tipo</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Selecione o tipo" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="Prova">Prova</SelectItem>
+                                  <SelectItem value="Trabalho">Trabalho</SelectItem>
+                                  <SelectItem value="Projeto">Projeto</SelectItem>
+                                  <SelectItem value="Aula">Aula</SelectItem>
+                                  <SelectItem value="Outro">Outro</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="disciplina"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Disciplina</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Selecione a disciplina" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {disciplinas.map((disciplina) => (
+                                    <SelectItem key={disciplina} value={disciplina}>
+                                      {disciplina}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Descrição</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Selecione a disciplina" />
-                                </SelectTrigger>
+                                <Input
+                                  {...field}
+                                  placeholder="Ex: Capítulos 1 a 3"
+                                />
                               </FormControl>
-                              <SelectContent>
-                                {disciplinas.map((disciplina) => (
-                                  <SelectItem key={disciplina} value={disciplina}>
-                                    {disciplina}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormItem>
-                        )}
-                      />
+                            </FormItem>
+                          )}
+                        />
 
-                      <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Descrição</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ex: Capítulos 1 a 3"
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-
-                      <Button type="submit" className="w-full">
-                        Adicionar Evento
-                      </Button>
-                    </form>
-                  </Form>
-                </DialogContent>
-              </Dialog>
+                        <Button type="submit" className="w-full">
+                          Adicionar Evento
+                        </Button>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6">
