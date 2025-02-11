@@ -43,7 +43,7 @@ export const useGoogleAuth = () => {
       console.error('Login Failed:', error);
       setAccessToken(null);
     },
-    scope: 'https://www.googleapis.com/auth/tasks https://www.googleapis.com/auth/tasks.readonly',
+    scope: 'https://www.googleapis.com/auth/tasks',
     flow: 'implicit',
     prompt: 'consent'
   });
@@ -118,7 +118,7 @@ const getOrCreateTaskList = async () => {
   }
 };
 
-export const addEventToGoogleCalendar = async (event: Omit<Event, "id">) => {
+export const addTaskToGoogle = async (event: Omit<Event, "id">) => {
   console.log('Preparando tarefa para enviar ao Google Tasks:', event);
   
   try {
@@ -146,7 +146,7 @@ export const addEventToGoogleCalendar = async (event: Omit<Event, "id">) => {
   }
 };
 
-export const updateGoogleEvent = async (taskId: string, event: Partial<Event>) => {
+export const updateGoogleTask = async (taskId: string, event: Partial<Event>) => {
   try {
     const taskListId = await getOrCreateTaskList();
     
@@ -167,7 +167,7 @@ export const updateGoogleEvent = async (taskId: string, event: Partial<Event>) =
   }
 };
 
-export const deleteGoogleEvent = async (taskId: string) => {
+export const deleteGoogleTask = async (taskId: string) => {
   try {
     const taskListId = await getOrCreateTaskList();
     await fetchWithAuth(`https://tasks.googleapis.com/tasks/v1/lists/${taskListId}/tasks/${taskId}`, {
@@ -179,7 +179,7 @@ export const deleteGoogleEvent = async (taskId: string) => {
   }
 };
 
-export const getGoogleCalendarEvents = async () => {
+export const getGoogleTasks = async () => {
   try {
     const taskListId = await getOrCreateTaskList();
     const response = await fetchWithAuth(
@@ -192,9 +192,9 @@ export const getGoogleCalendarEvents = async () => {
   }
 };
 
-export const syncGoogleCalendarEvents = async () => {
+export const syncGoogleTasks = async () => {
   try {
-    const tasks = await getGoogleCalendarEvents();
+    const tasks = await getGoogleTasks();
     const updatedEvents = [];
 
     for (const task of tasks) {
