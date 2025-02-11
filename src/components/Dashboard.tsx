@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Plus, Edit2, Trash, Check, CheckCircle2, Calendar as CalendarIcon, Clock, AlertCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -13,6 +13,18 @@ import type { Event as CalendarEvent } from "@/components/EventProvider";
 import { format, isFuture, compareAsc, startOfWeek, endOfWeek, isWithinInterval, startOfDay, isAfter, isBefore } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/components/AuthProvider";
+import { toast } from "sonner";
+import {
+  getDisciplines,
+  addDiscipline,
+  updateDiscipline,
+  deleteDiscipline,
+  addGrade,
+  calculateAverageGrade,
+  type Discipline,
+  type Grade
+} from "@/lib/disciplines";
 
 interface Course {
   id: number;
@@ -42,6 +54,14 @@ interface MetricCardProps {
   value: string;
   subtitle: string;
   className?: string;
+}
+
+interface CourseCardProps {
+  course: Discipline;
+  onEdit: () => void;
+  onAddGrade: () => void;
+  onAddAbsence: () => void;
+  onDelete: () => void;
 }
 
 const getEventTypeColor = (type: string) => {
@@ -108,46 +128,13 @@ const getStatusInfo = (events: CalendarEvent[]) => {
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [courses, setCourses] = useState<Course[]>([
-    {
-      id: 1,
-      name: "Cálculo I",
-      professor: "Prof. Dr. Silva",
-      grade: 8.5,
-      absences: 2,
-      progress: 75,
-      status: "Em dia",
-      credits: 4,
-      grades: [{ id: 1, value: 8.5, description: "Prova 1" }],
-    },
-    {
-      id: 2,
-      name: "Física Básica",
-      professor: "Prof. Dra. Santos",
-      grade: 7.5,
-      absences: 1,
-      progress: 60,
-      status: "Atenção",
-      credits: 6,
-      grades: [{ id: 1, value: 7.5, description: "Prova 1" }],
-    },
-    {
-      id: 3,
-      name: "Programação",
-      professor: "Prof. Dr. Costa",
-      grade: 9.0,
-      absences: 0,
-      progress: 85,
-      status: "Em dia",
-      credits: 4,
-      grades: [{ id: 1, value: 9.0, description: "Prova 1" }],
-    },
-  ]);
-
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const { user } = useAuth();
+  const [courses, setCourses] = useState<Discipline[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedCourse, setSelectedCourse] = useState<Discipline | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isAddingGrade, setIsAddingGrade] = useState(false);
-  const [courseToDelete, setCourseToDelete] = useState<Course | null>(null);
+  const [courseToDelete, setCourseToDelete] = useState<Discipline | null>(null);
   const [isAddingCourse, setIsAddingCourse] = useState(false);
 
   const form = useForm<CourseFormData>({
@@ -168,85 +155,131 @@ const Dashboard = () => {
   const { events, toggleEventComplete } = useEvents();
   const statusInfo = getStatusInfo(events);
 
+  // Carregar disciplinas
+  useEffect(() => {
+    const loadDisciplines = async () => {
+      if (!user) return;
+      
+      try {
+        setIsLoading(true);
+        const data = await getDisciplines(user.id);
+        setCourses(data);
+      } catch (error) {
+        console.error('Erro ao carregar disciplinas:', error);
+        toast.error('Erro ao carregar disciplinas');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDisciplines();
+  }, [user]);
+
+  const addCourse = async (data: CourseFormData) => {
+    if (!user) return;
+
+    try {
+      const newCourse = {
+        ...data,
+        grade: 0,
+        absences: 0,
+        progress: 0,
+        status: "Em dia",
+      };
+
+      const addedCourse = await addDiscipline(user.id, newCourse);
+      setCourses(prev => [...prev, addedCourse]);
+      form.reset();
+      setIsAddingCourse(false);
+      toast.success('Disciplina adicionada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao adicionar disciplina:', error);
+      toast.error('Erro ao adicionar disciplina');
+    }
+  };
+
+  const editCourse = async (data: CourseFormData) => {
+    if (!selectedCourse) return;
+
+    try {
+      const updatedCourse = await updateDiscipline(selectedCourse.id, data);
+      setCourses(prev => prev.map(course => 
+        course.id === selectedCourse.id ? updatedCourse : course
+      ));
+      setIsEditing(false);
+      form.reset();
+      toast.success('Disciplina atualizada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao atualizar disciplina:', error);
+      toast.error('Erro ao atualizar disciplina');
+    }
+  };
+
+  const handleAddGrade = async (data: GradeFormData) => {
+    if (!selectedCourse) return;
+
+    try {
+      const newGrade = await addGrade({
+        discipline_id: selectedCourse.id,
+        ...data
+      });
+
+      // Atualizar a média da disciplina
+      const updatedGrades = [...(selectedCourse.grades || []), newGrade];
+      const newAverage = calculateAverageGrade(updatedGrades);
+      
+      const updatedCourse = await updateDiscipline(selectedCourse.id, {
+        grade: newAverage
+      });
+
+      setCourses(prev => prev.map(course =>
+        course.id === selectedCourse.id ? updatedCourse : course
+      ));
+
+      setIsAddingGrade(false);
+      gradeForm.reset();
+      toast.success('Nota adicionada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao adicionar nota:', error);
+      toast.error('Erro ao adicionar nota');
+    }
+  };
+
+  const handleDeleteCourse = async (courseId: string) => {
+    try {
+      await deleteDiscipline(courseId);
+      setCourses(prev => prev.filter(course => course.id !== courseId));
+      setCourseToDelete(null);
+      toast.success('Disciplina removida com sucesso!');
+    } catch (error) {
+      console.error('Erro ao remover disciplina:', error);
+      toast.error('Erro ao remover disciplina');
+    }
+  };
+
+  const handleIncrementAbsences = async (courseId: string) => {
+    const course = courses.find(c => c.id === courseId);
+    if (!course) return;
+
+    try {
+      const updatedCourse = await updateDiscipline(courseId, {
+        absences: (course.absences || 0) + 1
+      });
+
+      setCourses(prev => prev.map(c =>
+        c.id === courseId ? updatedCourse : c
+      ));
+      toast.success('Falta registrada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao registrar falta:', error);
+      toast.error('Erro ao registrar falta');
+    }
+  };
+
   // Filtra e ordena todos os eventos não concluídos por data
   const sortedActivities = events
     .filter(event => !event.completed)
     .sort((a, b) => compareAsc(new Date(a.date), new Date(b.date)));
-
-  const addCourse = (data: CourseFormData) => {
-    const newCourse: Course = {
-      id: courses.length + 1,
-      ...data,
-      grade: 0,
-      absences: 0,
-      progress: 0,
-      status: "Em dia",
-      grades: [],
-    };
-    setCourses([...courses, newCourse]);
-    form.reset();
-    setIsAddingCourse(false);
-  };
-
-  const editCourse = (data: CourseFormData) => {
-    if (!selectedCourse) return;
-    const updatedCourses = courses.map((course) =>
-      course.id === selectedCourse.id
-        ? {
-            ...course,
-            ...data,
-          }
-        : course
-    );
-    setCourses(updatedCourses);
-    setIsEditing(false);
-    form.reset();
-  };
-
-  const addGrade = (data: GradeFormData) => {
-    if (!selectedCourse) return;
-    const newGrade = {
-      id: selectedCourse.grades.length + 1,
-      ...data,
-    };
-    
-    const updatedCourses = courses.map((course) =>
-      course.id === selectedCourse.id
-        ? {
-            ...course,
-            grades: [...course.grades, newGrade],
-            grade: calculateAverageGrade([...course.grades, newGrade]),
-          }
-        : course
-    );
-    
-    setCourses(updatedCourses);
-    setIsAddingGrade(false);
-    gradeForm.reset();
-  };
-
-  const calculateAverageGrade = (grades: { value: number }[]) => {
-    if (grades.length === 0) return 0;
-    const sum = grades.reduce((acc, grade) => acc + grade.value, 0);
-    return Number((sum / grades.length).toFixed(1));
-  };
-
-  const deleteCourse = (courseId: number) => {
-    setCourses(courses.filter(course => course.id !== courseId));
-    setCourseToDelete(null);
-  };
-
-  const incrementAbsences = (courseId: number) => {
-    const updatedCourses = courses.map((course) =>
-      course.id === courseId
-        ? {
-            ...course,
-            absences: course.absences + 1,
-          }
-        : course
-    );
-    setCourses(updatedCourses);
-  };
 
   return (
     <div className="container p-6 mx-auto animate-fadeIn">
@@ -357,7 +390,7 @@ const Dashboard = () => {
                   setSelectedCourse(course);
                   setIsAddingGrade(true);
                 }}
-                onAddAbsence={() => incrementAbsences(course.id)}
+                onAddAbsence={() => handleIncrementAbsences(course.id)}
                 onDelete={() => {
                   setCourseToDelete(course);
                 }}
@@ -545,7 +578,7 @@ const Dashboard = () => {
             <DialogTitle>Adicionar Nova Nota</DialogTitle>
           </DialogHeader>
           <Form {...gradeForm}>
-            <form onSubmit={gradeForm.handleSubmit(addGrade)} className="space-y-4">
+            <form onSubmit={gradeForm.handleSubmit(handleAddGrade)} className="space-y-4">
               <FormField
                 control={gradeForm.control}
                 name="value"
@@ -598,7 +631,7 @@ const Dashboard = () => {
               </Button>
               <Button 
                 variant="destructive" 
-                onClick={() => courseToDelete && deleteCourse(courseToDelete.id)}
+                onClick={() => courseToDelete && handleDeleteCourse(courseToDelete.id)}
               >
                 Excluir
               </Button>
@@ -618,7 +651,7 @@ const MetricCard = ({ title, value, subtitle, className = "" }: MetricCardProps)
   </div>
 );
 
-const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }) => (
+const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }: CourseCardProps) => (
   <div className="p-6 bg-white rounded-xl border border-gray-200 hover:border-primary transition-colors">
     <div className="flex justify-between items-start mb-4">
       <div>
@@ -678,7 +711,7 @@ const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }) => (
         </Button>
       </div>
     </div>
-    {course.grades.length > 0 && (
+    {course.grades && course.grades.length > 0 && (
       <div className="mt-4 border-t pt-4">
         <h4 className="text-sm font-semibold mb-2">Histórico de Notas</h4>
         <div className="space-y-2">
