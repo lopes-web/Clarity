@@ -27,6 +27,7 @@ export const useGoogleAuth = () => {
 
   return useGoogleLogin({
     onSuccess: (response) => {
+      console.log('Login successful, token received');
       setAccessToken(response.access_token);
     },
     onError: (error) => {
@@ -43,24 +44,36 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   const accessToken = useAuthStore.getState().accessToken;
   if (!accessToken) throw new Error('Not authenticated');
 
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      ...options.headers,
-      'Authorization': `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    },
-  });
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (!response.ok) {
-    if (response.status === 401) {
-      useAuthStore.getState().setAccessToken(null);
-      throw new Error('Authentication expired');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData
+      });
+
+      if (response.status === 401) {
+        useAuthStore.getState().setAccessToken(null);
+        throw new Error('Authentication expired');
+      }
+      throw new Error(`HTTP error! status: ${response.status} - ${JSON.stringify(errorData)}`);
     }
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
 
-  return response.json();
+    return response.json();
+  } catch (error) {
+    console.error('Request failed:', error);
+    throw error;
+  }
 };
 
 export const addEventToGoogleCalendar = async (event: Omit<Event, "id">) => {
