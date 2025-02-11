@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useGoogleAuth, isAuthenticated } from "@/lib/googleCalendar";
 import { toast } from "sonner";
 
-export function GoogleCalendarButton() {
+const GoogleCalendarButton = () => {
   const login = useGoogleAuth();
 
   const handleClick = async () => {
@@ -25,4 +25,6 @@ export function GoogleCalendarButton() {
       {isAuthenticated() ? "Conectado ao Google Calendar" : "Sincronizar com Google"}
     </Button>
   );
-} 
+};
+
+export default GoogleCalendarButton; 
