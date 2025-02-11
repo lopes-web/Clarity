@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { Toaster } from "@/components/ui/sonner";
 import { EventProvider } from "@/components/EventProvider";
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { useAuth } from "@/components/AuthProvider";
+import { useAuth, AuthProvider } from "@/components/AuthProvider";
 
 import Index from "@/pages/Index";
 import Calendar from "@/pages/Calendar";
@@ -48,35 +48,37 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <EventProvider>
-        <Router>
-          <Toaster />
-          <Routes>
-            <Route path="/login" element={
-              <PublicRoute>
-                <LoginPage />
-              </PublicRoute>
-            } />
-            <Route path="/register" element={
-              <PublicRoute>
-                <RegisterPage />
-              </PublicRoute>
-            } />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-of-service" element={<TermsOfService />} />
-            <Route path="/" element={
-              <PrivateRoute>
-                <Index />
-              </PrivateRoute>
-            } />
-            <Route path="/calendar" element={
-              <PrivateRoute>
-                <Calendar />
-              </PrivateRoute>
-            } />
-          </Routes>
-        </Router>
-      </EventProvider>
+      <AuthProvider>
+        <EventProvider>
+          <Router>
+            <Toaster />
+            <Routes>
+              <Route path="/login" element={
+                <PublicRoute>
+                  <LoginPage />
+                </PublicRoute>
+              } />
+              <Route path="/register" element={
+                <PublicRoute>
+                  <RegisterPage />
+                </PublicRoute>
+              } />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/" element={
+                <PrivateRoute>
+                  <Index />
+                </PrivateRoute>
+              } />
+              <Route path="/calendar" element={
+                <PrivateRoute>
+                  <Calendar />
+                </PrivateRoute>
+              } />
+            </Routes>
+          </Router>
+        </EventProvider>
+      </AuthProvider>
     </GoogleOAuthProvider>
   );
 }
