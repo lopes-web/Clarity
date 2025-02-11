@@ -33,7 +33,7 @@ export const useGoogleAuth = () => {
       console.error('Login Failed:', error);
       setAccessToken(null);
     },
-    scope: 'https://www.googleapis.com/auth/calendar',
+    scope: 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar',
     flow: 'implicit',
     prompt: 'consent'
   });
