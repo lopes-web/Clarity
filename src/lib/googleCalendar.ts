@@ -43,7 +43,7 @@ export const useGoogleAuth = () => {
       console.error('Login Failed:', error);
       setAccessToken(null);
     },
-    scope: 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar',
+    scope: 'https://www.googleapis.com/auth/tasks https://www.googleapis.com/auth/tasks.readonly',
     flow: 'implicit',
     prompt: 'consent'
   });
@@ -94,122 +94,123 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   }
 };
 
-export const addEventToGoogleCalendar = async (event: Omit<Event, "id">) => {
-  console.log('Preparando evento para enviar ao Google Calendar:', event);
-  
-  const googleEvent = {
-    summary: `📋 ${event.title}`,
-    description: `${event.type}${event.description ? `: ${event.description}` : ''}`,
-    start: {
-      dateTime: event.date.toISOString(),
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    },
-    end: {
-      dateTime: new Date(event.date.getTime() + 60 * 60 * 1000).toISOString(),
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    },
-    transparency: "transparent",
-    visibility: "private",
-    colorId: "8",
-    extendedProperties: {
-      private: {
-        type: "task",
-        completed: event.completed ? 'true' : 'false',
-        taskType: event.type,
-        isTask: 'true'
-      }
-    }
-  };
-
-  console.log('Evento formatado para Google Calendar:', googleEvent);
-  console.log('Token de acesso presente:', !!useAuthStore.getState().accessToken);
-
+// Primeiro, precisamos obter ou criar uma tasklist
+const getOrCreateTaskList = async () => {
   try {
-    const response = await fetchWithAuth('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-      method: 'POST',
-      body: JSON.stringify(googleEvent),
-    });
-    
-    console.log('Resposta do Google Calendar:', response);
-    return response;
+    // Tenta obter a tasklist existente
+    const response = await fetchWithAuth('https://tasks.googleapis.com/tasks/v1/users/@me/lists');
+    let taskList = response.items?.find(list => list.title === 'Clarity');
+
+    // Se não existir, cria uma nova
+    if (!taskList) {
+      taskList = await fetchWithAuth('https://tasks.googleapis.com/tasks/v1/users/@me/lists', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: 'Clarity'
+        })
+      });
+    }
+
+    return taskList.id;
   } catch (error) {
-    console.error('Erro detalhado ao adicionar evento:', error);
+    console.error('Erro ao obter/criar tasklist:', error);
     throw error;
   }
 };
 
-export const updateGoogleEvent = async (eventId: string, event: Partial<Event>) => {
-  const googleEvent = {
-    summary: `📋 ${event.title}`,
-    description: `${event.type}${event.description ? `: ${event.description}` : ''}`,
-    start: event.date && {
-      dateTime: event.date.toISOString(),
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    },
-    end: event.date && {
-      dateTime: new Date(event.date.getTime() + 60 * 60 * 1000).toISOString(),
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    },
-    transparency: "transparent",
-    visibility: "private",
-    colorId: "8",
-    extendedProperties: {
-      private: {
-        type: "task",
-        completed: event.completed ? 'true' : 'false',
-        taskType: event.type,
-        isTask: 'true'
-      }
-    }
-  };
-
-  return fetchWithAuth(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
-    method: 'PATCH',
-    body: JSON.stringify(googleEvent),
-  });
-};
-
-export const deleteGoogleEvent = async (eventId: string) => {
-  await fetchWithAuth(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
-    method: 'DELETE',
-  });
-};
-
-export const getGoogleCalendarEvents = async (timeMin: Date = new Date()) => {
+export const addEventToGoogleCalendar = async (event: Omit<Event, "id">) => {
+  console.log('Preparando tarefa para enviar ao Google Tasks:', event);
+  
   try {
-    const response = await fetchWithAuth(
-      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${timeMin.toISOString()}&maxResults=100&singleEvents=true&orderBy=startTime`
-    );
-    return response.items;
+    const taskListId = await getOrCreateTaskList();
+    
+    const googleTask = {
+      title: event.title,
+      notes: `${event.type}${event.description ? `: ${event.description}` : ''}`,
+      due: event.date.toISOString(),
+      status: event.completed ? 'completed' : 'needsAction'
+    };
+
+    console.log('Tarefa formatada para Google Tasks:', googleTask);
+
+    const response = await fetchWithAuth(`https://tasks.googleapis.com/tasks/v1/lists/${taskListId}/tasks`, {
+      method: 'POST',
+      body: JSON.stringify(googleTask),
+    });
+    
+    console.log('Resposta do Google Tasks:', response);
+    return response;
   } catch (error) {
-    console.error('Erro ao buscar eventos:', error);
+    console.error('Erro detalhado ao adicionar tarefa:', error);
+    throw error;
+  }
+};
+
+export const updateGoogleEvent = async (taskId: string, event: Partial<Event>) => {
+  try {
+    const taskListId = await getOrCreateTaskList();
+    
+    const googleTask = {
+      title: event.title,
+      notes: `${event.type}${event.description ? `: ${event.description}` : ''}`,
+      due: event.date?.toISOString(),
+      status: event.completed ? 'completed' : 'needsAction'
+    };
+
+    return fetchWithAuth(`https://tasks.googleapis.com/tasks/v1/lists/${taskListId}/tasks/${taskId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(googleTask),
+    });
+  } catch (error) {
+    console.error('Erro ao atualizar tarefa:', error);
+    throw error;
+  }
+};
+
+export const deleteGoogleEvent = async (taskId: string) => {
+  try {
+    const taskListId = await getOrCreateTaskList();
+    await fetchWithAuth(`https://tasks.googleapis.com/tasks/v1/lists/${taskListId}/tasks/${taskId}`, {
+      method: 'DELETE',
+    });
+  } catch (error) {
+    console.error('Erro ao deletar tarefa:', error);
+    throw error;
+  }
+};
+
+export const getGoogleCalendarEvents = async () => {
+  try {
+    const taskListId = await getOrCreateTaskList();
+    const response = await fetchWithAuth(
+      `https://tasks.googleapis.com/tasks/v1/lists/${taskListId}/tasks?showCompleted=true&showHidden=true`
+    );
+    return response.items || [];
+  } catch (error) {
+    console.error('Erro ao buscar tarefas:', error);
     throw error;
   }
 };
 
 export const syncGoogleCalendarEvents = async () => {
   try {
-    const events = await getGoogleCalendarEvents();
+    const tasks = await getGoogleCalendarEvents();
     const updatedEvents = [];
 
-    for (const event of events) {
-      if (event.extendedProperties?.private?.completed !== undefined) {
-        const isCompleted = event.extendedProperties.private.completed === 'true';
-        
-        updatedEvents.push({
-          id: event.id,
-          title: event.summary,
-          date: new Date(event.start.dateTime),
-          type: event.description?.split(':')[0] || 'Outro',
-          description: event.description?.split(':')[1]?.trim(),
-          completed: isCompleted
-        });
-      }
+    for (const task of tasks) {
+      updatedEvents.push({
+        id: task.id,
+        title: task.title,
+        date: task.due ? new Date(task.due) : new Date(),
+        type: task.notes?.split(':')[0] || 'Outro',
+        description: task.notes?.split(':')[1]?.trim(),
+        completed: task.status === 'completed'
+      });
     }
 
     return updatedEvents;
   } catch (error) {
-    console.error('Erro ao sincronizar eventos:', error);
+    console.error('Erro ao sincronizar tarefas:', error);
     throw error;
   }
 }; 

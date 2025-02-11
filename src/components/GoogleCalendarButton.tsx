@@ -133,7 +133,7 @@ const GoogleCalendarButton = () => {
       ) : (
         <>
           <Calendar className="w-4 h-4 mr-2" />
-          Sincronizar com Google
+          Sincronizar Tarefas
         </>
       )}
     </Button>
