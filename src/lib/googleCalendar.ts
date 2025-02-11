@@ -35,8 +35,7 @@ export const useGoogleAuth = () => {
     },
     scope: 'https://www.googleapis.com/auth/calendar',
     flow: 'implicit',
-    prompt: 'consent',
-    hosted_domain: window.location.hostname,
+    prompt: 'consent'
   });
 };
 
