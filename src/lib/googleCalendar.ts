@@ -105,9 +105,16 @@ export const addEventToGoogleCalendar = async (event: Omit<Event, "id">) => {
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
     end: {
-      dateTime: new Date(event.date.getTime() + 60 * 60 * 1000).toISOString(), // 1 hour duration
+      dateTime: new Date(event.date.getTime() + 60 * 60 * 1000).toISOString(),
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
+    eventType: 'default',
+    transparency: 'transparent',
+    extendedProperties: {
+      private: {
+        completed: event.completed ? 'true' : 'false'
+      }
+    }
   };
 
   console.log('Evento formatado para Google Calendar:', googleEvent);
@@ -139,6 +146,11 @@ export const updateGoogleEvent = async (eventId: string, event: Partial<Event>) 
       dateTime: new Date(event.date.getTime() + 60 * 60 * 1000).toISOString(),
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
+    extendedProperties: {
+      private: {
+        completed: event.completed ? 'true' : 'false'
+      }
+    }
   };
 
   return fetchWithAuth(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
@@ -161,6 +173,33 @@ export const getGoogleCalendarEvents = async (timeMin: Date = new Date()) => {
     return response.items;
   } catch (error) {
     console.error('Erro ao buscar eventos:', error);
+    throw error;
+  }
+};
+
+export const syncGoogleCalendarEvents = async () => {
+  try {
+    const events = await getGoogleCalendarEvents();
+    const updatedEvents = [];
+
+    for (const event of events) {
+      if (event.extendedProperties?.private?.completed !== undefined) {
+        const isCompleted = event.extendedProperties.private.completed === 'true';
+        
+        updatedEvents.push({
+          id: event.id,
+          title: event.summary,
+          date: new Date(event.start.dateTime),
+          type: event.description?.split(':')[0] || 'Outro',
+          description: event.description?.split(':')[1]?.trim(),
+          completed: isCompleted
+        });
+      }
+    }
+
+    return updatedEvents;
+  } catch (error) {
+    console.error('Erro ao sincronizar eventos:', error);
     throw error;
   }
 }; 
