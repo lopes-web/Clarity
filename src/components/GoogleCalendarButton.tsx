@@ -14,29 +14,50 @@ declare global {
   }
 }
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 2000;
+
 const GoogleCalendarButton = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   const login = useGoogleAuth();
 
   useEffect(() => {
     const checkGoogleInit = () => {
       if (typeof window !== 'undefined' && window.google?.accounts?.oauth2) {
         setIsReady(true);
-      } else {
-        console.error('Google OAuth não está inicializado corretamente');
-        toast.error('Erro ao inicializar Google OAuth. Tente recarregar a página.');
+        return true;
+      }
+      return false;
+    };
+
+    const initializeGoogleAuth = async () => {
+      if (checkGoogleInit()) return;
+
+      if (retryCount >= MAX_RETRIES) {
+        console.error('Falha ao inicializar Google OAuth após várias tentativas');
+        toast.error('Erro ao inicializar Google OAuth. Por favor, recarregue a página.');
+        return;
+      }
+
+      // Aguarda um tempo antes de tentar novamente
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      setRetryCount(prev => prev + 1);
+      
+      // Verifica novamente
+      if (!checkGoogleInit()) {
+        initializeGoogleAuth();
       }
     };
 
-    // Verifica imediatamente
-    checkGoogleInit();
+    initializeGoogleAuth();
 
-    // Verifica novamente após um curto delay para dar tempo de carregar
-    const timer = setTimeout(checkGoogleInit, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
+    return () => {
+      setIsReady(false);
+      setRetryCount(0);
+    };
+  }, [retryCount]);
 
   const handleClick = useCallback(async () => {
     if (isLoading || !isReady) return;
@@ -63,7 +84,7 @@ const GoogleCalendarButton = () => {
         disabled
       >
         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-        Inicializando...
+        {retryCount > 0 ? `Tentando novamente (${retryCount}/${MAX_RETRIES})...` : 'Inicializando...'}
       </Button>
     );
   }
