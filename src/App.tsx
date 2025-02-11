@@ -6,6 +6,7 @@ import Index from "@/pages/Index";
 import Calendar from "@/pages/Calendar";
 import NotFound from "@/pages/NotFound";
 import PrivacyPolicy from "@/pages/privacy-policy";
+import TermsOfService from "@/pages/terms-of-service";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -22,6 +23,7 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>

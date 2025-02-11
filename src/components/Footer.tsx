@@ -15,6 +15,12 @@ export function Footer() {
             >
               Política de Privacidade
             </Link>
+            <Link 
+              to="/terms-of-service" 
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              Termos de Serviço
+            </Link>
           </nav>
         </div>
       </div>
