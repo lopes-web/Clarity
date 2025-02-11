@@ -29,36 +29,44 @@
 - Política de Privacidade
 - Termos de Serviço
 
-## 3. Integração com Google Calendar
+## 3. Integração com Google Tasks
 
 ### 3.1 Configuração do Google OAuth
 - Configuração do projeto no Google Cloud Console
 - Implementação do sistema de autenticação OAuth
-- Configuração das credenciais:
+- Configuração das credenciais e escopos:
   ```env
   VITE_GOOGLE_CLIENT_ID="711017287148-88j0134kof4jabml2j5b105l078vqoeg.apps.googleusercontent.com"
-  VITE_GOOGLE_API_KEY="AIzaSyCXaYl9LzSOzJZGZ4UyYk2dDe3U86szXoQ"
   ```
+- Habilitação da API do Google Tasks
 
-### 3.2 Funcionalidades do Google Calendar
-- Sincronização de eventos
-- Adição de eventos ao Google Calendar
-- Atualização de eventos
-- Exclusão de eventos
+### 3.2 Funcionalidades do Google Tasks
+- Criação de lista de tarefas "Clarity"
+- Adição de tarefas acadêmicas
+- Atualização de status de conclusão
+- Exclusão de tarefas
+- Sincronização bidirecional de status
 - Persistência do token de acesso
 
-## 4. Sistema de Eventos
+### 3.3 Integração com o App
+- Sincronização automática a cada 5 minutos
+- Atualização em tempo real do status de conclusão
+- Tratamento de erros e feedback ao usuário
+- Modo offline com persistência local
+
+## 4. Sistema de Eventos/Tarefas
 
 ### 4.1 Gerenciamento de Estado
 - Implementação do EventProvider
 - Sistema de armazenamento local
-- Sincronização com Google Calendar
+- Sincronização com Google Tasks
+- Mapeamento entre eventos locais e tarefas do Google
 
 ### 4.2 Funcionalidades de Eventos
-- Criação de eventos
-- Edição de eventos
-- Exclusão de eventos
-- Marcação de eventos como concluídos
+- Criação de eventos como tarefas
+- Edição de eventos/tarefas
+- Exclusão de eventos/tarefas
+- Marcação de conclusão sincronizada
 - Filtros e ordenação
 
 ## 5. Sistema de Autenticação com Supabase
@@ -98,27 +106,27 @@
 ### 6.2 Visualização de Dados
 - Cards de métricas
 - Lista de disciplinas
-- Próximos eventos
+- Próximas tarefas
 - Status geral
 
 ## 7. Funcionalidades do Calendário
 
 ### 7.1 Interface do Calendário
 - Visualização mensal
-- Lista de eventos do dia
-- Próximos eventos
-- Indicadores visuais de eventos
+- Lista de tarefas do dia
+- Próximas tarefas
+- Indicadores visuais de tarefas
 
-### 7.2 Gerenciamento de Eventos
-- Adição de eventos
-- Tipos de eventos:
+### 7.2 Gerenciamento de Tarefas
+- Adição de tarefas acadêmicas
+- Tipos de tarefas:
   - Prova
   - Trabalho
   - Projeto
   - Aula
   - Outro
-- Sincronização com Google Calendar
-- Status de conclusão
+- Sincronização com Google Tasks
+- Status de conclusão bidirecional
 
 ## 8. Melhorias de UX/UI
 
@@ -153,13 +161,13 @@
 ### 10.1 Melhorias Planejadas
 - Implementação de testes
 - PWA (Progressive Web App)
-- Modo offline
+- Modo offline aprimorado
 - Notificações push
-- Compartilhamento de eventos
+- Compartilhamento de tarefas
 
 ### 10.2 Backlog
 - Sistema de lembretes
 - Exportação de dados
 - Temas personalizados
-- Integração com outros calendários
+- Integração com outros serviços
 - Sistema de backup 
