@@ -35,9 +35,9 @@ export default function LoginPage() {
       <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm shadow-xl border-0">
         <CardHeader className="space-y-6">
           <div className="space-y-2">
-            <CardTitle className="text-2xl font-bold text-center text-gray-900">Bem-vindo de volta!</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center text-gray-900">Bem-vinda de volta meu amor!</CardTitle>
             <CardDescription className="text-center text-gray-600">
-              Faça login para acessar sua conta
+              Faz login ai safadinha
             </CardDescription>
           </div>
         </CardHeader>

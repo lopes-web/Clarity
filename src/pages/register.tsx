@@ -64,7 +64,8 @@ export default function RegisterPage() {
           <div className="space-y-2">
             <CardTitle className="text-2xl font-bold text-center text-gray-900">Crie sua conta</CardTitle>
             <CardDescription className="text-center text-gray-600">
-              Comece sua jornada acadêmica conosco
+              Só vai precisar fazer isso uma vez cabeça de bunda
+
             </CardDescription>
           </div>
         </CardHeader>
