@@ -76,7 +76,7 @@ export default function RegisterPage() {
               <Input
                 id="name"
                 type="text"
-                placeholder="Seu nome"
+                placeholder="Nome da mulher mais linda do mundo"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -88,7 +88,7 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="seu@email.com"
+                placeholder="Email da mulher mais linda do mundo"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
