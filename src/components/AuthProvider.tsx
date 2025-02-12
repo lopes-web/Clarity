@@ -106,19 +106,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
       if (!user) throw new Error('No user returned after signup');
 
-      // Usar o cliente admin para criar o perfil
-      const { error: profileError } = await supabaseAdmin
-        .from('profiles')
-        .insert([
-          {
-            id: user.id,
-            email: user.email,
-            name: name
-          }
-        ]);
-
-      if (profileError) throw profileError;
-
       toast.success(
         'Conta criada com sucesso!',
         {
@@ -126,7 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           description: 'Por favor, verifique seu email para confirmar sua conta antes de fazer login.'
         }
       );
-      
+
       navigate('/login');
     } catch (error) {
       console.error('Error signing up:', error);
