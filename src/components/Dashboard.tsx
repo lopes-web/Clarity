@@ -82,7 +82,7 @@ const getEventTypeColor = (type: string) => {
 const getEventPriority = (date: Date) => {
   const today = new Date();
   const diffTime = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  
+
   if (diffTime < 0) return { color: "text-white bg-red-500", text: "Atrasada" };
   if (diffTime === 0) return { color: "text-white bg-orange-500", text: "Hoje" };
   if (diffTime === 1) return { color: "text-white bg-yellow-500", text: "Amanhã" };
@@ -159,7 +159,7 @@ const Dashboard = () => {
   useEffect(() => {
     const loadDisciplines = async () => {
       if (!user) return;
-      
+
       try {
         setIsLoading(true);
         const data = await getDisciplines(user.id);
@@ -203,7 +203,7 @@ const Dashboard = () => {
 
     try {
       const updatedCourse = await updateDiscipline(selectedCourse.id, data);
-      setCourses(prev => prev.map(course => 
+      setCourses(prev => prev.map(course =>
         course.id === selectedCourse.id ? updatedCourse : course
       ));
       setIsEditing(false);
@@ -227,7 +227,7 @@ const Dashboard = () => {
       // Atualizar a média da disciplina
       const updatedGrades = [...(selectedCourse.grades || []), newGrade];
       const newAverage = calculateAverageGrade(updatedGrades);
-      
+
       const updatedCourse = await updateDiscipline(selectedCourse.id, {
         grade: newAverage
       });
@@ -263,6 +263,7 @@ const Dashboard = () => {
 
     try {
       const updatedCourse = await updateDiscipline(courseId, {
+        ...course,
         absences: (course.absences || 0) + 1
       });
 
@@ -378,8 +379,8 @@ const Dashboard = () => {
           </div>
           <div className="space-y-4">
             {courses.map((course) => (
-              <CourseCard 
-                key={course.id} 
+              <CourseCard
+                key={course.id}
                 course={course}
                 onEdit={() => {
                   setSelectedCourse(course);
@@ -402,9 +403,9 @@ const Dashboard = () => {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold">Atividades</h2>
             <div className="flex items-center space-x-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="text-xs"
                 onClick={() => navigate('/calendar')}
               >
@@ -417,22 +418,22 @@ const Dashboard = () => {
             {sortedActivities.map((activity) => {
               const eventDate = new Date(activity.date);
               const priority = getEventPriority(eventDate);
-              
+
               return (
                 <div
                   key={activity.id}
                   className={cn(
                     "group relative overflow-hidden bg-white rounded-lg border transition-all duration-200",
-                    activity.completed 
+                    activity.completed
                       ? "border-gray-200 bg-gray-50/50"
                       : "border-gray-200 hover:border-primary hover:shadow-md"
                   )}
                 >
-                  <div 
+                  <div
                     className={cn(
                       "absolute top-0 left-0 w-1 h-full transition-colors duration-200",
                       getEventTypeColor(activity.type)
-                    )} 
+                    )}
                   />
                   <div className="p-4">
                     <div className="flex justify-between items-start">
@@ -475,8 +476,8 @@ const Dashboard = () => {
                         size="sm"
                         className={cn(
                           "h-8 w-8 rounded-full transition-colors duration-200",
-                          activity.completed 
-                            ? "bg-primary/10 hover:bg-primary/20" 
+                          activity.completed
+                            ? "bg-primary/10 hover:bg-primary/20"
                             : "hover:bg-gray-100"
                         )}
                         onClick={() => toggleEventComplete(activity.id)}
@@ -629,8 +630,8 @@ const Dashboard = () => {
               <Button variant="outline" onClick={() => setCourseToDelete(null)}>
                 Cancelar
               </Button>
-              <Button 
-                variant="destructive" 
+              <Button
+                variant="destructive"
                 onClick={() => courseToDelete && handleDeleteCourse(courseToDelete.id)}
               >
                 Excluir
@@ -663,8 +664,8 @@ const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }: Cour
         <p className="text-sm text-gray-600">{course.status}</p>
       </div>
     </div>
-    <Progress 
-      value={(course.grade / 10) * 100} 
+    <Progress
+      value={(course.grade / 10) * 100}
       className={cn(
         "mb-2",
         course.grade < 5 ? "[&>div]:bg-red-500" : "[&>div]:bg-primary"
@@ -676,33 +677,33 @@ const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }: Cour
         <p>{course.progress}% concluído</p>
       </div>
       <div className="flex items-center space-x-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onAddAbsence}
           className="flex items-center"
         >
           +1 Falta
         </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onAddGrade}
           className="flex items-center"
         >
           Nova Nota
         </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onEdit}
           className="flex items-center justify-center w-9 h-9 p-0"
         >
           <Edit2 className="w-4 h-4" />
         </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onDelete}
           className="flex items-center justify-center w-9 h-9 p-0 border-red-200 hover:border-red-400 hover:bg-red-50"
           aria-label="Excluir disciplina"
