@@ -9,7 +9,13 @@ if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
 }
 
 // Cliente público para operações normais
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    storageKey: 'clarity-auth',
+    storage: window.localStorage
+  }
+});
 
 // Cliente com permissões de service_role para operações administrativas
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
