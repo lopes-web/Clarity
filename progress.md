@@ -1,4 +1,49 @@
-# Clarity - Progresso do Desenvolvimento
+# Clarity - Sistema de Gestão Acadêmica
+
+## Sobre o Projeto
+
+Clarity é um sistema de gestão acadêmica moderno e intuitivo, projetado para ajudar estudantes a gerenciar suas atividades acadêmicas de forma eficiente e engajadora. O projeto combina funcionalidades práticas com elementos de gamificação para tornar a organização dos estudos mais divertida e motivadora.
+
+### Principais Funcionalidades
+
+1. **Gestão de Disciplinas**
+   - Cadastro e acompanhamento de disciplinas
+   - Registro de notas e frequência
+   - Cálculo automático de médias
+   - Visualização do progresso por disciplina
+
+2. **Sistema de Tarefas**
+   - Criação e gerenciamento de tarefas acadêmicas
+   - Integração com Google Tasks
+   - Lembretes e notificações
+   - Categorização por tipo (provas, trabalhos, projetos)
+
+3. **Calendário Acadêmico**
+   - Visualização mensal de atividades
+   - Sincronização com Google Calendar
+   - Organização visual por tipos de evento
+   - Acompanhamento de prazos
+
+4. **Sistema de Gamificação**
+   - Conquistas baseadas em desempenho
+   - Sistema de níveis e XP
+   - Recompensas por metas alcançadas
+   - Feedback visual de progresso
+
+### Tecnologias Utilizadas
+
+- **Frontend**: React, TypeScript, TailwindCSS, Shadcn/UI
+- **Backend**: Supabase (PostgreSQL, Autenticação)
+- **Integrações**: Google Tasks API, Google Calendar API
+- **Deploy**: Vercel
+
+### Como Usar
+
+1. Faça login ou crie uma conta
+2. Configure suas disciplinas do semestre
+3. Adicione suas tarefas e compromissos
+4. Acompanhe seu progresso e conquistas
+5. Sincronize com Google Tasks (opcional)
 
 ## 1. Configuração Inicial do Projeto
 
@@ -235,4 +280,44 @@
 - Conquistas por presença
 - Conquistas por tarefas
 - Conquistas por streaks
-- Conquistas especiais por metas 
+- Conquistas especiais por metas
+
+### Status do Projeto
+
+#### Concluído ✅
+- Sistema de autenticação com Supabase
+- CRUD de disciplinas
+- Sistema de notas e frequência
+- Calendário acadêmico
+- Integração com Google Tasks
+- Sistema de conquistas e XP
+- Interface responsiva
+- Tema personalizado
+
+#### Em Desenvolvimento 🚧
+- Notificações push
+- Modo offline
+- Exportação de dados
+- Compartilhamento de tarefas
+- Sistema de lembretes
+
+#### Planejado 📋
+- Implementação de testes
+- PWA (Progressive Web App)
+- Temas personalizados
+- Sistema de backup
+- Integração com outros serviços
+
+### Últimas Atualizações
+
+1. **14/03/2024**
+   - Implementação do sistema de gamificação
+   - Adição de conquistas e sistema de XP
+   - Criação do componente de exibição de conquistas
+   - Integração com banco de dados para tracking de progresso
+
+2. **13/03/2024**
+   - Implementação do calendário acadêmico
+   - Integração com Google Tasks
+   - Sistema de autenticação
+   - CRUD de disciplinas 
