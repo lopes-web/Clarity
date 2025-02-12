@@ -48,9 +48,9 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <AuthProvider>
-        <EventProvider>
-          <Router>
+      <Router>
+        <AuthProvider>
+          <EventProvider>
             <Toaster />
             <Routes>
               <Route path="/login" element={
@@ -76,9 +76,9 @@ function App() {
                 </PrivateRoute>
               } />
             </Routes>
-          </Router>
-        </EventProvider>
-      </AuthProvider>
+          </EventProvider>
+        </AuthProvider>
+      </Router>
     </GoogleOAuthProvider>
   );
 }
