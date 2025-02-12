@@ -25,6 +25,8 @@ import {
   type Discipline,
   type Grade
 } from "@/lib/disciplines";
+import { AchievementsDialog } from "./AchievementsDialog";
+import { supabase } from "@/lib/supabase";
 
 interface Course {
   id: number;
@@ -155,23 +157,24 @@ const Dashboard = () => {
   const { events, toggleEventComplete } = useEvents();
   const statusInfo = getStatusInfo(events);
 
-  // Carregar disciplinas
+  // Mover loadDisciplines para fora do useEffect
+  const loadDisciplines = async () => {
+    if (!user) return;
+
+    try {
+      setIsLoading(true);
+      const data = await getDisciplines(user.id);
+      setCourses(data);
+    } catch (error) {
+      console.error('Erro ao carregar disciplinas:', error);
+      toast.error('Erro ao carregar disciplinas');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Usar loadDisciplines no useEffect
   useEffect(() => {
-    const loadDisciplines = async () => {
-      if (!user) return;
-
-      try {
-        setIsLoading(true);
-        const data = await getDisciplines(user.id);
-        setCourses(data);
-      } catch (error) {
-        console.error('Erro ao carregar disciplinas:', error);
-        toast.error('Erro ao carregar disciplinas');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadDisciplines();
   }, [user]);
 
@@ -285,8 +288,45 @@ const Dashboard = () => {
     .filter(event => !event.completed)
     .sort((a, b) => compareAsc(new Date(a.date), new Date(b.date)));
 
+  // Adicionar função de teste
+  const handleTestAchievement = async () => {
+    if (!user) return;
+
+    try {
+      // Simular nota 10
+      const { data: grade } = await supabase
+        .from('grades')
+        .insert([
+          {
+            discipline_id: courses[0]?.id,
+            value: 10,
+            description: 'Nota de teste'
+          }
+        ])
+        .select()
+        .single();
+
+      if (grade) {
+        toast.success('Nota 10 adicionada! Verifique suas conquistas.');
+        loadDisciplines();
+      }
+    } catch (error) {
+      console.error('Erro ao testar conquista:', error);
+      toast.error('Erro ao testar conquista');
+    }
+  };
+
   return (
     <div className="container p-6 mx-auto animate-fadeIn">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <div className="flex items-center gap-4">
+          <AchievementsDialog />
+          <Button onClick={handleTestAchievement} variant="outline" size="sm">
+            Testar Conquista
+          </Button>
+        </div>
+      </div>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-4 mb-8">
         <MetricCard
           title="Disciplinas"
