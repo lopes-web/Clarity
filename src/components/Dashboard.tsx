@@ -432,12 +432,6 @@ const Dashboard = () => {
                       : "border-gray-200 hover:border-primary hover:shadow-md transform hover:-translate-y-0.5"
                   )}
                 >
-                  <div
-                    className={cn(
-                      "absolute top-0 left-0 w-1 h-full transition-all duration-300 group-hover:w-2",
-                      getEventTypeColor(activity.type)
-                    )}
-                  />
                   <div className="p-4">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">

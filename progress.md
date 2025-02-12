@@ -135,12 +135,34 @@
 - Indicadores de carregamento
 - Estados de erro
 - Confirmações de ações
+- Microinterações e animações:
+  - Hover effects em cards e botões
+  - Transições suaves em elementos interativos
+  - Feedback visual em ações do usuário
+  - Animações de escala e transformação
+  - Cores dinâmicas para status e prioridades
 
 ### 8.2 Responsividade
 - Layout adaptativo
 - Sidebar responsiva
 - Cards responsivos
 - Calendário responsivo
+- Grid system otimizado para diferentes telas
+
+### 8.3 Melhorias de UI
+- Esquema de cores atualizado:
+  - Tons de roxo e rosa para tags e status
+  - Cores personalizadas para tipos de atividades
+  - Gradientes e transparências para profundidade visual
+- Cards redesenhados:
+  - Sombras e elevações sutis
+  - Bordas suaves e cantos arredondados
+  - Estados hover aprimorados
+  - Remoção de elementos visuais desnecessários
+- Tipografia aprimorada:
+  - Hierarquia clara de textos
+  - Espaçamento otimizado
+  - Fonte Figtree para melhor legibilidade
 
 ## 9. Segurança
 
