@@ -263,12 +263,12 @@ const Dashboard = () => {
 
     try {
       const updatedCourse = await updateDiscipline(courseId, {
-        ...course,
         absences: (course.absences || 0) + 1
       });
 
+      // Preservar as grades ao atualizar o estado
       setCourses(prev => prev.map(c =>
-        c.id === courseId ? updatedCourse : c
+        c.id === courseId ? { ...updatedCourse, grades: c.grades } : c
       ));
       toast.success('Falta registrada com sucesso!');
     } catch (error) {
