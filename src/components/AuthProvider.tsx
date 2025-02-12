@@ -68,7 +68,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message === 'Email not confirmed') {
+          toast.error(
+            'Por favor, confirme seu email antes de fazer login. Verifique sua caixa de entrada.',
+            {
+              duration: 5000,
+              description: 'Não recebeu o email? Verifique sua pasta de spam.'
+            }
+          );
+          return;
+        }
+        throw error;
+      }
+
       navigate('/');
       toast.success('Login realizado com sucesso!');
     } catch (error) {
@@ -106,8 +119,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (profileError) throw profileError;
 
-      navigate('/');
-      toast.success('Conta criada com sucesso! Por favor, verifique seu email.');
+      toast.success(
+        'Conta criada com sucesso!',
+        {
+          duration: 6000,
+          description: 'Por favor, verifique seu email para confirmar sua conta antes de fazer login.'
+        }
+      );
+      
+      navigate('/login');
     } catch (error) {
       console.error('Error signing up:', error);
       toast.error('Erro ao criar conta');
