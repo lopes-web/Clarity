@@ -67,13 +67,13 @@ interface CourseCardProps {
 const getEventTypeColor = (type: string) => {
   switch (type) {
     case "Prova":
-      return "bg-purple-700";
+      return "bg-pink-600";
     case "Trabalho":
-      return "bg-purple-600";
-    case "Projeto":
       return "bg-purple-500";
+    case "Projeto":
+      return "bg-fuchsia-500";
     case "Aula":
-      return "bg-purple-400";
+      return "bg-violet-400";
     default:
       return "bg-purple-300";
   }
@@ -83,11 +83,11 @@ const getEventPriority = (date: Date) => {
   const today = new Date();
   const diffTime = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
-  if (diffTime < 0) return { color: "text-white bg-red-500", text: "Atrasada" };
-  if (diffTime === 0) return { color: "text-white bg-orange-500", text: "Hoje" };
-  if (diffTime === 1) return { color: "text-white bg-yellow-500", text: "Amanhã" };
-  if (diffTime <= 3) return { color: "text-white bg-blue-500", text: "Em breve" };
-  return { color: "text-white bg-purple-500", text: "Programada" };
+  if (diffTime < 0) return { color: "text-white bg-pink-600", text: "Atrasada" };
+  if (diffTime === 0) return { color: "text-white bg-fuchsia-500", text: "Hoje" };
+  if (diffTime === 1) return { color: "text-white bg-purple-500", text: "Amanhã" };
+  if (diffTime <= 3) return { color: "text-white bg-violet-400", text: "Em breve" };
+  return { color: "text-white bg-purple-300", text: "Programada" };
 };
 
 const getStatusInfo = (events: CalendarEvent[]) => {
@@ -465,7 +465,7 @@ const Dashboard = () => {
                             <Clock className="w-4 h-4 mr-1" />
                             <span>{format(eventDate, "dd/MM/yyyy")}</span>
                             <span className="mx-2">•</span>
-                            <span className="text-xs px-2 py-0.5 bg-gray-100 rounded-full">
+                            <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
                               {activity.type}
                             </span>
                           </div>
