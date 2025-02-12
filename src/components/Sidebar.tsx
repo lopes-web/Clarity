@@ -30,11 +30,14 @@ const Sidebar = () => {
                 <Link
                   to={item.path}
                   className={`flex items-center p-3 space-x-3 rounded-lg transition-colors ${location.pathname === item.path
-                    ? "bg-secondary text-primary-foreground"
-                    : "text-gray-700 hover:bg-secondary hover:text-primary-foreground"
+                    ? "bg-primary/10 text-primary"
+                    : "text-gray-500 hover:bg-primary/5 hover:text-primary"
                     }`}
                 >
-                  <item.icon className="w-6 h-6" />
+                  <item.icon className={`w-6 h-6 ${location.pathname === item.path
+                    ? "text-primary"
+                    : "text-gray-500 group-hover:text-primary"
+                    }`} />
                   {!isCollapsed && <span>{item.label}</span>}
                 </Link>
               </li>
