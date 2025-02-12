@@ -4,10 +4,11 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabaseServiceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+  throw new Error('Missing Supabase environment variables. Please check your .env file.');
 }
 
+// Cliente público para operações normais
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Cliente com permissões de service_role para operações administrativas
