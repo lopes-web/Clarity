@@ -61,9 +61,6 @@ export default function RegisterPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm shadow-xl border-0">
         <CardHeader className="space-y-6">
-          <div className="flex justify-center">
-            <img src="/logo.svg" alt="Clarity Logo" className="h-12 w-auto" />
-          </div>
           <div className="space-y-2">
             <CardTitle className="text-2xl font-bold text-center text-gray-900">Crie sua conta</CardTitle>
             <CardDescription className="text-center text-gray-600">
@@ -128,9 +125,9 @@ export default function RegisterPage() {
               className="w-full h-11 text-base font-medium"
               disabled={loading || rateLimitSeconds !== null}
             >
-              {loading ? "Registrando..." : 
-               rateLimitSeconds ? `Aguarde ${rateLimitSeconds}s...` : 
-               "Criar conta"}
+              {loading ? "Registrando..." :
+                rateLimitSeconds ? `Aguarde ${rateLimitSeconds}s...` :
+                  "Criar conta"}
             </Button>
             <p className="text-center text-sm text-gray-600">
               Já tem uma conta?{" "}
