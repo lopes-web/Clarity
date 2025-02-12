@@ -270,7 +270,7 @@ const Dashboard = () => {
       setCourses(prev => prev.map(c =>
         c.id === courseId ? { ...updatedCourse, grades: c.grades } : c
       ));
-      toast.success('Falta registrada com sucesso!');
+      toast.success('Falta registrada, meu amor! 🌸');
     } catch (error) {
       console.error('Erro ao registrar falta:', error);
       toast.error('Erro ao registrar falta');
