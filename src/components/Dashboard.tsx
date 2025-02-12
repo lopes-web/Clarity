@@ -232,8 +232,11 @@ const Dashboard = () => {
         grade: newAverage
       });
 
+      // Atualizar o estado preservando o array de notas atualizado
       setCourses(prev => prev.map(course =>
-        course.id === selectedCourse.id ? updatedCourse : course
+        course.id === selectedCourse.id
+          ? { ...updatedCourse, grades: updatedGrades }
+          : course
       ));
 
       setIsAddingGrade(false);
