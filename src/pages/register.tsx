@@ -13,6 +13,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [rateLimitSeconds, setRateLimitSeconds] = useState<number | null>(null);
   const { signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,8 +31,27 @@ export default function RegisterPage() {
     try {
       setLoading(true);
       await signUp(email, password, name);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro no registro:", error);
+      if (error?.message?.includes("after")) {
+        // Extrai o número de segundos da mensagem de erro
+        const seconds = parseInt(error.message.match(/\d+/)?.[0] || "60");
+        setRateLimitSeconds(seconds);
+        toast.error(`Aguarde ${seconds} segundos antes de tentar novamente`);
+
+        // Inicia o contador regressivo
+        const interval = setInterval(() => {
+          setRateLimitSeconds(prev => {
+            if (prev === null || prev <= 1) {
+              clearInterval(interval);
+              return null;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      } else {
+        toast.error("Erro ao criar conta. Tente novamente mais tarde.");
+      }
     } finally {
       setLoading(false);
     }
@@ -95,9 +115,11 @@ export default function RegisterPage() {
             <Button
               type="submit"
               className="w-full"
-              disabled={loading}
+              disabled={loading || rateLimitSeconds !== null}
             >
-              {loading ? "Registrando..." : "Registrar"}
+              {loading ? "Registrando..." : 
+               rateLimitSeconds ? `Aguarde ${rateLimitSeconds}s...` : 
+               "Registrar"}
             </Button>
             <p className="text-center text-sm text-gray-600">
               Já tem uma conta?{" "}
