@@ -301,7 +301,7 @@ const Dashboard = () => {
           title="Total de Créditos"
           value={courses.reduce((acc, course) => acc + course.credits, 0).toString()}
           subtitle="Créditos matriculados"
-          className="bg-secondary-hover"
+          className="bg-[rgb(230,202,255)]"
         />
         <MetricCard
           title="Status"
