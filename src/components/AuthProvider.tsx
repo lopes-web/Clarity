@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase, Profile } from '@/lib/supabase';
+import { supabase, supabaseAdmin, Profile } from '@/lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -83,26 +83,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data: { user }, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            name: name
+          }
+        }
       });
 
       if (error) throw error;
       if (!user) throw new Error('No user returned after signup');
 
-      // Cria o perfil do usuário
-      const { error: profileError } = await supabase
+      // Usar o cliente admin para criar o perfil
+      const { error: profileError } = await supabaseAdmin
         .from('profiles')
         .insert([
           {
             id: user.id,
-            email,
-            name,
-          },
+            email: user.email,
+            name: name
+          }
         ]);
 
       if (profileError) throw profileError;
 
       navigate('/');
-      toast.success('Conta criada com sucesso!');
+      toast.success('Conta criada com sucesso! Por favor, verifique seu email.');
     } catch (error) {
       console.error('Error signing up:', error);
       toast.error('Erro ao criar conta');
