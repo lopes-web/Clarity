@@ -27,6 +27,7 @@ import {
 } from "@/lib/disciplines";
 import { AchievementsDialog } from "./AchievementsDialog";
 import { supabase } from "@/lib/supabase";
+import { unlockAchievement } from "@/lib/achievements";
 
 interface Course {
   id: number;
@@ -219,7 +220,7 @@ const Dashboard = () => {
   };
 
   const handleAddGrade = async (data: GradeFormData) => {
-    if (!selectedCourse) return;
+    if (!selectedCourse || !user) return;
 
     try {
       const newGrade = await addGrade({
@@ -241,6 +242,11 @@ const Dashboard = () => {
           ? { ...updatedCourse, grades: updatedGrades }
           : course
       ));
+
+      // Verificar conquista de nota 10
+      if (data.value === 10) {
+        await unlockAchievement(user.id, 'first_perfect_grade');
+      }
 
       setIsAddingGrade(false);
       gradeForm.reset();
@@ -288,44 +294,10 @@ const Dashboard = () => {
     .filter(event => !event.completed)
     .sort((a, b) => compareAsc(new Date(a.date), new Date(b.date)));
 
-  // Adicionar função de teste
-  const handleTestAchievement = async () => {
-    if (!user) return;
-
-    try {
-      // Simular nota 10
-      const { data: grade } = await supabase
-        .from('grades')
-        .insert([
-          {
-            discipline_id: courses[0]?.id,
-            value: 10,
-            description: 'Nota de teste'
-          }
-        ])
-        .select()
-        .single();
-
-      if (grade) {
-        toast.success('Nota 10 adicionada! Verifique suas conquistas.');
-        loadDisciplines();
-      }
-    } catch (error) {
-      console.error('Erro ao testar conquista:', error);
-      toast.error('Erro ao testar conquista');
-    }
-  };
-
   return (
     <div className="container p-6 mx-auto animate-fadeIn">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <div className="flex items-center gap-4">
-          <AchievementsDialog />
-          <Button onClick={handleTestAchievement} variant="outline" size="sm">
-            Testar Conquista
-          </Button>
-        </div>
       </div>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-4 mb-8">
         <MetricCard
@@ -340,12 +312,17 @@ const Dashboard = () => {
           subtitle={`Total de atividades pendentes`}
           className="bg-primary text-white"
         />
-        <MetricCard
-          title="Total de Créditos"
-          value={courses.reduce((acc, course) => acc + course.credits, 0).toString()}
-          subtitle="Créditos matriculados"
-          className="bg-[rgb(230,202,255)]"
-        />
+        <div className="relative">
+          <MetricCard
+            title="Total de Créditos"
+            value={courses.reduce((acc, course) => acc + course.credits, 0).toString()}
+            subtitle="Créditos matriculados"
+            className="bg-[rgb(230,202,255)]"
+          />
+          <div className="absolute top-2 right-2">
+            <AchievementsDialog />
+          </div>
+        </div>
         <MetricCard
           title="Status"
           value={statusInfo.status}
