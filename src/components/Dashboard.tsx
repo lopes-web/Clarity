@@ -423,15 +423,15 @@ const Dashboard = () => {
                 <div
                   key={activity.id}
                   className={cn(
-                    "group relative overflow-hidden bg-white rounded-lg border transition-all duration-200",
+                    "group relative overflow-hidden bg-white rounded-lg border transition-all duration-300",
                     activity.completed
-                      ? "border-gray-200 bg-gray-50/50"
-                      : "border-gray-200 hover:border-primary hover:shadow-md"
+                      ? "border-gray-200 bg-gray-50/50 hover:bg-gray-50"
+                      : "border-gray-200 hover:border-primary hover:shadow-md transform hover:-translate-y-0.5"
                   )}
                 >
                   <div
                     className={cn(
-                      "absolute top-0 left-0 w-1 h-full transition-colors duration-200",
+                      "absolute top-0 left-0 w-1 h-full transition-all duration-300 group-hover:w-2",
                       getEventTypeColor(activity.type)
                     )}
                   />
@@ -440,32 +440,32 @@ const Dashboard = () => {
                       <div className="flex-1">
                         <div className="flex items-center space-x-2">
                           <h4 className={cn(
-                            "font-medium transition-colors duration-200",
-                            activity.completed ? "line-through text-gray-500" : "text-gray-900"
+                            "font-medium transition-all duration-200",
+                            activity.completed ? "line-through text-gray-500" : "text-gray-900 group-hover:text-primary"
                           )}>{activity.title}</h4>
                           <span className={cn(
-                            "px-2 py-0.5 rounded-full text-xs font-medium",
+                            "px-2 py-0.5 rounded-full text-xs font-medium transition-all duration-200 group-hover:shadow-sm",
                             priority.color
                           )}>{priority.text}</span>
                         </div>
                         <div className="mt-1 space-y-1">
                           {activity.disciplina && (
-                            <p className="text-sm text-gray-600 flex items-center">
+                            <p className="text-sm text-gray-600 flex items-center group-hover:text-gray-900 transition-colors duration-200">
                               <span className={cn(
-                                "w-2 h-2 rounded-full mr-2",
+                                "w-2 h-2 rounded-full mr-2 transition-transform duration-200 group-hover:scale-125",
                                 getEventTypeColor(activity.type)
                               )} />
                               {activity.disciplina}
                             </p>
                           )}
                           {activity.description && (
-                            <p className="text-sm text-gray-500">{activity.description}</p>
+                            <p className="text-sm text-gray-500 transition-colors duration-200 group-hover:text-gray-700">{activity.description}</p>
                           )}
                           <div className="flex items-center text-sm text-gray-500">
-                            <Clock className="w-4 h-4 mr-1" />
-                            <span>{format(eventDate, "dd/MM/yyyy")}</span>
+                            <Clock className="w-4 h-4 mr-1 transition-transform duration-200 group-hover:scale-110" />
+                            <span className="transition-colors duration-200 group-hover:text-gray-900">{format(eventDate, "dd/MM/yyyy")}</span>
                             <span className="mx-2">•</span>
-                            <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
+                            <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full transition-all duration-200 group-hover:bg-primary/20">
                               {activity.type}
                             </span>
                           </div>
@@ -475,16 +475,16 @@ const Dashboard = () => {
                         variant="ghost"
                         size="sm"
                         className={cn(
-                          "h-8 w-8 rounded-full transition-colors duration-200",
+                          "h-8 w-8 rounded-full transition-all duration-200",
                           activity.completed
-                            ? "bg-primary/10 hover:bg-primary/20"
-                            : "hover:bg-gray-100"
+                            ? "bg-primary/10 hover:bg-primary/20 hover:scale-110"
+                            : "hover:bg-gray-100 hover:scale-110"
                         )}
                         onClick={() => toggleEventComplete(activity.id)}
                       >
                         <CheckCircle2 className={cn(
-                          "h-4 w-4 transition-colors duration-200",
-                          activity.completed ? "text-primary" : "text-gray-400 group-hover:text-gray-600"
+                          "h-4 w-4 transition-all duration-200",
+                          activity.completed ? "text-primary scale-110" : "text-gray-400 group-hover:text-gray-600"
                         )} />
                       </Button>
                     </div>
@@ -493,14 +493,14 @@ const Dashboard = () => {
               );
             })}
             {sortedActivities.length === 0 && (
-              <div className="text-center py-8">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
-                  <CalendarIcon className="w-6 h-6 text-gray-500" />
+              <div className="text-center py-8 transition-all duration-300 hover:transform hover:scale-105">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4 transition-transform duration-200 hover:scale-110">
+                  <CalendarIcon className="w-6 h-6 text-gray-500 transition-colors duration-200 hover:text-primary" />
                 </div>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 transition-colors duration-200 hover:text-gray-700">
                   Nenhuma atividade pendente
                 </p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-gray-400 mt-1 transition-colors duration-200 hover:text-gray-600">
                   Adicione novas atividades no calendário
                 </p>
               </div>
@@ -645,34 +645,34 @@ const Dashboard = () => {
 };
 
 const MetricCard = ({ title, value, subtitle, className = "" }: MetricCardProps) => (
-  <div className={`p-6 rounded-xl ${className}`}>
-    <h3 className="text-sm font-medium mb-2">{title}</h3>
-    <p className="text-3xl font-bold mb-1">{value}</p>
-    <p className="text-sm opacity-80">{subtitle}</p>
+  <div className={`p-6 rounded-xl transform transition-all duration-300 hover:scale-105 hover:shadow-lg ${className}`}>
+    <h3 className="text-sm font-medium mb-2 transition-opacity duration-200 group-hover:opacity-75">{title}</h3>
+    <p className="text-3xl font-bold mb-1 transition-transform duration-200 hover:scale-110 origin-left">{value}</p>
+    <p className="text-sm opacity-80 transition-opacity duration-200 group-hover:opacity-100">{subtitle}</p>
   </div>
 );
 
 const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }: CourseCardProps) => (
-  <div className="p-6 bg-white rounded-xl border border-gray-200 hover:border-primary transition-colors">
+  <div className="p-6 bg-white rounded-xl border border-gray-200 hover:border-primary transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
     <div className="flex justify-between items-start mb-4">
       <div>
-        <h3 className="text-lg font-semibold">{course.name}</h3>
-        <p className="text-sm text-gray-600">{course.professor}</p>
+        <h3 className="text-lg font-semibold transition-colors duration-200 hover:text-primary cursor-default">{course.name}</h3>
+        <p className="text-sm text-gray-600 transition-opacity duration-200 hover:opacity-75">{course.professor}</p>
       </div>
       <div className="text-right">
-        <p className="text-lg font-bold">Nota: {course.grade}</p>
-        <p className="text-sm text-gray-600">{course.status}</p>
+        <p className="text-lg font-bold transition-all duration-300 hover:scale-110 origin-right cursor-default">Nota: {course.grade}</p>
+        <p className="text-sm text-gray-600 transition-opacity duration-200 hover:opacity-75">{course.status}</p>
       </div>
     </div>
     <Progress
       value={(course.grade / 10) * 100}
       className={cn(
-        "mb-2",
+        "mb-2 transition-all duration-500 ease-out hover:scale-y-150",
         course.grade < 5 ? "[&>div]:bg-red-500" : "[&>div]:bg-primary"
       )}
     />
     <div className="flex justify-between items-center mt-4">
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 transition-opacity duration-200 hover:opacity-75">
         <p>Faltas: {course.absences}</p>
         <p>{course.progress}% concluído</p>
       </div>
@@ -681,7 +681,7 @@ const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }: Cour
           variant="outline"
           size="sm"
           onClick={onAddAbsence}
-          className="flex items-center"
+          className="flex items-center transition-all duration-200 hover:bg-primary hover:text-white active:scale-95"
         >
           +1 Falta
         </Button>
@@ -689,7 +689,7 @@ const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }: Cour
           variant="outline"
           size="sm"
           onClick={onAddGrade}
-          className="flex items-center"
+          className="flex items-center transition-all duration-200 hover:bg-primary hover:text-white active:scale-95"
         >
           Nova Nota
         </Button>
@@ -697,7 +697,7 @@ const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }: Cour
           variant="outline"
           size="sm"
           onClick={onEdit}
-          className="flex items-center justify-center w-9 h-9 p-0"
+          className="flex items-center justify-center w-9 h-9 p-0 transition-all duration-200 hover:bg-primary hover:text-white active:scale-95"
         >
           <Edit2 className="w-4 h-4" />
         </Button>
@@ -705,10 +705,10 @@ const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }: Cour
           variant="outline"
           size="sm"
           onClick={onDelete}
-          className="flex items-center justify-center w-9 h-9 p-0 border-red-200 hover:border-red-400 hover:bg-red-50"
+          className="flex items-center justify-center w-9 h-9 p-0 border-red-200 hover:bg-red-50 hover:border-red-400 transition-all duration-200 active:scale-95"
           aria-label="Excluir disciplina"
         >
-          <Trash className="w-4 h-4 text-red-500" />
+          <Trash className="w-4 h-4 text-red-500 transition-colors duration-200 group-hover:text-red-600" />
         </Button>
       </div>
     </div>
@@ -717,9 +717,9 @@ const CourseCard = ({ course, onEdit, onAddGrade, onAddAbsence, onDelete }: Cour
         <h4 className="text-sm font-semibold mb-2">Histórico de Notas</h4>
         <div className="space-y-2">
           {course.grades.map((grade) => (
-            <div key={grade.id} className="flex justify-between text-sm">
-              <span>{grade.description}</span>
-              <span className="font-medium">{grade.value}</span>
+            <div key={grade.id} className="flex justify-between text-sm transition-all duration-200 hover:bg-gray-50 p-2 rounded-lg cursor-default">
+              <span className="transition-colors duration-200 hover:text-primary">{grade.description}</span>
+              <span className="font-medium transition-all duration-200 hover:scale-110">{grade.value}</span>
             </div>
           ))}
         </div>
