@@ -2,6 +2,7 @@
 create table profiles (
   id uuid references auth.users on delete cascade not null primary key,
   email text unique not null,
+  name text not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -22,8 +23,8 @@ create policy "Users can update their own profile."
 create function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, email)
-  values (new.id, new.email);
+  insert into public.profiles (id, email, name)
+  values (new.id, new.email, new.raw_user_meta_data->>'name');
   return new;
 end;
 $$ language plpgsql security definer;
