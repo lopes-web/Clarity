@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/components/AuthProvider";
 import {
   addTaskToGoogle,
   updateGoogleTask,
@@ -21,31 +23,46 @@ export interface Event {
 
 interface EventContextType {
   events: Event[];
-  addEvent: (event: Omit<Event, "id">) => void;
-  removeEvent: (id: string) => void;
-  toggleEventComplete: (id: string) => void;
+  addEvent: (event: Omit<Event, "id">) => Promise<void>;
+  removeEvent: (id: string) => Promise<void>;
+  toggleEventComplete: (id: string) => Promise<void>;
 }
 
 const EventContext = createContext<EventContextType | undefined>(undefined);
 
-const STORAGE_KEY = "@clarity/events";
-
 export function EventProvider({ children }: { children: ReactNode }) {
-  const [events, setEvents] = useState<Event[]>(() => {
-    const storedEvents = localStorage.getItem(STORAGE_KEY);
-    if (storedEvents) {
-      const parsedEvents = JSON.parse(storedEvents);
-      return parsedEvents.map((event: any) => ({
-        ...event,
-        date: new Date(event.date),
-      }));
-    }
-    return [];
-  });
+  const [events, setEvents] = useState<Event[]>([]);
+  const { user } = useAuth();
 
+  // Carregar eventos do Supabase ao iniciar
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-  }, [events]);
+    if (user) {
+      loadEvents();
+    }
+  }, [user]);
+
+  const loadEvents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('user_id', user?.id);
+
+      if (error) throw error;
+
+      const formattedEvents = data.map(event => ({
+        ...event,
+        id: event.id,
+        date: new Date(event.date),
+        googleTaskId: event.google_event_id
+      }));
+
+      setEvents(formattedEvents);
+    } catch (error) {
+      console.error('Erro ao carregar eventos:', error);
+      toast.error('Erro ao carregar eventos');
+    }
+  };
 
   // Efeito para sincronizar com o Google Tasks
   useEffect(() => {
@@ -84,34 +101,50 @@ export function EventProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addEvent = async (eventData: Omit<Event, "id">) => {
-    console.log('Iniciando adição de evento:', eventData);
-    
+    if (!user) {
+      toast.error('Você precisa estar logado para adicionar eventos');
+      return;
+    }
+
     try {
       let googleTaskId = undefined;
       
       // Se estiver autenticado no Google, adiciona a tarefa lá também
       if (isAuthenticated()) {
-        console.log('Usuário autenticado, adicionando ao Google Tasks');
         try {
           const googleTask = await addTaskToGoogle(eventData);
           googleTaskId = googleTask.id;
-          console.log('Tarefa adicionada ao Google Tasks com ID:', googleTaskId);
         } catch (error) {
           console.error('Erro ao adicionar tarefa ao Google Tasks:', error);
           toast.error('Erro ao sincronizar com Google Tasks. O evento será salvo apenas localmente.');
         }
-      } else {
-        console.log('Usuário não autenticado no Google Tasks');
       }
 
+      // Salvar no Supabase
+      const { data, error } = await supabase
+        .from('events')
+        .insert([{
+          user_id: user.id,
+          title: eventData.title,
+          date: eventData.date.toISOString(),
+          type: eventData.type,
+          description: eventData.description,
+          disciplina: eventData.disciplina,
+          completed: false,
+          google_event_id: googleTaskId
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
       const newEvent: Event = {
-        id: Date.now().toString(),
-        completed: false,
-        ...eventData,
-        googleTaskId,
+        ...data,
+        id: data.id,
+        date: new Date(data.date),
+        googleTaskId: data.google_event_id
       };
 
-      console.log('Salvando evento localmente:', newEvent);
       setEvents(prev => [...prev, newEvent]);
       toast.success('Evento adicionado com sucesso!');
     } catch (error) {
@@ -121,35 +154,66 @@ export function EventProvider({ children }: { children: ReactNode }) {
   };
 
   const removeEvent = async (id: string) => {
-    const event = events.find(e => e.id === id);
-    if (event?.googleTaskId && isAuthenticated()) {
-      try {
-        await deleteGoogleTask(event.googleTaskId);
-      } catch (error) {
-        console.error('Erro ao remover tarefa do Google Tasks:', error);
+    try {
+      const event = events.find(e => e.id === id);
+      
+      // Remover do Google Tasks se existir
+      if (event?.googleTaskId && isAuthenticated()) {
+        try {
+          await deleteGoogleTask(event.googleTaskId);
+        } catch (error) {
+          console.error('Erro ao remover tarefa do Google Tasks:', error);
+        }
       }
+
+      // Remover do Supabase
+      const { error } = await supabase
+        .from('events')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setEvents(prev => prev.filter(event => event.id !== id));
+      toast.success('Evento removido com sucesso!');
+    } catch (error) {
+      console.error('Erro ao remover evento:', error);
+      toast.error('Erro ao remover evento');
     }
-    setEvents(prev => prev.filter(event => event.id !== id));
   };
 
   const toggleEventComplete = async (id: string) => {
-    setEvents(prev => prev.map(event => {
-      if (event.id === id) {
-        const updatedEvent = { ...event, completed: !event.completed };
-        
-        if (event.googleTaskId && isAuthenticated()) {
-          try {
-            updateGoogleTask(event.googleTaskId, updatedEvent);
-          } catch (error) {
-            console.error('Erro ao atualizar tarefa no Google Tasks:', error);
-            toast.error('Erro ao sincronizar com Google Tasks');
-          }
+    try {
+      const event = events.find(e => e.id === id);
+      if (!event) return;
+
+      const newStatus = !event.completed;
+
+      // Atualizar no Supabase
+      const { error } = await supabase
+        .from('events')
+        .update({ completed: newStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      // Atualizar no Google Tasks se existir
+      if (event.googleTaskId && isAuthenticated()) {
+        try {
+          await updateGoogleTask(event.googleTaskId, { ...event, completed: newStatus });
+        } catch (error) {
+          console.error('Erro ao atualizar tarefa no Google Tasks:', error);
+          toast.error('Erro ao sincronizar com Google Tasks');
         }
-        
-        return updatedEvent;
       }
-      return event;
-    }));
+
+      setEvents(prev => prev.map(event => 
+        event.id === id ? { ...event, completed: newStatus } : event
+      ));
+    } catch (error) {
+      console.error('Erro ao atualizar evento:', error);
+      toast.error('Erro ao atualizar evento');
+    }
   };
 
   return (
@@ -159,10 +223,10 @@ export function EventProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useEvents() {
+export const useEvents = () => {
   const context = useContext(EventContext);
   if (context === undefined) {
-    throw new Error("useEvents must be used within an EventProvider");
+    throw new Error('useEvents must be used within an EventProvider');
   }
   return context;
-} 
+}; 
