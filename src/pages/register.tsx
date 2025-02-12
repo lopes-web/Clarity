@@ -62,7 +62,7 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm shadow-xl border-0">
         <CardHeader className="space-y-6">
           <div className="flex justify-center">
-            <img src="/logo.svg" alt="Clarity Logo" className="h-16 w-auto" />
+            <img src="/logo.svg" alt="Clarity Logo" className="h-12 w-auto" />
           </div>
           <div className="space-y-2">
             <CardTitle className="text-2xl font-bold text-center text-gray-900">Crie sua conta</CardTitle>
