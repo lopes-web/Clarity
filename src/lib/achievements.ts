@@ -8,8 +8,9 @@ export interface Achievement {
     type: AchievementType;
     condition: AchievementCondition;
     xp: number;
+    xpReward: number;
     rarity: AchievementRarity;
-    unlockedAt?: Date;
+    unlockedAt?: Date | null;
 }
 
 export type AchievementType =
@@ -41,6 +42,7 @@ export const ACHIEVEMENTS: Achievement[] = [
         type: 'GRADE',
         condition: { type: 'GRADE', value: 10, comparison: 'EQUALS' },
         xp: 100,
+        xpReward: 100,
         rarity: 'COMMON'
     },
     {
@@ -51,6 +53,7 @@ export const ACHIEVEMENTS: Achievement[] = [
         type: 'ATTENDANCE',
         condition: { type: 'ATTENDANCE', value: 0, comparison: 'EQUALS' },
         xp: 150,
+        xpReward: 150,
         rarity: 'RARE'
     },
     {
@@ -61,6 +64,7 @@ export const ACHIEVEMENTS: Achievement[] = [
         type: 'TASK',
         condition: { type: 'TASK', value: 10, comparison: 'GREATER_THAN' },
         xp: 200,
+        xpReward: 200,
         rarity: 'RARE'
     },
     {
@@ -71,6 +75,7 @@ export const ACHIEVEMENTS: Achievement[] = [
         type: 'STREAK',
         condition: { type: 'STREAK', value: 7, comparison: 'GREATER_THAN' },
         xp: 300,
+        xpReward: 300,
         rarity: 'EPIC'
     },
     {
@@ -81,6 +86,7 @@ export const ACHIEVEMENTS: Achievement[] = [
         type: 'GRADE',
         condition: { type: 'GRADE', value: 9, comparison: 'GREATER_THAN' },
         xp: 500,
+        xpReward: 500,
         rarity: 'LEGENDARY'
     }
 ];
