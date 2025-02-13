@@ -20,6 +20,8 @@ import FontFamily from '@tiptap/extension-font-family';
 import Highlight from '@tiptap/extension-highlight';
 import Heading from '@tiptap/extension-heading';
 
+import '../styles/editor.css';
+
 export const KeyboardShortcuts = Extension.create({
     name: 'keyboard-shortcuts',
 
