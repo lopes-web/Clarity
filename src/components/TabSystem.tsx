@@ -119,6 +119,15 @@ const TabSystem = ({ onTabOpen, onAllTabsClose }: TabSystemProps) => {
     <div className="flex flex-col w-full">
       <div className="flex items-center justify-between border-b border-border bg-white">
         <div className="flex-1 flex items-center overflow-x-auto">
+          {tabs.length === 0 && (
+            <button
+              onClick={() => createNewTab()}
+              className="p-2 hover:bg-gray-100 text-gray-600"
+              title="Nova nota"
+            >
+              <Plus size={20} />
+            </button>
+          )}
           {tabs.map((tab, index) => (
             <TabContextMenu
               key={tab.id}
