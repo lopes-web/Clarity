@@ -1,8 +1,6 @@
 import { Button } from './ui/button';
 import { Download } from 'lucide-react';
 import { Editor } from '@tiptap/react';
-import jsPDF from 'jspdf';
-import HTMLtoDOCX from 'html-to-docx';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,11 +16,15 @@ interface ExportButtonProps {
 export function ExportButton({ editor }: ExportButtonProps) {
     const exportAsPDF = async () => {
         try {
-            // Inicializa o documento PDF com fonte UTF-8
+            // Importação dinâmica do jsPDF
+            const { default: jsPDF } = await import('jspdf');
+
+            // Inicializa o documento PDF
             const doc = new jsPDF({
                 orientation: 'portrait',
                 unit: 'mm',
                 format: 'a4',
+                putOnlyUsedFonts: true,
             });
 
             const content = editor.getHTML();
@@ -53,6 +55,9 @@ export function ExportButton({ editor }: ExportButtonProps) {
                 // Adiciona quebras de linha apropriadas
                 if (['P', 'H1', 'H2', 'H3', 'LI'].includes(element.tagName)) {
                     text += '\n';
+                    if (element.tagName.startsWith('H')) {
+                        text += '\n'; // Espaço extra para títulos
+                    }
                 }
                 if (element.tagName === 'BR') {
                     text += '\n';
@@ -88,6 +93,9 @@ export function ExportButton({ editor }: ExportButtonProps) {
 
     const exportAsWord = async () => {
         try {
+            // Importação dinâmica do html-to-docx
+            const HTMLtoDOCX = (await import('html-to-docx')).default;
+
             const content = editor.getHTML();
 
             // Configurações do documento Word
@@ -115,7 +123,9 @@ export function ExportButton({ editor }: ExportButtonProps) {
             const buffer = await HTMLtoDOCX(content, null, options);
 
             // Cria um blob e faz o download
-            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+            const blob = new Blob([buffer], {
+                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            });
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
