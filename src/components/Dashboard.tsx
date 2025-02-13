@@ -28,6 +28,7 @@ import {
 import { AchievementsDialog } from "./AchievementsDialog";
 import { supabase } from "@/lib/supabase";
 import { unlockAchievement, getUserAchievements, checkAchievement, type AchievementType } from "@/lib/achievements";
+import { ExportButton } from './ExportButton';
 
 interface Course {
   id: number;

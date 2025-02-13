@@ -55,6 +55,7 @@ interface RichTextEditorProps {
     placeholder?: string;
     autofocus?: boolean;
     readOnly?: boolean;
+    onEditorReady?: (editor: any) => void;
 }
 
 export function RichTextEditor({
@@ -63,6 +64,7 @@ export function RichTextEditor({
     placeholder = 'Comece a escrever...',
     autofocus = false,
     readOnly = false,
+    onEditorReady,
 }: RichTextEditorProps) {
     const { isDarkMode, isFocusMode, fontSize, fontFamily } = useNotesStore();
     const [showCommandMenu, setShowCommandMenu] = useState(false);
@@ -82,6 +84,12 @@ export function RichTextEditor({
             editor.commands.setContent(content);
         }
     }, [content, editor]);
+
+    useEffect(() => {
+        if (editor && onEditorReady) {
+            onEditorReady(editor);
+        }
+    }, [editor, onEditorReady]);
 
     const addImage = useCallback(() => {
         const url = window.prompt('URL da imagem:');

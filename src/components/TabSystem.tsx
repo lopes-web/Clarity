@@ -4,8 +4,8 @@ import { RichTextEditor } from "./RichTextEditor";
 import { EditorSettings } from "./EditorSettings";
 import { NoteTitle } from "./NoteTitle";
 import { TabContextMenu } from "./TabContextMenu";
-import { ExportMenu } from "./ExportMenu";
 import { ImportMenu } from "./ImportMenu";
+import { ExportButton } from "./ExportButton";
 
 interface Tab {
   id: string;
@@ -21,6 +21,7 @@ interface TabSystemProps {
 const TabSystem = ({ onTabOpen, onAllTabsClose }: TabSystemProps) => {
   const [tabs, setTabs] = useState<Tab[]>([]);
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
+  const [editor, setEditor] = useState<any>(null);
 
   const createNewTab = (title: string = "Nova nota", content: string = "") => {
     const newTab = {
@@ -160,11 +161,8 @@ const TabSystem = ({ onTabOpen, onAllTabsClose }: TabSystemProps) => {
         </div>
         <div className="flex items-center gap-2 px-2">
           <ImportMenu onImport={handleImport} />
-          {activeTab && (
-            <ExportMenu
-              content={activeTab.content}
-              title={activeTab.title}
-            />
+          {activeTab && editor && (
+            <ExportButton editor={editor} />
           )}
           <EditorSettings />
           <button
@@ -183,6 +181,7 @@ const TabSystem = ({ onTabOpen, onAllTabsClose }: TabSystemProps) => {
             content={activeTab.content}
             onChange={(content) => updateTabContent(activeTab.id, content)}
             placeholder="Digite sua anotação aqui..."
+            onEditorReady={setEditor}
           />
         </div>
       )}
