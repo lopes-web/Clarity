@@ -113,7 +113,7 @@ export function RichTextEditor({
 
     return (
         <div className={cn(
-            'relative w-full rounded-lg border bg-background p-4',
+            'relative w-full rounded-lg border bg-background p-4 h-[calc(100vh-8rem)]',
             isDarkMode && 'dark',
             isFocusMode && 'prose-lg'
         )}>
@@ -339,7 +339,7 @@ export function RichTextEditor({
                         readOnly && 'pointer-events-none',
                         '[&_*]:outline-none',
                         'px-6',
-                        'min-h-[300px]',
+                        'h-[calc(100%-4rem)] overflow-y-auto',
                         'prose-headings:font-normal',
                         'prose-headings:mb-4 prose-headings:mt-6 prose-headings:first:mt-0',
                         'prose-h1:text-4xl',

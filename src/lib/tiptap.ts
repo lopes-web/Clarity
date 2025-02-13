@@ -18,6 +18,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import Typography from '@tiptap/extension-typography';
 import FontFamily from '@tiptap/extension-font-family';
 import Highlight from '@tiptap/extension-highlight';
+import Heading from '@tiptap/extension-heading';
 
 export const KeyboardShortcuts = Extension.create({
     name: 'keyboard-shortcuts',
@@ -49,14 +50,12 @@ export const KeyboardShortcuts = Extension.create({
 export const extensions = [
     StarterKit.configure({
         heading: {
-            levels: [1, 2, 3],
             HTMLAttributes: {
-                levels: {
-                    1: 'text-4xl mb-4 font-normal',
-                    2: 'text-3xl mb-3 font-normal',
-                    3: 'text-2xl mb-2 font-normal'
-                }
-            }
+                1: { class: 'text-4xl font-normal' },
+                2: { class: 'text-3xl font-normal' },
+                3: { class: 'text-2xl font-normal' }
+            },
+            levels: [1, 2, 3]
         },
         bulletList: {
             HTMLAttributes: {
