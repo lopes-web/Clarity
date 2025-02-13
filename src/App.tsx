@@ -1,85 +1,37 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { Toaster } from "@/components/ui/sonner";
-import { EventProvider } from "@/components/EventProvider";
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import { useAuth, AuthProvider } from "@/components/AuthProvider";
-
-import Index from "@/pages/Index";
-import Calendar from "@/pages/Calendar";
-import LoginPage from "@/pages/login";
-import RegisterPage from "@/pages/register";
-import PrivacyPolicy from "@/pages/privacy-policy";
-import TermsOfService from "@/pages/terms-of-service";
-
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
-if (!GOOGLE_CLIENT_ID) {
-  throw new Error('VITE_GOOGLE_CLIENT_ID is not defined in environment variables');
-}
-
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <div>Carregando...</div>;
-  }
-
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-
-  return children;
-}
-
-function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <div>Carregando...</div>;
-  }
-
-  if (user) {
-    return <Navigate to="/" />;
-  }
-
-  return children;
-}
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './components/AuthProvider';
+import { AchievementProvider } from './components/AchievementProvider';
+import { Toaster } from 'sonner';
+import Index from './pages/Index';
+import Login from './pages/login';
+import Register from './pages/register';
+import Calendar from './pages/Calendar';
+import Achievements from './pages/achievements';
+import PrivacyPolicy from './pages/privacy-policy';
+import TermsOfService from './pages/terms-of-service';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 function App() {
   return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <Router>
-        <AuthProvider>
-          <EventProvider>
-            <Toaster />
-            <Routes>
-              <Route path="/login" element={
-                <PublicRoute>
-                  <LoginPage />
-                </PublicRoute>
-              } />
-              <Route path="/register" element={
-                <PublicRoute>
-                  <RegisterPage />
-                </PublicRoute>
-              } />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/" element={
-                <PrivateRoute>
-                  <Index />
-                </PrivateRoute>
-              } />
-              <Route path="/calendar" element={
-                <PrivateRoute>
-                  <Calendar />
-                </PrivateRoute>
-              } />
-            </Routes>
-          </EventProvider>
-        </AuthProvider>
-      </Router>
-    </GoogleOAuthProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <AchievementProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<Index />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/achievements" element={<Achievements />} />
+            </Route>
+          </Routes>
+          <Toaster />
+        </AchievementProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
