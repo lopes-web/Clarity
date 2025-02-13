@@ -49,6 +49,9 @@ export const KeyboardShortcuts = Extension.create({
 
 export const extensions = [
     StarterKit.configure({
+        heading: {
+            levels: [1, 2, 3]
+        },
         bulletList: {
             HTMLAttributes: {
                 class: 'list-disc pl-6',
