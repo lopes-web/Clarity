@@ -27,7 +27,7 @@ import {
 } from "@/lib/disciplines";
 import { AchievementsDialog } from "./AchievementsDialog";
 import { supabase } from "@/lib/supabase";
-import { unlockAchievement, getUserAchievements } from "@/lib/achievements";
+import { unlockAchievement, getUserAchievements, checkAchievement, type AchievementType } from "@/lib/achievements";
 
 interface Course {
   id: number;
@@ -271,21 +271,21 @@ const Dashboard = () => {
       ));
 
       // Verificar conquistas relacionadas a notas
-      await checkAchievement(user.id, 'GRADE', data.value);
+      await checkAchievement(user.id, 'GRADE' as AchievementType, data.value);
 
       // Se for a primeira nota do usuário
-      const { data: gradesCount } = await supabase
+      const { count } = await supabase
         .from('grades')
-        .select('id', { count: 'exact' })
+        .select('*', { count: 'exact', head: true })
         .eq('discipline_id', selectedCourse.id);
 
-      if (gradesCount === 1) {
-        await checkAchievement(user.id, 'GRADE', 1);
+      if (count === 1) {
+        await checkAchievement(user.id, 'GRADE' as AchievementType, 1);
       }
 
       // Verificar conquista de nota acima de 7
       if (data.value > 7) {
-        await checkAchievement(user.id, 'GRADE', data.value);
+        await checkAchievement(user.id, 'GRADE' as AchievementType, data.value);
       }
 
       setIsAddingGrade(false);
