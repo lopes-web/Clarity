@@ -47,6 +47,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Separator } from './ui/separator';
 import { toast } from 'sonner';
 import { HighlightColorPicker } from './HighlightColorPicker';
+import { ExportButton } from './ExportButton';
 
 interface RichTextEditorProps {
     content: string;
@@ -321,6 +322,10 @@ export function RichTextEditor({
                     >
                         <Redo className="h-4 w-4" />
                     </Button>
+
+                    <Separator orientation="vertical" className="h-8" />
+
+                    <ExportButton editor={editor} />
                 </div>
             )}
 
