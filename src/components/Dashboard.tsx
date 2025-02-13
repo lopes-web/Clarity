@@ -270,17 +270,20 @@ const Dashboard = () => {
           : course
       ));
 
-      // Verificar conquistas relacionadas a notas
-      await checkAchievement(user.id, 'GRADE' as AchievementType, data.value);
+      // Verificar todas as notas do usuário
+      const { data: allGrades } = await supabase
+        .from('grades')
+        .select('*')
+        .eq('user_id', user.id);
 
       // Se for a primeira nota do usuário
-      const { count } = await supabase
-        .from('grades')
-        .select('*', { count: 'exact', head: true })
-        .eq('discipline_id', selectedCourse.id);
-
-      if (count === 1) {
+      if (allGrades && allGrades.length === 1) {
         await checkAchievement(user.id, 'GRADE' as AchievementType, 1);
+      }
+
+      // Verificar conquista de nota 10
+      if (data.value === 10) {
+        await checkAchievement(user.id, 'GRADE' as AchievementType, 10);
       }
 
       // Verificar conquista de nota acima de 7

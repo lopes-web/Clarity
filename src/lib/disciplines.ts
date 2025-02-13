@@ -95,10 +95,32 @@ export const deleteDiscipline = async (disciplineId: string) => {
 };
 
 // Adicionar uma nota
-export const addGrade = async (grade: Omit<Grade, 'id' | 'created_at' | 'updated_at'>) => {
-  const { data, error } = await supabase
+export const addGrade = async (data: {
+  discipline_id: string;
+  value: number;
+  description: string;
+  user_id?: string;
+}): Promise<Grade> => {
+  const { data: discipline } = await supabase
+    .from('disciplines')
+    .select('user_id')
+    .eq('id', data.discipline_id)
+    .single();
+
+  if (!discipline) {
+    throw new Error('Disciplina não encontrada');
+  }
+
+  const { data: grade, error } = await supabase
     .from('grades')
-    .insert([grade])
+    .insert([
+      {
+        discipline_id: data.discipline_id,
+        value: data.value,
+        description: data.description,
+        user_id: discipline.user_id
+      }
+    ])
     .select()
     .single();
 
@@ -107,7 +129,7 @@ export const addGrade = async (grade: Omit<Grade, 'id' | 'created_at' | 'updated
     throw error;
   }
 
-  return data;
+  return grade;
 };
 
 // Calcular média das notas

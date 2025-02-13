@@ -307,7 +307,20 @@ export const checkAchievement = async (userId: string, type: AchievementType, va
 
         // Verificar cada conquista elegível
         for (const achievement of eligibleAchievements) {
-            const shouldUnlock = checkCondition(achievement.condition, value);
+            let shouldUnlock = false;
+
+            // Verificação especial para a primeira nota
+            if (achievement.id === 'first_grade') {
+                const { count } = await supabase
+                    .from('grades')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', userId);
+
+                shouldUnlock = count === 1;
+            } else {
+                shouldUnlock = checkCondition(achievement.condition, value);
+            }
+
             if (shouldUnlock) {
                 await unlockAchievement(userId, achievement.id);
             }
