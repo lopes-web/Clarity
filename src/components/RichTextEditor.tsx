@@ -334,10 +334,14 @@ export function RichTextEditor({
                 <EditorContent
                     editor={editor}
                     className={cn(
-                        'prose max-w-none dark:prose-invert outline-none',
+                        'prose max-w-none dark:prose-invert',
                         isFocusMode && 'prose-lg',
                         readOnly && 'pointer-events-none',
-                        'prose-headings:font-semibold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl',
+                        '[&_*]:outline-none',
+                        'prose-headings:mb-4 prose-headings:mt-6 prose-headings:first:mt-0',
+                        'prose-h1:text-3xl prose-h1:font-bold',
+                        'prose-h2:text-2xl prose-h2:font-bold',
+                        'prose-h3:text-xl prose-h3:font-bold',
                         'prose-p:my-3',
                         'prose-blockquote:border-l-2 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic',
                         'prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:font-mono prose-code:text-sm',
