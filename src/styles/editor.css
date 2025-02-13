@@ -1,50 +1,50 @@
 /* Editor Styles */
-.ProseMirror h1 {
+.ProseMirror h1,
+h1.is-editor-empty {
     font-size: 36px !important; /* text-4xl */
     line-height: 40px !important;
     margin-bottom: 1rem !important; /* mb-4 */
     font-weight: normal !important;
-    font-family: inherit !important;
 }
 
-.ProseMirror h2 {
+.ProseMirror h2,
+h2.is-editor-empty {
     font-size: 30px !important; /* text-3xl */
     line-height: 36px !important;
     margin-bottom: 0.75rem !important; /* mb-3 */
     font-weight: normal !important;
-    font-family: inherit !important;
 }
 
-.ProseMirror h3 {
+.ProseMirror h3,
+h3.is-editor-empty {
     font-size: 24px !important; /* text-2xl */
     line-height: 32px !important;
     margin-bottom: 0.5rem !important; /* mb-2 */
     font-weight: normal !important;
-    font-family: inherit !important;
 }
 
-.ProseMirror h4 {
+.ProseMirror h4,
+h4.is-editor-empty {
     font-size: 20px !important; /* text-xl */
     line-height: 28px !important;
     margin-bottom: 0.5rem !important; /* mb-2 */
     font-weight: normal !important;
-    font-family: inherit !important;
 }
 
-.ProseMirror h5 {
+.ProseMirror h5,
+h5.is-editor-empty {
     font-size: 16px !important; /* text-base */
     line-height: 24px !important;
     margin-bottom: 0.5rem !important; /* mb-2 */
     font-weight: normal !important;
-    font-family: inherit !important;
 }
 
-.ProseMirror h6 {
+.ProseMirror h6,
+h6.is-editor-empty {
     font-size: 14px !important; /* text-sm */
     line-height: 20px !important;
     margin-bottom: 0.5rem !important; /* mb-2 */
     font-weight: normal !important;
-    font-family: inherit !important;
 }
 
 /* Task List Styles */
