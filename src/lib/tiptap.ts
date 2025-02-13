@@ -28,10 +28,9 @@ export const KeyboardShortcuts = Extension.create({
             'Mod-i': () => this.editor.commands.toggleItalic(),
             'Mod-u': () => this.editor.commands.toggleUnderline(),
             'Mod-`': () => this.editor.commands.toggleCode(),
-            'Mod-Alt-0': () => this.editor.commands.setParagraph(),
-            'Mod-Alt-1': () => this.editor.commands.toggleHeading({ level: 1 }),
-            'Mod-Alt-2': () => this.editor.commands.toggleHeading({ level: 2 }),
-            'Mod-Alt-3': () => this.editor.commands.toggleHeading({ level: 3 }),
+            'Mod-1': () => this.editor.commands.toggleHeading({ level: 1 }),
+            'Mod-2': () => this.editor.commands.toggleHeading({ level: 2 }),
+            'Mod-3': () => this.editor.commands.toggleHeading({ level: 3 }),
             'Mod-Shift-7': () => this.editor.commands.toggleOrderedList(),
             'Mod-Shift-8': () => this.editor.commands.toggleBulletList(),
             'Mod-Shift-9': () => this.editor.commands.toggleTaskList(),
@@ -51,6 +50,11 @@ export const extensions = [
     StarterKit.configure({
         heading: {
             levels: [1, 2, 3],
+            HTMLAttributes: {
+                1: { class: 'text-3xl font-bold' },
+                2: { class: 'text-2xl font-bold' },
+                3: { class: 'text-xl font-bold' },
+            },
         },
         bulletList: {
             HTMLAttributes: {
@@ -79,13 +83,13 @@ export const extensions = [
     }),
     TaskList.configure({
         HTMLAttributes: {
-            class: 'not-prose task-list',
+            class: 'not-prose pl-2',
         },
     }),
     TaskItem.configure({
         nested: true,
         HTMLAttributes: {
-            class: 'task-list-item',
+            class: 'flex items-start gap-2 my-1',
         },
     }),
     Table.configure({

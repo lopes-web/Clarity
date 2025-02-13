@@ -334,7 +334,7 @@ export function RichTextEditor({
                 <EditorContent
                     editor={editor}
                     className={cn(
-                        'prose max-w-none dark:prose-invert',
+                        'prose max-w-none dark:prose-invert outline-none',
                         isFocusMode && 'prose-lg',
                         readOnly && 'pointer-events-none',
                         'prose-headings:font-semibold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl',
@@ -347,13 +347,10 @@ export function RichTextEditor({
                         'prose-td:border prose-td:border-border prose-td:p-2',
                         'prose-ul:my-2 prose-ul:list-disc prose-ul:pl-6',
                         'prose-ol:my-2 prose-ol:list-decimal prose-ol:pl-6',
-                        '[&_.task-list]:my-2 [&_.task-list]:pl-0 [&_.task-list]:list-none',
-                        '[&_.task-list-item]:flex [&_.task-list-item]:items-start [&_.task-list-item]:gap-2 [&_.task-list-item]:my-1',
-                        '[&_.task-list-item>label]:flex [&_.task-list-item>label]:items-center [&_.task-list-item>label]:gap-2 [&_.task-list-item>label]:flex-1',
-                        '[&_.task-list-item>label>input]:mt-1 [&_.task-list-item>label>input]:flex-shrink-0',
-                        '[&_.task-list-item>label>div]:flex-1',
-                        '[&_.task-list-item.checked>label>div]:text-muted-foreground [&_.task-list-item.checked>label>div]:line-through',
-                        '[&_mark]:bg-yellow-200 dark:[&_mark]:bg-yellow-800'
+                        '[&_input[type=checkbox]]:h-4 [&_input[type=checkbox]]:w-4 [&_input[type=checkbox]]:mt-1.5 [&_input[type=checkbox]]:cursor-pointer',
+                        '[&_label]:flex [&_label]:items-start [&_label]:gap-2 [&_label]:flex-1',
+                        '[&_label>div]:flex-1',
+                        '[&_.is-checked>label>div]:text-muted-foreground [&_.is-checked>label>div]:line-through'
                     )}
                     style={{
                         fontSize: `${fontSize}px`,
