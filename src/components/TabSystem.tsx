@@ -117,7 +117,7 @@ const TabSystem = ({ onTabOpen, onAllTabsClose }: TabSystemProps) => {
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex items-center justify-between border-b border-gray-200 bg-white">
+      <div className="flex items-center justify-between border-b bg-white">
         <div className="flex-1 flex items-center overflow-x-auto">
           {tabs.map((tab, index) => (
             <TabContextMenu
@@ -134,7 +134,7 @@ const TabSystem = ({ onTabOpen, onAllTabsClose }: TabSystemProps) => {
             >
               <div
                 onClick={() => handleTabClick(tab.id)}
-                className={`flex items-center py-2 cursor-pointer border-r border-gray-200 min-w-[120px] ${activeTabId === tab.id
+                className={`flex items-center py-2 cursor-pointer border-r min-w-[120px] ${activeTabId === tab.id
                   ? "bg-primary text-white"
                   : "bg-white hover:bg-gray-50"
                   }`}
