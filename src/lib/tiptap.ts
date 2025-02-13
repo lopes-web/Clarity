@@ -49,7 +49,6 @@ export const KeyboardShortcuts = Extension.create({
 
 export const extensions = [
     StarterKit.configure({
-        heading: false,
         bulletList: {
             HTMLAttributes: {
                 class: 'list-disc pl-6',
@@ -126,9 +125,6 @@ export const extensions = [
     FontFamily,
     Highlight.configure({
         multicolor: true,
-    }),
-    Heading.configure({
-        levels: [1, 2, 3]
     }),
     KeyboardShortcuts,
 ]; 
