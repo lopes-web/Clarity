@@ -150,18 +150,23 @@ const TabSystem = ({ onTabOpen, onAllTabsClose }: TabSystemProps) => {
                 >
                   <X size={16} />
                 </button>
+                {index === tabs.length - 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      createNewTab();
+                    }}
+                    className="hover:text-primary px-2"
+                    title="Nova nota"
+                  >
+                    <Plus size={16} />
+                  </button>
+                )}
               </div>
             </TabContextMenu>
           ))}
         </div>
         <div className="flex items-center gap-2 px-2">
-          <button
-            onClick={() => createNewTab()}
-            className="p-2 hover:bg-gray-100 text-gray-600 border-l border-border"
-            title="Nova nota"
-          >
-            <Plus size={20} />
-          </button>
           {activeTab && editor && (
             <ExportButton editor={editor} />
           )}
