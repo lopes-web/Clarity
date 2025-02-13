@@ -81,13 +81,13 @@ export const extensions = [
     }),
     TaskList.configure({
         HTMLAttributes: {
-            class: 'not-prose pl-2',
+            class: 'not-prose',
         },
     }),
     TaskItem.configure({
         nested: true,
         HTMLAttributes: {
-            class: 'flex items-start gap-1 my-1',
+            class: 'flex items-center my-1',
         },
     }),
     Table.configure({
