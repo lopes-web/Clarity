@@ -93,13 +93,28 @@ export type AchievementCondition = {
 
 // Lista de todas as conquistas disponíveis
 export const ACHIEVEMENTS: Achievement[] = [
+    // Conquistas de Notas
+    {
+        id: 'first_grade',
+        title: 'Primeira Nota',
+        description: 'Registrou sua primeira nota em uma disciplina',
+        icon: '📝',
+        rarity: 'COMMON',
+        xpReward: 25,
+        type: 'GRADE',
+        condition: {
+            type: 'GRADE',
+            value: 1,
+            comparison: 'EQUALS'
+        }
+    },
     {
         id: 'first_perfect_grade',
-        title: 'Primeira Nota 10! 🌟',
-        description: 'Tirou sua primeira nota 10 em uma atividade.',
-        icon: '🎯',
+        title: 'Primeira Nota 10!',
+        description: 'Tirou sua primeira nota 10 em uma atividade',
+        icon: '🌟',
         rarity: 'COMMON',
-        xpReward: 100,
+        xpReward: 50,
         type: 'GRADE',
         condition: {
             type: 'GRADE',
@@ -108,11 +123,147 @@ export const ACHIEVEMENTS: Achievement[] = [
         }
     },
     {
-        id: 'perfect_attendance',
-        title: 'Assiduidade Perfeita 📚',
-        description: 'Manteve 100% de presença em uma disciplina.',
+        id: 'good_start',
+        title: 'Bom Começo',
+        description: 'Tirou nota acima de 7 em sua primeira atividade',
+        icon: '🎯',
+        rarity: 'COMMON',
+        xpReward: 30,
+        type: 'GRADE',
+        condition: {
+            type: 'GRADE',
+            value: 7,
+            comparison: 'GREATER_THAN'
+        }
+    },
+
+    // Conquistas de Presença
+    {
+        id: 'first_class',
+        title: 'Primeiro Dia',
+        description: 'Compareceu à sua primeira aula',
+        icon: '📚',
+        rarity: 'COMMON',
+        xpReward: 20,
+        type: 'ATTENDANCE',
+        condition: {
+            type: 'ATTENDANCE',
+            value: 1,
+            comparison: 'EQUALS'
+        }
+    },
+    {
+        id: 'perfect_week',
+        title: 'Semana Perfeita',
+        description: 'Não teve faltas por uma semana inteira',
+        icon: '✨',
+        rarity: 'COMMON',
+        xpReward: 40,
+        type: 'ATTENDANCE',
+        condition: {
+            type: 'ATTENDANCE',
+            value: 7,
+            comparison: 'EQUALS'
+        }
+    },
+
+    // Conquistas de Tarefas
+    {
+        id: 'task_starter',
+        title: 'Começando as Tarefas',
+        description: 'Completou sua primeira tarefa',
         icon: '✅',
+        rarity: 'COMMON',
+        xpReward: 20,
+        type: 'TASK',
+        condition: {
+            type: 'TASK',
+            value: 1,
+            comparison: 'EQUALS'
+        }
+    },
+    {
+        id: 'early_bird',
+        title: 'Passarinho Madrugador',
+        description: 'Completou uma tarefa com mais de 3 dias de antecedência',
+        icon: '🌅',
         rarity: 'RARE',
+        xpReward: 75,
+        type: 'TASK',
+        condition: {
+            type: 'TASK',
+            value: 3,
+            comparison: 'GREATER_THAN'
+        }
+    },
+
+    // Conquistas de Sequência
+    {
+        id: 'first_streak',
+        title: 'Primeira Sequência',
+        description: 'Manteve uma sequência de 3 dias completando tarefas',
+        icon: '🔥',
+        rarity: 'COMMON',
+        xpReward: 35,
+        type: 'STREAK',
+        condition: {
+            type: 'STREAK',
+            value: 3,
+            comparison: 'EQUALS'
+        }
+    },
+    {
+        id: 'weekly_warrior',
+        title: 'Guerreiro Semanal',
+        description: 'Completou pelo menos uma tarefa por 7 dias seguidos',
+        icon: '⚔️',
+        rarity: 'RARE',
+        xpReward: 100,
+        type: 'STREAK',
+        condition: {
+            type: 'STREAK',
+            value: 7,
+            comparison: 'EQUALS'
+        }
+    },
+
+    // Conquistas Especiais
+    {
+        id: 'first_discipline',
+        title: 'Nova Jornada',
+        description: 'Adicionou sua primeira disciplina',
+        icon: '📖',
+        rarity: 'COMMON',
+        xpReward: 30,
+        type: 'SPECIAL',
+        condition: {
+            type: 'TASK',
+            value: 1,
+            comparison: 'EQUALS'
+        }
+    },
+    {
+        id: 'calendar_sync',
+        title: 'Tudo Sincronizado',
+        description: 'Conectou sua conta ao Google Calendar',
+        icon: '🔄',
+        rarity: 'RARE',
+        xpReward: 50,
+        type: 'SPECIAL',
+        condition: {
+            type: 'TASK',
+            value: 1,
+            comparison: 'EQUALS'
+        }
+    },
+
+    // Conquistas Avançadas
+    {
+        id: 'perfect_attendance',
+        title: 'Assiduidade Perfeita',
+        description: 'Manteve 100% de presença em uma disciplina',
+        icon: '👑',
+        rarity: 'EPIC',
         xpReward: 150,
         type: 'ATTENDANCE',
         condition: {
@@ -122,38 +273,10 @@ export const ACHIEVEMENTS: Achievement[] = [
         }
     },
     {
-        id: 'task_master',
-        title: 'Mestre das Tarefas 🏆',
-        description: 'Completou 10 tarefas antes do prazo.',
-        icon: '⚡',
-        rarity: 'RARE',
-        xpReward: 200,
-        type: 'TASK',
-        condition: {
-            type: 'TASK',
-            value: 10,
-            comparison: 'EQUALS'
-        }
-    },
-    {
-        id: 'study_streak',
-        title: 'Dedicação Máxima 🔥',
-        description: 'Manteve uma sequência de 7 dias completando tarefas.',
-        icon: '🔥',
-        rarity: 'EPIC',
-        xpReward: 300,
-        type: 'STREAK',
-        condition: {
-            type: 'STREAK',
-            value: 7,
-            comparison: 'EQUALS'
-        }
-    },
-    {
         id: 'semester_champion',
-        title: 'Campeão do Semestre 👑',
-        description: 'Alcançou média geral acima de 9.',
-        icon: '👑',
+        title: 'Campeão do Semestre',
+        description: 'Alcançou média geral acima de 9',
+        icon: '🏆',
         rarity: 'LEGENDARY',
         xpReward: 500,
         type: 'GRADE',
