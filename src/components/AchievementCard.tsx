@@ -88,7 +88,7 @@ export function AchievementCard({ achievement, className }: AchievementCardProps
                             {rarityText}
                         </span>
                         <span className="text-sm text-gray-500">
-                            +{achievement.xp} XP
+                            +{achievement.xpReward} XP
                         </span>
                     </div>
                     {isUnlocked && (
