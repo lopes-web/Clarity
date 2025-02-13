@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { BookOpen, Calendar, List, Settings } from "lucide-react";
+import { BookOpen, Calendar, List, Settings, Trophy } from "lucide-react";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -10,6 +10,7 @@ const Sidebar = () => {
     { icon: BookOpen, label: "Dashboard", path: "/" },
     { icon: List, label: "Anotações", path: "/notes" },
     { icon: Calendar, label: "Calendário", path: "/calendar" },
+    { icon: Trophy, label: "Conquistas", path: "/achievements" },
     { icon: Settings, label: "Configurações", path: "/settings" },
   ];
 
