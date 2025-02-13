@@ -52,6 +52,21 @@ export const extensions = [
         heading: {
             levels: [1, 2, 3],
         },
+        bulletList: {
+            HTMLAttributes: {
+                class: 'list-disc pl-6',
+            },
+        },
+        orderedList: {
+            HTMLAttributes: {
+                class: 'list-decimal pl-6',
+            },
+        },
+        blockquote: {
+            HTMLAttributes: {
+                class: 'border-l-2 border-primary pl-4 italic',
+            },
+        },
     }),
     Placeholder.configure({
         placeholder: 'Digite sua anotação aqui...',
@@ -64,21 +79,36 @@ export const extensions = [
     }),
     TaskList.configure({
         HTMLAttributes: {
-            class: 'not-prose pl-2',
+            class: 'not-prose task-list',
         },
     }),
     TaskItem.configure({
         nested: true,
         HTMLAttributes: {
-            class: 'flex items-start my-1',
+            class: 'task-list-item',
         },
     }),
     Table.configure({
         resizable: true,
+        HTMLAttributes: {
+            class: 'border-collapse border border-border',
+        },
     }),
-    TableRow,
-    TableCell,
-    TableHeader,
+    TableRow.configure({
+        HTMLAttributes: {
+            class: 'border border-border',
+        },
+    }),
+    TableCell.configure({
+        HTMLAttributes: {
+            class: 'border border-border p-2',
+        },
+    }),
+    TableHeader.configure({
+        HTMLAttributes: {
+            class: 'border border-border p-2 bg-muted',
+        },
+    }),
     Image.configure({
         HTMLAttributes: {
             class: 'rounded-lg max-w-full',
@@ -91,6 +121,8 @@ export const extensions = [
     Superscript,
     TextAlign.configure({
         types: ['heading', 'paragraph'],
+        alignments: ['left', 'center', 'right', 'justify'],
+        defaultAlignment: 'left',
     }),
     Typography,
     FontFamily,
