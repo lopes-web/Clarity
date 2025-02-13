@@ -46,6 +46,7 @@ import { Label } from './ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Separator } from './ui/separator';
 import { toast } from 'sonner';
+import { HighlightColorPicker } from './HighlightColorPicker';
 
 interface RichTextEditorProps {
     content: string;
@@ -195,14 +196,7 @@ export function RichTextEditor({
                     >
                         <Strikethrough className="h-4 w-4" />
                     </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().toggleHighlight().run()}
-                        className={cn(editor.isActive('highlight') && 'bg-muted')}
-                    >
-                        <Highlighter className="h-4 w-4" />
-                    </Button>
+                    <HighlightColorPicker editor={editor} />
 
                     <Separator orientation="vertical" className="h-8" />
 
@@ -403,14 +397,7 @@ export function RichTextEditor({
                     >
                         <Strikethrough className="h-4 w-4" />
                     </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().toggleHighlight().run()}
-                        className={cn(editor.isActive('highlight') && 'bg-muted')}
-                    >
-                        <Highlighter className="h-4 w-4" />
-                    </Button>
+                    <HighlightColorPicker editor={editor} />
                     <Button
                         variant="ghost"
                         size="sm"

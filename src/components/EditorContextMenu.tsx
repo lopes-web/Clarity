@@ -150,11 +150,11 @@ export function EditorContextMenu({ editor, children }: EditorContextMenuProps) 
                     <span>Tachado</span>
                 </ContextMenuItem>
                 <ContextMenuItem
-                    onClick={() => editor.chain().focus().toggleHighlight().run()}
+                    onClick={() => editor.chain().focus().toggleHighlight({ color: 'amarelo' }).run()}
                     className="flex items-center gap-2"
                 >
                     <Highlighter className="h-4 w-4" />
-                    <span>Marca-texto</span>
+                    <span>Marca-texto (Amarelo)</span>
                 </ContextMenuItem>
                 <ContextMenuItem
                     onClick={() => editor.chain().focus().toggleCode().run()}

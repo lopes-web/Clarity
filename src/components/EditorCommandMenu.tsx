@@ -87,9 +87,9 @@ export function EditorCommandMenu({
             action: () => editor.chain().focus().toggleStrike().run(),
         },
         {
-            name: 'Marca-texto',
+            name: 'Marca-texto (Amarelo)',
             icon: <Highlighter className="h-4 w-4" />,
-            action: () => editor.chain().focus().toggleHighlight().run(),
+            action: () => editor.chain().focus().toggleHighlight({ color: 'amarelo' }).run(),
         },
         {
             name: 'Código',

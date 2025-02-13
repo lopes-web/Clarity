@@ -130,6 +130,9 @@ export const extensions = [
     FontFamily,
     Highlight.configure({
         multicolor: true,
+        HTMLAttributes: {
+            'data-color': 'amarelo',
+        },
     }),
     KeyboardShortcuts,
 ]; 

@@ -118,4 +118,34 @@ h6.is-editor-empty {
     margin-right: 0;
     padding-left: 1rem;
     font-style: italic;
+}
+
+/* Highlight Colors */
+.ProseMirror mark {
+    background-color: #f59e0b;
+    color: inherit;
+}
+
+.ProseMirror mark[data-color="roxo"] {
+    background-color: #9b87f5;
+}
+
+.ProseMirror mark[data-color="rosa"] {
+    background-color: #f472b6;
+}
+
+.ProseMirror mark[data-color="verde"] {
+    background-color: #22c55e;
+}
+
+.ProseMirror mark[data-color="amarelo"] {
+    background-color: #f59e0b;
+}
+
+.ProseMirror mark[data-color="vermelho"] {
+    background-color: #ef4444;
+}
+
+.ProseMirror mark[data-color="azul"] {
+    background-color: #3b82f6;
 } 
