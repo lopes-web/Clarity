@@ -311,12 +311,15 @@ export const checkAchievement = async (userId: string, type: AchievementType, va
 
             // Verificação especial para a primeira nota
             if (achievement.id === 'first_grade') {
-                const { count } = await supabase
-                    .from('grades')
-                    .select('*', { count: 'exact', head: true })
+                const { data: disciplines } = await supabase
+                    .from('disciplines')
+                    .select('grades(*)')
                     .eq('user_id', userId);
 
-                shouldUnlock = count === 1;
+                const totalGrades = disciplines?.reduce((total, disc) =>
+                    total + (disc.grades?.length || 0), 0) || 0;
+
+                shouldUnlock = totalGrades === 1;
             } else {
                 shouldUnlock = checkCondition(achievement.condition, value);
             }
