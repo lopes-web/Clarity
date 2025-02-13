@@ -55,7 +55,7 @@ h6.is-editor-empty {
 
 .ProseMirror ul[data-type="taskList"] li {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.25rem;
     margin: 0.25rem 0;
 }
@@ -64,13 +64,13 @@ h6.is-editor-empty {
     margin: 0;
     user-select: none;
     padding: 0;
-    flex-shrink: 0;
 }
 
 .ProseMirror ul[data-type="taskList"] li > div {
-    flex: 0 1 auto;
+    flex: 1;
     margin: 0;
     padding: 0;
+    min-width: 1px; /* Força o texto a ficar próximo do checkbox */
     word-break: break-word;
 }
 
