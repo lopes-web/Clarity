@@ -51,14 +51,11 @@ export const extensions = [
         heading: {
             levels: [1, 2, 3],
             HTMLAttributes: {
-                1: {
-                    class: 'text-4xl mb-4'
-                },
-                2: {
-                    class: 'text-3xl mb-3'
-                },
-                3: {
-                    class: 'text-2xl mb-2'
+                class: 'font-bold',
+                levels: {
+                    1: 'text-4xl mb-4',
+                    2: 'text-3xl mb-3',
+                    3: 'text-2xl mb-2'
                 }
             }
         },
