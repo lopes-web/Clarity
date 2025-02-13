@@ -128,18 +128,7 @@ export const extensions = [
         multicolor: true,
     }),
     Heading.configure({
-        levels: [1, 2, 3],
-        HTMLAttributes: (attributes) => {
-            const level = attributes.level as number;
-            const classes = {
-                1: 'text-4xl mb-4',
-                2: 'text-3xl mb-3',
-                3: 'text-2xl mb-2'
-            };
-            return {
-                class: `font-normal ${classes[level as keyof typeof classes] || ''}`
-            };
-        }
+        levels: [1, 2, 3]
     }),
     KeyboardShortcuts,
 ]; 
