@@ -51,13 +51,16 @@ export const extensions = [
         heading: {
             levels: [1, 2, 3],
             HTMLAttributes: {
-                class: 'font-bold',
-                levels: {
-                    1: 'text-3xl',
-                    2: 'text-2xl',
-                    3: 'text-xl',
+                1: {
+                    class: 'text-4xl mb-4'
+                },
+                2: {
+                    class: 'text-3xl mb-3'
+                },
+                3: {
+                    class: 'text-2xl mb-2'
                 }
-            },
+            }
         },
         bulletList: {
             HTMLAttributes: {
