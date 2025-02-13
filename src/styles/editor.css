@@ -54,21 +54,23 @@ h6.is-editor-empty {
 }
 
 .ProseMirror ul[data-type="taskList"] li {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.25rem;
     margin: 0.25rem 0;
     padding-left: 0;
+    width: 100%;
 }
 
 .ProseMirror ul[data-type="taskList"] li > label {
     margin: 0;
     user-select: none;
     padding: 0;
+    display: inline-block;
 }
 
 .ProseMirror ul[data-type="taskList"] li > div {
-    flex: 1;
+    display: inline-block;
     margin: 0;
     padding: 0;
     word-break: break-word;
