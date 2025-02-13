@@ -170,7 +170,7 @@ const TabSystem = ({ onTabOpen, onAllTabsClose }: TabSystemProps) => {
       </div>
 
       {activeTab && (
-        <div className="flex-1 bg-white">
+        <div className="flex-1 bg-white border-0">
           <RichTextEditor
             content={activeTab.content}
             onChange={(content) => updateTabContent(activeTab.id, content)}
