@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
-import { Plus, Edit2, Trash, Check, CheckCircle2, Calendar as CalendarIcon, Clock, AlertCircle } from "lucide-react";
+import { Plus, Edit2, Trash, Check, CheckCircle2, Calendar as CalendarIcon, Clock, AlertCircle, Trophy } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,7 @@ import { useEvents } from "@/components/EventProvider";
 import type { Event as CalendarEvent } from "@/components/EventProvider";
 import { format, isFuture, compareAsc, startOfWeek, endOfWeek, isWithinInterval, startOfDay, isAfter, isBefore } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { toast } from "sonner";
 import {
@@ -27,7 +27,7 @@ import {
 } from "@/lib/disciplines";
 import { AchievementsDialog } from "./AchievementsDialog";
 import { supabase } from "@/lib/supabase";
-import { unlockAchievement } from "@/lib/achievements";
+import { unlockAchievement, getUserAchievements } from "@/lib/achievements";
 
 interface Course {
   id: number;
@@ -139,6 +139,13 @@ const Dashboard = () => {
   const [isAddingGrade, setIsAddingGrade] = useState(false);
   const [courseToDelete, setCourseToDelete] = useState<Discipline | null>(null);
   const [isAddingCourse, setIsAddingCourse] = useState(false);
+  const [stats, setStats] = useState({
+    disciplineCount: 0,
+    pendingActivities: 0,
+    totalCredits: 0,
+    unlockedAchievements: 0,
+    totalAchievements: 0
+  });
 
   const form = useForm<CourseFormData>({
     defaultValues: {
@@ -177,6 +184,26 @@ const Dashboard = () => {
   // Usar loadDisciplines no useEffect
   useEffect(() => {
     loadDisciplines();
+  }, [user]);
+
+  useEffect(() => {
+    async function loadStats() {
+      if (!user) return;
+
+      // Carregar conquistas
+      const achievements = await getUserAchievements(user.id);
+      const unlocked = achievements.filter(a => a.unlockedAt).length;
+
+      setStats({
+        disciplineCount: 1, // Temporário
+        pendingActivities: 0, // Temporário
+        totalCredits: 4, // Temporário
+        unlockedAchievements: unlocked,
+        totalAchievements: achievements.length
+      });
+    }
+
+    loadStats();
   }, [user]);
 
   const addCourse = async (data: CourseFormData) => {
@@ -319,9 +346,6 @@ const Dashboard = () => {
             subtitle="Créditos matriculados"
             className="bg-[rgb(230,202,255)]"
           />
-          <div className="absolute top-2 right-2">
-            <AchievementsDialog />
-          </div>
         </div>
         <MetricCard
           title="Status"
