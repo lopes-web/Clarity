@@ -1,44 +1,50 @@
 /* Editor Styles */
 .ProseMirror h1 {
-    font-size: 36px; /* text-4xl */
-    line-height: 40px;
-    margin-bottom: 1rem; /* mb-4 */
-    font-weight: normal;
+    font-size: 36px !important; /* text-4xl */
+    line-height: 40px !important;
+    margin-bottom: 1rem !important; /* mb-4 */
+    font-weight: normal !important;
+    font-family: inherit !important;
 }
 
 .ProseMirror h2 {
-    font-size: 30px; /* text-3xl */
-    line-height: 36px;
-    margin-bottom: 0.75rem; /* mb-3 */
-    font-weight: normal;
+    font-size: 30px !important; /* text-3xl */
+    line-height: 36px !important;
+    margin-bottom: 0.75rem !important; /* mb-3 */
+    font-weight: normal !important;
+    font-family: inherit !important;
 }
 
 .ProseMirror h3 {
-    font-size: 24px; /* text-2xl */
-    line-height: 32px;
-    margin-bottom: 0.5rem; /* mb-2 */
-    font-weight: normal;
+    font-size: 24px !important; /* text-2xl */
+    line-height: 32px !important;
+    margin-bottom: 0.5rem !important; /* mb-2 */
+    font-weight: normal !important;
+    font-family: inherit !important;
 }
 
 .ProseMirror h4 {
-    font-size: 20px; /* text-xl */
-    line-height: 28px;
-    margin-bottom: 0.5rem; /* mb-2 */
-    font-weight: normal;
+    font-size: 20px !important; /* text-xl */
+    line-height: 28px !important;
+    margin-bottom: 0.5rem !important; /* mb-2 */
+    font-weight: normal !important;
+    font-family: inherit !important;
 }
 
 .ProseMirror h5 {
-    font-size: 16px; /* text-base */
-    line-height: 24px;
-    margin-bottom: 0.5rem; /* mb-2 */
-    font-weight: normal;
+    font-size: 16px !important; /* text-base */
+    line-height: 24px !important;
+    margin-bottom: 0.5rem !important; /* mb-2 */
+    font-weight: normal !important;
+    font-family: inherit !important;
 }
 
 .ProseMirror h6 {
-    font-size: 14px; /* text-sm */
-    line-height: 20px;
-    margin-bottom: 0.5rem; /* mb-2 */
-    font-weight: normal;
+    font-size: 14px !important; /* text-sm */
+    line-height: 20px !important;
+    margin-bottom: 0.5rem !important; /* mb-2 */
+    font-weight: normal !important;
+    font-family: inherit !important;
 }
 
 /* Task List Styles */
