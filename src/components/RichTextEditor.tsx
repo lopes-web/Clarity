@@ -122,7 +122,7 @@ export function RichTextEditor({
 
     return (
         <div className={cn(
-            'relative w-full rounded-lg border bg-background p-4 h-[calc(100vh-8rem)]',
+            'relative w-full bg-background p-4 h-[calc(100vh-8rem)]',
             isDarkMode && 'dark',
             isFocusMode && 'prose-lg'
         )}>
