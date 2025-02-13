@@ -4,7 +4,7 @@ import { RichTextEditor } from "./RichTextEditor";
 import { EditorSettings } from "./EditorSettings";
 import { NoteTitle } from "./NoteTitle";
 import { TabContextMenu } from "./TabContextMenu";
-import { ImportMenu } from "./ImportMenu";
+import { ExportButton } from "./ExportButton";
 
 interface Tab {
   id: string;
@@ -113,10 +113,6 @@ const TabSystem = ({ onTabOpen, onAllTabsClose }: TabSystemProps) => {
     onTabOpen(tabId);
   };
 
-  const handleImport = (title: string, content: string) => {
-    createNewTab(title, content);
-  };
-
   const activeTab = tabs.find((tab) => tab.id === activeTabId);
 
   return (
@@ -159,7 +155,9 @@ const TabSystem = ({ onTabOpen, onAllTabsClose }: TabSystemProps) => {
           ))}
         </div>
         <div className="flex items-center gap-2 px-2">
-          <ImportMenu onImport={handleImport} />
+          {activeTab && editor && (
+            <ExportButton editor={editor} />
+          )}
           <EditorSettings />
           <button
             onClick={() => createNewTab()}
