@@ -127,25 +127,25 @@ h6.is-editor-empty {
 }
 
 .ProseMirror mark[data-color="roxo"] {
-    background-color: #9b87f5;
+    background-color: rgba(155, 135, 245, 0.4);
 }
 
 .ProseMirror mark[data-color="rosa"] {
-    background-color: #f472b6;
+    background-color: rgba(244, 114, 182, 0.4);
 }
 
 .ProseMirror mark[data-color="verde"] {
-    background-color: #22c55e;
+    background-color: rgba(34, 197, 94, 0.4);
 }
 
 .ProseMirror mark[data-color="amarelo"] {
-    background-color: #f59e0b;
+    background-color: rgba(245, 158, 11, 0.4);
 }
 
 .ProseMirror mark[data-color="vermelho"] {
-    background-color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.4);
 }
 
 .ProseMirror mark[data-color="azul"] {
-    background-color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.4);
 } 
