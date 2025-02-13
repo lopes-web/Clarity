@@ -1,7 +1,11 @@
-
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
-import { Textarea } from "./ui/textarea";
+import { RichTextEditor } from "./RichTextEditor";
+import { EditorSettings } from "./EditorSettings";
+import { NoteTitle } from "./NoteTitle";
+import { TabContextMenu } from "./TabContextMenu";
+import { ExportMenu } from "./ExportMenu";
+import { ImportMenu } from "./ImportMenu";
 
 interface Tab {
   id: string;
@@ -18,19 +22,19 @@ const TabSystem = ({ onTabOpen, onAllTabsClose }: TabSystemProps) => {
   const [tabs, setTabs] = useState<Tab[]>([]);
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
 
-  const createNewTab = () => {
+  const createNewTab = (title: string = "Nova nota", content: string = "") => {
     const newTab = {
       id: Date.now().toString(),
-      title: "Nova nota",
-      content: "",
+      title,
+      content,
     };
     setTabs([...tabs, newTab]);
     setActiveTabId(newTab.id);
     onTabOpen(newTab.id);
   };
 
-  const closeTab = (tabId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const closeTab = (tabId: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     setTabs(tabs.filter((tab) => tab.id !== tabId));
     if (activeTabId === tabId) {
       const nextTabId = tabs[tabs.length - 2]?.id || null;
@@ -38,6 +42,53 @@ const TabSystem = ({ onTabOpen, onAllTabsClose }: TabSystemProps) => {
       if (!nextTabId) {
         onAllTabsClose();
       }
+    }
+  };
+
+  const closeOtherTabs = (tabId: string) => {
+    setTabs(tabs.filter((tab) => tab.id === tabId));
+    setActiveTabId(tabId);
+  };
+
+  const closeAllTabs = () => {
+    setTabs([]);
+    setActiveTabId(null);
+    onAllTabsClose();
+  };
+
+  const moveTabLeft = (tabId: string) => {
+    const tabIndex = tabs.findIndex((tab) => tab.id === tabId);
+    if (tabIndex > 0) {
+      const newTabs = [...tabs];
+      const tab = newTabs[tabIndex];
+      newTabs[tabIndex] = newTabs[tabIndex - 1];
+      newTabs[tabIndex - 1] = tab;
+      setTabs(newTabs);
+    }
+  };
+
+  const moveTabRight = (tabId: string) => {
+    const tabIndex = tabs.findIndex((tab) => tab.id === tabId);
+    if (tabIndex < tabs.length - 1) {
+      const newTabs = [...tabs];
+      const tab = newTabs[tabIndex];
+      newTabs[tabIndex] = newTabs[tabIndex + 1];
+      newTabs[tabIndex + 1] = tab;
+      setTabs(newTabs);
+    }
+  };
+
+  const duplicateTab = (tabId: string) => {
+    const tab = tabs.find((tab) => tab.id === tabId);
+    if (tab) {
+      const newTab = {
+        ...tab,
+        id: Date.now().toString(),
+        title: `${tab.title} (cópia)`,
+      };
+      setTabs([...tabs, newTab]);
+      setActiveTabId(newTab.id);
+      onTabOpen(newTab.id);
     }
   };
 
@@ -49,52 +100,88 @@ const TabSystem = ({ onTabOpen, onAllTabsClose }: TabSystemProps) => {
     );
   };
 
+  const updateTabTitle = (tabId: string, newTitle: string) => {
+    setTabs(
+      tabs.map((tab) =>
+        tab.id === tabId ? { ...tab, title: newTitle } : tab
+      )
+    );
+  };
+
   const handleTabClick = (tabId: string) => {
     setActiveTabId(tabId);
     onTabOpen(tabId);
+  };
+
+  const handleImport = (title: string, content: string) => {
+    createNewTab(title, content);
   };
 
   const activeTab = tabs.find((tab) => tab.id === activeTabId);
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex items-center border-b border-gray-200 bg-white">
+      <div className="flex items-center justify-between border-b border-gray-200 bg-white">
         <div className="flex-1 flex items-center overflow-x-auto">
-          {tabs.map((tab) => (
-            <div
+          {tabs.map((tab, index) => (
+            <TabContextMenu
               key={tab.id}
-              onClick={() => handleTabClick(tab.id)}
-              className={`flex items-center px-4 py-2 cursor-pointer border-r border-gray-200 min-w-[120px] ${
-                activeTabId === tab.id
+              onClose={() => closeTab(tab.id)}
+              onCloseOthers={() => closeOtherTabs(tab.id)}
+              onCloseAll={closeAllTabs}
+              onMoveLeft={() => moveTabLeft(tab.id)}
+              onMoveRight={() => moveTabRight(tab.id)}
+              onDuplicate={() => duplicateTab(tab.id)}
+              canMoveLeft={index > 0}
+              canMoveRight={index < tabs.length - 1}
+              hasOtherTabs={tabs.length > 1}
+            >
+              <div
+                onClick={() => handleTabClick(tab.id)}
+                className={`flex items-center py-2 cursor-pointer border-r border-gray-200 min-w-[120px] ${activeTabId === tab.id
                   ? "bg-primary text-white"
                   : "bg-white hover:bg-gray-50"
-              }`}
-            >
-              <span className="truncate flex-1">{tab.title}</span>
-              <button
-                onClick={(e) => closeTab(tab.id, e)}
-                className="ml-2 hover:text-red-500"
+                  }`}
               >
-                <X size={16} />
-              </button>
-            </div>
+                <NoteTitle
+                  title={tab.title}
+                  onChange={(newTitle) => updateTabTitle(tab.id, newTitle)}
+                  className={activeTabId === tab.id ? "text-white" : ""}
+                />
+                <button
+                  onClick={(e) => closeTab(tab.id, e)}
+                  className="ml-2 hover:text-red-500 px-2"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            </TabContextMenu>
           ))}
         </div>
-        <button
-          onClick={createNewTab}
-          className="p-2 hover:bg-gray-100 text-gray-600"
-          title="Nova nota"
-        >
-          <Plus size={20} />
-        </button>
+        <div className="flex items-center gap-2 px-2">
+          <ImportMenu onImport={handleImport} />
+          {activeTab && (
+            <ExportMenu
+              content={activeTab.content}
+              title={activeTab.title}
+            />
+          )}
+          <EditorSettings />
+          <button
+            onClick={() => createNewTab()}
+            className="p-2 hover:bg-gray-100 text-gray-600"
+            title="Nova nota"
+          >
+            <Plus size={20} />
+          </button>
+        </div>
       </div>
 
       {activeTab && (
         <div className="flex-1 bg-white">
-          <Textarea
-            value={activeTab.content}
-            onChange={(e) => updateTabContent(activeTab.id, e.target.value)}
-            className="w-full h-[calc(100vh-48px)] resize-none p-4 border-none focus:ring-0"
+          <RichTextEditor
+            content={activeTab.content}
+            onChange={(content) => updateTabContent(activeTab.id, content)}
             placeholder="Digite sua anotação aqui..."
           />
         </div>
