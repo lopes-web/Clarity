@@ -275,23 +275,50 @@ export const ACHIEVEMENTS: Achievement[] = [
     {
         id: 'semester_champion',
         title: 'Campeão do Semestre',
-        description: 'Alcançou média geral acima de 9',
+        description: 'Completou 5 atividades com nota acima de 8',
         icon: '🏆',
         rarity: 'LEGENDARY',
         xpReward: 500,
         type: 'GRADE',
         condition: {
             type: 'GRADE',
-            value: 9,
-            comparison: 'GREATER_THAN'
+            value: 5,
+            comparison: 'EQUALS'
         }
     }
 ];
 
 // Função para verificar se um achievement foi desbloqueado
-export const checkAchievement = (achievement: Achievement, value: number): boolean => {
-    const { condition } = achievement;
+export const checkAchievement = async (userId: string, type: AchievementType, value: number): Promise<void> => {
+    try {
+        // Buscar conquistas já desbloqueadas
+        const { data: unlockedAchievements } = await supabase
+            .from('user_achievements')
+            .select('achievement_id')
+            .eq('user_id', userId);
 
+        const unlockedIds = unlockedAchievements?.map(a => a.achievement_id) || [];
+
+        // Filtrar conquistas do tipo específico que ainda não foram desbloqueadas
+        const eligibleAchievements = ACHIEVEMENTS.filter(achievement =>
+            achievement.type === type &&
+            !unlockedIds.includes(achievement.id)
+        );
+
+        // Verificar cada conquista elegível
+        for (const achievement of eligibleAchievements) {
+            const shouldUnlock = checkCondition(achievement.condition, value);
+            if (shouldUnlock) {
+                await unlockAchievement(userId, achievement.id);
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao verificar conquistas:', error);
+    }
+};
+
+// Função auxiliar para verificar condição
+const checkCondition = (condition: AchievementCondition, value: number): boolean => {
     switch (condition.comparison) {
         case 'EQUALS':
             return value === condition.value;
