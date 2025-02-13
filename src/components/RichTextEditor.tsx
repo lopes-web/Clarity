@@ -32,6 +32,7 @@ import {
     Subscript as SubscriptIcon,
     Palette,
     Command,
+    Highlighter,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import {
@@ -194,6 +195,14 @@ export function RichTextEditor({
                     >
                         <Strikethrough className="h-4 w-4" />
                     </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => editor.chain().focus().toggleHighlight().run()}
+                        className={cn(editor.isActive('highlight') && 'bg-muted')}
+                    >
+                        <Highlighter className="h-4 w-4" />
+                    </Button>
 
                     <Separator orientation="vertical" className="h-8" />
 
@@ -327,7 +336,23 @@ export function RichTextEditor({
                     className={cn(
                         'prose max-w-none dark:prose-invert',
                         isFocusMode && 'prose-lg',
-                        readOnly && 'pointer-events-none'
+                        readOnly && 'pointer-events-none',
+                        'prose-headings:font-semibold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl',
+                        'prose-p:my-3',
+                        'prose-blockquote:border-l-2 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic',
+                        'prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:font-mono prose-code:text-sm',
+                        'prose-img:rounded-lg',
+                        'prose-table:border prose-table:border-border',
+                        'prose-th:border prose-th:border-border prose-th:p-2 prose-th:bg-muted',
+                        'prose-td:border prose-td:border-border prose-td:p-2',
+                        'prose-ul:my-2 prose-ul:list-disc prose-ul:pl-6',
+                        'prose-ol:my-2 prose-ol:list-decimal prose-ol:pl-6',
+                        '[&_.task-list]:my-2 [&_.task-list]:pl-2 [&_.task-list]:list-none',
+                        '[&_.task-list-item]:flex [&_.task-list-item]:items-start [&_.task-list-item]:my-1',
+                        '[&_.task-list-item>label]:flex [&_.task-list-item>label]:items-center [&_.task-list-item>label]:gap-2',
+                        '[&_.task-list-item>label>input]:mt-1',
+                        '[&_.task-list-item.checked>label>div]:text-muted-foreground [&_.task-list-item.checked>label>div]:line-through',
+                        '[&_mark]:bg-yellow-200 dark:[&_mark]:bg-yellow-800'
                     )}
                     style={{
                         fontSize: `${fontSize}px`,
@@ -373,6 +398,14 @@ export function RichTextEditor({
                         className={cn(editor.isActive('strike') && 'bg-muted')}
                     >
                         <Strikethrough className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => editor.chain().focus().toggleHighlight().run()}
+                        className={cn(editor.isActive('highlight') && 'bg-muted')}
+                    >
+                        <Highlighter className="h-4 w-4" />
                     </Button>
                     <Button
                         variant="ghost"

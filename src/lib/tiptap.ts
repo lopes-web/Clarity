@@ -17,6 +17,7 @@ import Superscript from '@tiptap/extension-superscript';
 import TextAlign from '@tiptap/extension-text-align';
 import Typography from '@tiptap/extension-typography';
 import FontFamily from '@tiptap/extension-font-family';
+import Highlight from '@tiptap/extension-highlight';
 
 export const KeyboardShortcuts = Extension.create({
     name: 'keyboard-shortcuts',
@@ -41,6 +42,7 @@ export const KeyboardShortcuts = Extension.create({
                 }
                 return true;
             },
+            'Mod-h': () => this.editor.commands.toggleHighlight(),
         };
     },
 });
@@ -60,9 +62,16 @@ export const extensions = [
             class: 'text-primary underline',
         },
     }),
-    TaskList,
+    TaskList.configure({
+        HTMLAttributes: {
+            class: 'not-prose pl-2',
+        },
+    }),
     TaskItem.configure({
         nested: true,
+        HTMLAttributes: {
+            class: 'flex items-start my-1',
+        },
     }),
     Table.configure({
         resizable: true,
@@ -85,5 +94,8 @@ export const extensions = [
     }),
     Typography,
     FontFamily,
+    Highlight.configure({
+        multicolor: true,
+    }),
     KeyboardShortcuts,
 ]; 

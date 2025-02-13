@@ -22,6 +22,7 @@ import {
     AlignCenter,
     AlignRight,
     AlignJustify,
+    Highlighter,
 } from 'lucide-react';
 
 interface EditorCommandMenuProps {
@@ -84,6 +85,11 @@ export function EditorCommandMenu({
             name: 'Tachado',
             icon: <Strikethrough className="h-4 w-4" />,
             action: () => editor.chain().focus().toggleStrike().run(),
+        },
+        {
+            name: 'Marca-texto',
+            icon: <Highlighter className="h-4 w-4" />,
+            action: () => editor.chain().focus().toggleHighlight().run(),
         },
         {
             name: 'Código',

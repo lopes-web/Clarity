@@ -27,6 +27,7 @@ import {
     Scissors,
     Clipboard,
     Trash2,
+    Highlighter,
 } from "lucide-react";
 
 interface EditorContextMenuProps {
@@ -147,6 +148,13 @@ export function EditorContextMenu({ editor, children }: EditorContextMenuProps) 
                 >
                     <Strikethrough className="h-4 w-4" />
                     <span>Tachado</span>
+                </ContextMenuItem>
+                <ContextMenuItem
+                    onClick={() => editor.chain().focus().toggleHighlight().run()}
+                    className="flex items-center gap-2"
+                >
+                    <Highlighter className="h-4 w-4" />
+                    <span>Marca-texto</span>
                 </ContextMenuItem>
                 <ContextMenuItem
                     onClick={() => editor.chain().focus().toggleCode().run()}
