@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { Achievement, getUserAchievements } from '@/lib/achievements';
 import { Trophy } from 'lucide-react';
+import { AchievementCard } from '@/components/AchievementCard';
+import Sidebar from '@/components/Sidebar';
 
 export default function Achievements() {
     const { user } = useAuth();
@@ -27,51 +29,37 @@ export default function Achievements() {
         );
     }
 
-    return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="flex items-center gap-3 mb-8">
-                <Trophy className="w-8 h-8 text-primary" />
-                <h1 className="text-2xl font-bold">Minhas Conquistas</h1>
-            </div>
+    const unlockedCount = achievements.filter(a => a.unlockedAt).length;
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {achievements.map((achievement) => (
-                    <div
-                        key={achievement.id}
-                        className={`p-4 rounded-lg border ${achievement.unlockedAt
-                            ? 'bg-primary/10 border-primary'
-                            : 'bg-muted/50 border-muted opacity-50'
-                            }`}
-                    >
-                        <div className="flex items-start justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                                <span className="text-2xl">{achievement.icon}</span>
-                                <h3 className="font-semibold">{achievement.title}</h3>
+    return (
+        <div className="flex h-screen bg-gray-50">
+            <Sidebar />
+            <main className="flex-1 overflow-hidden flex flex-col">
+                <div className="flex-1 overflow-y-auto">
+                    <div className="container mx-auto px-4 py-8">
+                        <div className="flex items-center justify-between mb-8">
+                            <div className="flex items-center gap-3">
+                                <Trophy className="w-8 h-8 text-primary" />
+                                <div>
+                                    <h1 className="text-2xl font-bold">Minhas Conquistas</h1>
+                                    <p className="text-sm text-muted-foreground">
+                                        {unlockedCount} de {achievements.length} conquistas desbloqueadas
+                                    </p>
+                                </div>
                             </div>
-                            <span className={`text-xs px-2 py-1 rounded-full ${achievement.rarity === 'LEGENDARY' ? 'bg-yellow-500/20 text-yellow-500' :
-                                achievement.rarity === 'EPIC' ? 'bg-purple-500/20 text-purple-500' :
-                                    achievement.rarity === 'RARE' ? 'bg-blue-500/20 text-blue-500' :
-                                        'bg-green-500/20 text-green-500'
-                                }`}>
-                                {achievement.rarity}
-                            </span>
                         </div>
 
-                        <p className="text-sm text-muted-foreground mb-2">
-                            {achievement.description}
-                        </p>
-
-                        <div className="flex items-center justify-between text-sm">
-                            <span className="text-primary">+{achievement.xpReward} XP</span>
-                            {achievement.unlockedAt && (
-                                <span className="text-muted-foreground">
-                                    Desbloqueado em {new Date(achievement.unlockedAt).toLocaleDateString()}
-                                </span>
-                            )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {achievements.map((achievement) => (
+                                <AchievementCard
+                                    key={achievement.id}
+                                    achievement={achievement}
+                                />
+                            ))}
                         </div>
                     </div>
-                ))}
-            </div>
+                </div>
+            </main>
         </div>
     );
 } 
