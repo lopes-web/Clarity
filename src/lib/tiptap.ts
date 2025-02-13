@@ -87,7 +87,7 @@ export const extensions = [
     TaskItem.configure({
         nested: true,
         HTMLAttributes: {
-            class: 'flex items-start gap-2 my-1',
+            class: 'flex items-start gap-1 my-1',
         },
     }),
     Table.configure({
