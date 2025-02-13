@@ -87,7 +87,7 @@ export const extensions = [
     TaskItem.configure({
         nested: true,
         HTMLAttributes: {
-            class: 'inline-flex items-center my-1',
+            class: 'flex items-center my-1',
         },
     }),
     Table.configure({
