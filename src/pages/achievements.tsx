@@ -1,21 +1,34 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/AuthProvider';
-import { Achievement, getUserAchievements } from '@/lib/achievements';
+import { Achievement, ACHIEVEMENTS } from '@/lib/achievements';
 import { Trophy } from 'lucide-react';
 import { AchievementCard } from '@/components/AchievementCard';
 import Sidebar from '@/components/Sidebar';
+import { supabase } from '@/lib/supabase';
 
 export default function Achievements() {
     const { user } = useAuth();
-    const [achievements, setAchievements] = useState<Achievement[]>([]);
+    const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function loadAchievements() {
             if (!user) return;
-            const userAchievements = await getUserAchievements(user.id);
-            setAchievements(userAchievements);
-            setLoading(false);
+
+            try {
+                const { data, error } = await supabase
+                    .from('user_achievements')
+                    .select('achievement_id, unlocked_at')
+                    .eq('user_id', user.id);
+
+                if (error) throw error;
+
+                setUnlockedAchievements(data.map(a => a.achievement_id));
+            } catch (error) {
+                console.error('Erro ao carregar conquistas:', error);
+            } finally {
+                setLoading(false);
+            }
         }
 
         loadAchievements();
@@ -29,7 +42,12 @@ export default function Achievements() {
         );
     }
 
-    const unlockedCount = achievements.filter(a => a.unlockedAt).length;
+    const achievementsWithStatus = ACHIEVEMENTS.map(achievement => ({
+        ...achievement,
+        unlockedAt: unlockedAchievements.includes(achievement.id) ? new Date().toISOString() : undefined
+    }));
+
+    const unlockedCount = unlockedAchievements.length;
 
     return (
         <div className="flex h-screen bg-gray-50">
@@ -43,14 +61,14 @@ export default function Achievements() {
                                 <div>
                                     <h1 className="text-2xl font-bold">Minhas Conquistas</h1>
                                     <p className="text-sm text-muted-foreground">
-                                        {unlockedCount} de {achievements.length} conquistas desbloqueadas
+                                        {unlockedCount} de {ACHIEVEMENTS.length} conquistas desbloqueadas
                                     </p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {achievements.map((achievement) => (
+                            {achievementsWithStatus.map((achievement) => (
                                 <AchievementCard
                                     key={achievement.id}
                                     achievement={achievement}
