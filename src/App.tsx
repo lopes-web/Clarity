@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './components/AuthProvider';
 import { AchievementProvider } from './components/AchievementProvider';
+import { EventProvider } from './components/EventProvider';
 import { Toaster } from 'sonner';
 import Index from './pages/Index';
 import Login from './pages/login';
@@ -16,19 +17,21 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <AchievementProvider>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-of-service" element={<TermsOfService />} />
+          <EventProvider>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
 
-            <Route element={<ProtectedRoute />}>
-              <Route path="/" element={<Index />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/achievements" element={<Achievements />} />
-            </Route>
-          </Routes>
-          <Toaster />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/" element={<Index />} />
+                <Route path="/calendar" element={<Calendar />} />
+                <Route path="/achievements" element={<Achievements />} />
+              </Route>
+            </Routes>
+            <Toaster />
+          </EventProvider>
         </AchievementProvider>
       </AuthProvider>
     </BrowserRouter>
