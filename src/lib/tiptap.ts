@@ -50,12 +50,12 @@ export const KeyboardShortcuts = Extension.create({
 export const extensions = [
     StarterKit.configure({
         heading: {
+            levels: [1, 2, 3],
             HTMLAttributes: {
-                1: { class: 'text-4xl font-normal' },
-                2: { class: 'text-3xl font-normal' },
-                3: { class: 'text-2xl font-normal' }
-            },
-            levels: [1, 2, 3]
+                1: { class: 'text-4xl font-normal mb-4' },
+                2: { class: 'text-3xl font-normal mb-3' },
+                3: { class: 'text-2xl font-normal mb-2' }
+            }
         },
         bulletList: {
             HTMLAttributes: {
