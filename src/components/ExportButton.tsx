@@ -94,7 +94,8 @@ export function ExportButton({ editor }: ExportButtonProps) {
     const exportAsWord = async () => {
         try {
             // Importação dinâmica do html-to-docx
-            const HTMLtoDOCX = (await import('html-to-docx')).default;
+            const htmlToDocx = await import('html-to-docx');
+            const HTMLtoDOCX = htmlToDocx.default || htmlToDocx;
 
             const content = editor.getHTML();
 
