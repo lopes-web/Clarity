@@ -161,12 +161,34 @@ export function RichTextEditor({
                         text-align: justify;
                         color: #000;
                         background-color: #fff;
+                        padding: 0;
+                        margin: 0;
                     }
-                    h1 { font-size: 18pt; margin-bottom: 0.5cm; }
-                    h2 { font-size: 16pt; margin-top: 0.5cm; margin-bottom: 0.5cm; }
-                    h3 { font-size: 14pt; margin-top: 0.5cm; margin-bottom: 0.5cm; }
-                    h4 { font-size: 12pt; margin-top: 0.5cm; margin-bottom: 0.3cm; }
-                    p { text-indent: 1.25cm; margin-bottom: 0.5cm; }
+                    h1 { 
+                        font-size: 20pt; 
+                        margin-bottom: 0.5cm; 
+                        text-align: center;
+                    }
+                    h2 { 
+                        font-size: 16pt; 
+                        margin-top: 0.5cm; 
+                        margin-bottom: 0.5cm; 
+                    }
+                    h3 { 
+                        font-size: 14pt; 
+                        margin-top: 0.5cm; 
+                        margin-bottom: 0.5cm; 
+                    }
+                    h4 { 
+                        font-size: 12pt; 
+                        margin-top: 0.5cm; 
+                        margin-bottom: 0.3cm; 
+                    }
+                    p { 
+                        text-indent: 1.25cm; 
+                        margin-bottom: 0.5cm; 
+                        text-align: justify;
+                    }
                     blockquote {
                         font-size: 10pt;
                         line-height: 1.0;
@@ -215,7 +237,17 @@ export function RichTextEditor({
         // Criar um link para download
         const a = document.createElement('a');
         a.href = url;
-        a.download = `documento-abnt.${format === 'pdf' ? 'html' : 'html'}`;
+
+        // Definir o nome do arquivo com a extensão correta
+        if (format === 'pdf') {
+            // Para PDF, ainda usamos HTML que pode ser convertido para PDF pelo usuário
+            a.download = `documento-abnt.html`;
+            toast.success(`Documento exportado como HTML. Abra no navegador e use a função de impressão para salvar como PDF.`);
+        } else {
+            // Para Word, usamos HTML que pode ser aberto no Word
+            a.download = `documento-abnt.html`;
+            toast.success(`Documento exportado como HTML. Abra no Microsoft Word para editar.`);
+        }
 
         // Adicionar o link ao documento e clicar nele
         document.body.appendChild(a);
@@ -226,8 +258,6 @@ export function RichTextEditor({
 
         // Liberar o URL
         URL.revokeObjectURL(url);
-
-        toast.success(`Documento exportado como ${format.toUpperCase()}`);
     }, [editor, fontFamily]);
 
     if (!editor) {

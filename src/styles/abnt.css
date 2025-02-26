@@ -24,36 +24,27 @@
     outline: none;
 }
 
-/* Títulos */
+/* Títulos - Tamanhos claramente diferenciados */
 .ProseMirror h1 {
-    font-size: 14pt !important;
-    font-weight: bold !important;
+    font-size: 20pt !important;
+    margin-bottom: 0.5cm !important;
     text-align: center !important;
-    margin-bottom: 1.5cm !important;
-    text-transform: uppercase !important;
 }
 
 .ProseMirror h2 {
-    font-size: 14pt !important;
-    font-weight: bold !important;
-    text-align: center !important; /* Alterado para centralizado conforme ABNT */
-    margin-top: 1.5cm !important;
+    font-size: 16pt !important;
+    margin-top: 0.5cm !important;
     margin-bottom: 0.5cm !important;
-    text-transform: uppercase !important;
 }
 
 .ProseMirror h3 {
-    font-size: 12pt !important;
-    font-weight: bold !important;
-    text-align: center !important; /* Alterado para centralizado conforme ABNT */
-    margin-top: 1cm !important;
+    font-size: 14pt !important;
+    margin-top: 0.5cm !important;
     margin-bottom: 0.5cm !important;
 }
 
 .ProseMirror h4 {
     font-size: 12pt !important;
-    font-weight: bold !important;
-    text-align: left !important;
     margin-top: 0.5cm !important;
     margin-bottom: 0.3cm !important;
 }
