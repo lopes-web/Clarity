@@ -8,137 +8,137 @@ import {
     DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { toast } from 'sonner';
+import { useNotesStore } from '@/lib/stores/useNotesStore';
+import { useCallback } from 'react';
 
 interface ExportButtonProps {
     editor: Editor;
 }
 
 export function ExportButton({ editor }: ExportButtonProps) {
-    const exportAsPDF = async () => {
-        try {
-            // Importação dinâmica do jsPDF
-            const { default: jsPDF } = await import('jspdf');
+    const { fontFamily } = useNotesStore();
 
-            // Inicializa o documento PDF
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4',
-                putOnlyUsedFonts: true,
-            });
+    const exportDocument = useCallback((format: 'pdf' | 'docx') => {
+        if (!editor) return;
 
-            const content = editor.getHTML();
+        // Obter o conteúdo HTML do editor
+        const content = editor.getHTML();
 
-            // Cria um elemento temporário para renderizar o conteúdo
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = content;
-
-            // Processa o conteúdo para manter a formatação básica
-            const processNode = (node: Node, level = 0): string => {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    return node.textContent || '';
-                }
-
-                const element = node as Element;
-                let text = '';
-
-                // Adiciona espaçamento para listas
-                if (element.tagName === 'LI') {
-                    text += '  '.repeat(level) + '• ';
-                }
-
-                // Processa os nós filhos
-                for (const child of Array.from(node.childNodes)) {
-                    text += processNode(child, level + 1);
-                }
-
-                // Adiciona quebras de linha apropriadas
-                if (['P', 'H1', 'H2', 'H3', 'LI'].includes(element.tagName)) {
-                    text += '\n';
-                    if (element.tagName.startsWith('H')) {
-                        text += '\n'; // Espaço extra para títulos
+        // Criar um novo documento HTML com os estilos ABNT incorporados
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Documento ABNT</title>
+                <style>
+                    @page {
+                        size: A4;
+                        margin: 2cm 2cm 2cm 3cm;
                     }
-                }
-                if (element.tagName === 'BR') {
-                    text += '\n';
-                }
+                    body {
+                        font-family: ${fontFamily};
+                        font-size: 12pt;
+                        line-height: 1.5;
+                        text-align: justify;
+                        color: #000;
+                        background-color: #fff;
+                        padding: 0;
+                        margin: 0;
+                    }
+                    h1 {
+                        font-size: 20pt;
+                        margin-bottom: 0.5cm;
+                        text-align: center;
+                    }
+                    h2 {
+                        font-size: 16pt;
+                        margin-top: 0.5cm;
+                        margin-bottom: 0.5cm;
+                    }
+                    h3 {
+                        font-size: 14pt;
+                        margin-top: 0.5cm;
+                        margin-bottom: 0.5cm;
+                    }
+                    h4 {
+                        font-size: 12pt;
+                        margin-top: 0.5cm;
+                        margin-bottom: 0.3cm;
+                    }
+                    p {
+                        text-indent: 1.25cm;
+                        margin-bottom: 0.5cm;
+                        text-align: justify;
+                    }
+                    blockquote {
+                        font-size: 10pt;
+                        line-height: 1.0;
+                        margin-left: 4cm;
+                        margin-right: 0;
+                        padding-left: 0;
+                        border-left: none;
+                        margin-top: 0.5cm;
+                        margin-bottom: 0.5cm;
+                    }
+                    ul, ol {
+                        margin-top: 0.5cm;
+                        margin-bottom: 0.5cm;
+                        padding-left: 1.25cm;
+                    }
+                    table {
+                        border-collapse: collapse;
+                        width: 100%;
+                        margin-top: 0.5cm;
+                        margin-bottom: 0.5cm;
+                    }
+                    th, td {
+                        border: 1px solid #000;
+                        padding: 0.2cm;
+                        font-size: 10pt;
+                    }
+                    img {
+                        display: block;
+                        margin: 0.5cm auto;
+                        max-width: 100%;
+                    }
+                </style>
+            </head>
+            <body>
+                ${content}
+            </body>
+            </html>
+        `;
 
-                return text;
-            };
+        // Criar um Blob com o conteúdo HTML
+        const blob = new Blob([htmlContent], { type: 'text/html' });
 
-            const processedText = processNode(tempDiv);
+        // Criar um URL para o Blob
+        const url = URL.createObjectURL(blob);
 
-            // Configurações da página
-            const margin = 20; // margens em mm
-            const pageWidth = doc.internal.pageSize.getWidth();
+        // Criar um link para download
+        const a = document.createElement('a');
+        a.href = url;
 
-            // Configurações do texto
-            doc.setFont('helvetica');
-            doc.setFontSize(11);
-
-            // Divide o texto em linhas que cabem na página
-            const lines = doc.splitTextToSize(processedText, pageWidth - 2 * margin);
-
-            // Adiciona as linhas à página
-            doc.text(lines, margin, margin);
-
-            // Download do arquivo
-            doc.save('documento.pdf');
-            toast.success('PDF exportado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao exportar PDF:', error);
-            toast.error('Erro ao exportar PDF');
+        // Definir o nome do arquivo com a extensão correta
+        if (format === 'pdf') {
+            a.download = `documento-abnt.html`;
+            toast.success(`Documento exportado como HTML. Abra no navegador e use a função de impressão para salvar como PDF.`);
+        } else {
+            a.download = `documento-abnt.html`;
+            toast.success(`Documento exportado como HTML. Abra no Microsoft Word para editar.`);
         }
-    };
 
-    const exportAsWord = async () => {
-        try {
-            // Importação dinâmica do html-to-docx
-            const htmlToDocx = await import('html-to-docx');
-            const HTMLtoDOCX = htmlToDocx.default || htmlToDocx;
+        // Adicionar o link ao documento e clicar nele
+        document.body.appendChild(a);
+        a.click();
 
-            const content = editor.getHTML();
+        // Remover o link do documento
+        document.body.removeChild(a);
 
-            // Configurações do documento Word
-            const options = {
-                orientation: 'portrait',
-                margins: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
-                font: 'Arial',
-                title: 'Documento',
-                styleMap: [
-                    "h1 => h1:fresh",
-                    "h2 => h2:fresh",
-                    "h3 => h3:fresh",
-                    "p => p:fresh",
-                    "ul => ul:fresh",
-                    "ol => ol:fresh",
-                    "code => code:fresh",
-                    "blockquote => blockquote:fresh"
-                ],
-                table: { row: { cantSplit: true } },
-                footer: false,
-                pageNumber: false
-            };
-
-            // Gera o arquivo .docx
-            const buffer = await HTMLtoDOCX(content, null, options);
-
-            // Cria um blob e faz o download
-            const blob = new Blob([buffer], {
-                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'documento.docx';
-            link.click();
-            window.URL.revokeObjectURL(url);
-            toast.success('Documento Word exportado com sucesso!');
-        } catch (error) {
-            console.error('Erro ao exportar Word:', error);
-            toast.error('Erro ao exportar Word');
-        }
-    };
+        // Liberar o URL
+        URL.revokeObjectURL(url);
+    }, [editor, fontFamily]);
 
     return (
         <DropdownMenu>
@@ -149,13 +149,13 @@ export function ExportButton({ editor }: ExportButtonProps) {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-                <DropdownMenuItem onClick={exportAsPDF}>
+                <DropdownMenuItem onClick={() => exportDocument('pdf')}>
                     Exportar como PDF
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={exportAsWord}>
+                <DropdownMenuItem onClick={() => exportDocument('docx')}>
                     Exportar como Word
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     );
-} 
+}
