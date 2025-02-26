@@ -32,108 +32,134 @@ export function ExportButton({ editor }: ExportButtonProps) {
             // Criar um elemento temporário para renderizar o conteúdo
             const tempDiv = document.createElement('div');
             tempDiv.className = 'abnt-export-container';
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.left = '-9999px';
+            tempDiv.style.top = '0';
+            tempDiv.style.width = '210mm'; // Largura A4
+            tempDiv.style.padding = '2cm 2cm 2cm 3cm';
+            tempDiv.style.backgroundColor = '#ffffff';
+            tempDiv.style.fontFamily = fontFamily;
+            tempDiv.style.fontSize = '12pt';
+            tempDiv.style.lineHeight = '1.5';
+            tempDiv.style.textAlign = 'justify';
+            tempDiv.style.color = '#000000';
+            tempDiv.style.boxSizing = 'border-box';
             tempDiv.innerHTML = content;
 
             // Aplicar estilos ABNT ao elemento temporário
             const style = document.createElement('style');
             style.textContent = `
+                @font-face {
+                    font-family: 'Times New Roman';
+                    src: local('Times New Roman');
+                    font-weight: normal;
+                    font-style: normal;
+                }
+                
                 .abnt-export-container {
-                    font-family: ${fontFamily};
-                    font-size: 12pt;
-                    line-height: 1.5;
-                    text-align: justify;
-                    color: #000;
-                    background-color: #fff;
-                    padding: 2cm 2cm 2cm 3cm;
-                    width: 210mm; /* Largura A4 */
-                    box-sizing: border-box;
+                    font-family: ${fontFamily} !important;
+                    font-size: 12pt !important;
+                    line-height: 1.5 !important;
+                    text-align: justify !important;
+                    color: #000 !important;
+                    background-color: #fff !important;
+                    padding: 2cm 2cm 2cm 3cm !important;
+                    width: 210mm !important; /* Largura A4 */
+                    box-sizing: border-box !important;
+                }
+                .abnt-export-container * {
+                    font-family: ${fontFamily} !important;
                 }
                 .abnt-export-container h1 {
-                    font-size: 20pt;
-                    font-weight: bold;
-                    margin-bottom: 0.5cm;
-                    text-align: center;
+                    font-size: 20pt !important;
+                    font-weight: bold !important;
+                    margin-bottom: 0.5cm !important;
+                    text-align: center !important;
+                    width: 100% !important;
                 }
                 .abnt-export-container h2 {
-                    font-size: 16pt;
-                    font-weight: bold;
-                    margin-top: 0.5cm;
-                    margin-bottom: 0.5cm;
+                    font-size: 16pt !important;
+                    font-weight: bold !important;
+                    margin-top: 0.5cm !important;
+                    margin-bottom: 0.5cm !important;
                 }
                 .abnt-export-container h3 {
-                    font-size: 14pt;
-                    font-weight: bold;
-                    margin-top: 0.5cm;
-                    margin-bottom: 0.5cm;
+                    font-size: 14pt !important;
+                    font-weight: bold !important;
+                    margin-top: 0.5cm !important;
+                    margin-bottom: 0.5cm !important;
                 }
                 .abnt-export-container h4 {
-                    font-size: 12pt;
-                    font-weight: bold;
-                    margin-top: 0.5cm;
-                    margin-bottom: 0.3cm;
+                    font-size: 12pt !important;
+                    font-weight: bold !important;
+                    margin-top: 0.5cm !important;
+                    margin-bottom: 0.3cm !important;
                 }
                 .abnt-export-container p {
-                    text-indent: 1.25cm;
-                    margin-bottom: 0.5cm;
-                    text-align: justify;
+                    text-indent: 1.25cm !important;
+                    margin-bottom: 0.5cm !important;
+                    text-align: justify !important;
                 }
                 .abnt-export-container blockquote {
-                    font-size: 10pt;
-                    line-height: 1.0;
-                    margin-left: 4cm;
-                    margin-right: 0;
-                    padding-left: 0;
-                    border-left: none;
-                    margin-top: 0.5cm;
-                    margin-bottom: 0.5cm;
+                    font-size: 10pt !important;
+                    line-height: 1.0 !important;
+                    margin-left: 4cm !important;
+                    margin-right: 0 !important;
+                    padding-left: 0 !important;
+                    border-left: none !important;
+                    margin-top: 0.5cm !important;
+                    margin-bottom: 0.5cm !important;
                 }
                 .abnt-export-container ul, 
                 .abnt-export-container ol {
-                    margin-top: 0.5cm;
-                    margin-bottom: 0.5cm;
-                    padding-left: 1.25cm;
+                    margin-top: 0.5cm !important;
+                    margin-bottom: 0.5cm !important;
+                    padding-left: 1.25cm !important;
                 }
                 .abnt-export-container table {
-                    border-collapse: collapse;
-                    width: 100%;
-                    margin-top: 0.5cm;
-                    margin-bottom: 0.5cm;
+                    border-collapse: collapse !important;
+                    width: 100% !important;
+                    margin-top: 0.5cm !important;
+                    margin-bottom: 0.5cm !important;
                 }
                 .abnt-export-container th,
                 .abnt-export-container td {
-                    border: 1px solid #000;
-                    padding: 0.2cm;
-                    font-size: 10pt;
+                    border: 1px solid #000 !important;
+                    padding: 0.2cm !important;
+                    font-size: 10pt !important;
                 }
                 .abnt-export-container img {
-                    display: block;
-                    margin: 0.5cm auto;
-                    max-width: 100%;
+                    display: block !important;
+                    margin: 0.5cm auto !important;
+                    max-width: 100% !important;
                 }
             `;
 
             document.head.appendChild(style);
             document.body.appendChild(tempDiv);
 
+            // Garantir que a fonte seja carregada antes de renderizar
+            await document.fonts.ready;
+
             // Aplicar estilos diretamente aos elementos usando setAttribute
             const headings = tempDiv.querySelectorAll('h1, h2, h3, h4');
             headings.forEach((heading) => {
                 const htmlHeading = heading as HTMLElement;
                 if (heading.tagName === 'H1') {
-                    htmlHeading.setAttribute('style', `font-size: 20pt; text-align: center; font-family: ${fontFamily}; font-weight: bold;`);
+                    htmlHeading.setAttribute('style', `font-size: 20pt !important; text-align: center !important; font-family: ${fontFamily} !important; font-weight: bold !important; width: 100% !important; display: block !important;`);
                 } else if (heading.tagName === 'H2') {
-                    htmlHeading.setAttribute('style', `font-size: 16pt; font-family: ${fontFamily}; font-weight: bold;`);
+                    htmlHeading.setAttribute('style', `font-size: 16pt !important; font-family: ${fontFamily} !important; font-weight: bold !important;`);
                 } else if (heading.tagName === 'H3') {
-                    htmlHeading.setAttribute('style', `font-size: 14pt; font-family: ${fontFamily}; font-weight: bold;`);
+                    htmlHeading.setAttribute('style', `font-size: 14pt !important; font-family: ${fontFamily} !important; font-weight: bold !important;`);
                 } else if (heading.tagName === 'H4') {
-                    htmlHeading.setAttribute('style', `font-size: 12pt; font-family: ${fontFamily}; font-weight: bold;`);
+                    htmlHeading.setAttribute('style', `font-size: 12pt !important; font-family: ${fontFamily} !important; font-weight: bold !important;`);
                 }
             });
 
             const paragraphs = tempDiv.querySelectorAll('p');
             paragraphs.forEach((p) => {
                 const htmlP = p as HTMLElement;
-                htmlP.setAttribute('style', `text-indent: 1.25cm; text-align: justify; font-family: ${fontFamily}; font-size: 12pt; line-height: 1.5;`);
+                htmlP.setAttribute('style', `text-indent: 1.25cm !important; text-align: justify !important; font-family: ${fontFamily} !important; font-size: 12pt !important; line-height: 1.5 !important;`);
             });
 
             // Método alternativo para exportar PDF
@@ -148,6 +174,13 @@ export function ExportButton({ editor }: ExportButtonProps) {
                     floatPrecision: 16
                 });
 
+                // Adicionar fonte Times New Roman ao PDF
+                if (fontFamily.includes('Times New Roman')) {
+                    doc.setFont('times', 'normal');
+                } else if (fontFamily.includes('Arial')) {
+                    doc.setFont('helvetica', 'normal');
+                }
+
                 // Configurar margens ABNT (3cm esquerda, 2cm demais lados)
                 const margin = {
                     top: 20,
@@ -155,6 +188,9 @@ export function ExportButton({ editor }: ExportButtonProps) {
                     bottom: 20,
                     left: 30
                 };
+
+                // Aguardar um momento para garantir que os estilos sejam aplicados
+                await new Promise(resolve => setTimeout(resolve, 500));
 
                 // Usar html2canvas com configurações otimizadas
                 const canvas = await html2canvas(tempDiv, {
@@ -164,7 +200,32 @@ export function ExportButton({ editor }: ExportButtonProps) {
                     allowTaint: true,
                     backgroundColor: '#ffffff',
                     imageTimeout: 15000,
-                    foreignObjectRendering: false // Desativado para evitar problemas de renderização
+                    foreignObjectRendering: false, // Desativado para evitar problemas de renderização
+                    onclone: (clonedDoc) => {
+                        // Aplicar estilos adicionais ao clone
+                        const clonedElement = clonedDoc.querySelector('.abnt-export-container') as HTMLElement;
+                        if (clonedElement) {
+                            clonedElement.style.fontFamily = fontFamily;
+                            clonedElement.style.fontSize = '12pt';
+                            clonedElement.style.lineHeight = '1.5';
+                            clonedElement.style.textAlign = 'justify';
+
+                            // Aplicar estilos a todos os elementos dentro do container
+                            const allElements = clonedElement.querySelectorAll('*');
+                            allElements.forEach((el) => {
+                                const htmlEl = el as HTMLElement;
+                                htmlEl.style.fontFamily = fontFamily;
+
+                                if (el.tagName === 'H1') {
+                                    htmlEl.style.textAlign = 'center';
+                                    htmlEl.style.fontSize = '20pt';
+                                    htmlEl.style.fontWeight = 'bold';
+                                    htmlEl.style.width = '100%';
+                                    htmlEl.style.display = 'block';
+                                }
+                            });
+                        }
+                    }
                 });
 
                 // Converter canvas para imagem
@@ -253,6 +314,13 @@ export function ExportButton({ editor }: ExportButtonProps) {
                             <meta charset="UTF-8">
                             <title>Documento ABNT</title>
                             <style>
+                                @font-face {
+                                    font-family: 'Times New Roman';
+                                    src: local('Times New Roman');
+                                    font-weight: normal;
+                                    font-style: normal;
+                                }
+                                
                                 @page {
                                     size: A4;
                                     margin: 2cm 2cm 2cm 3cm;
@@ -267,11 +335,16 @@ export function ExportButton({ editor }: ExportButtonProps) {
                                     padding: 2cm 2cm 2cm 3cm;
                                     margin: 0;
                                 }
+                                * {
+                                    font-family: ${fontFamily};
+                                }
                                 h1 { 
                                     font-size: 20pt; 
                                     margin-bottom: 0.5cm; 
                                     text-align: center;
                                     font-weight: bold;
+                                    width: 100%;
+                                    display: block;
                                 }
                                 h2 { 
                                     font-size: 16pt; 
@@ -368,6 +441,20 @@ export function ExportButton({ editor }: ExportButtonProps) {
             // Obter o conteúdo HTML do editor
             const content = editor.getHTML();
 
+            // Processar o conteúdo para garantir que os títulos estejam centralizados
+            let processedContent = content;
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+
+            // Centralizar todos os h1
+            const h1Elements = tempDiv.querySelectorAll('h1');
+            h1Elements.forEach(h1 => {
+                h1.setAttribute('style', 'text-align: center; width: 100%; display: block;');
+                h1.setAttribute('align', 'center');
+            });
+
+            processedContent = tempDiv.innerHTML;
+
             // Criar um HTML completo com estilos ABNT mais detalhados
             const htmlContent = `
                 <!DOCTYPE html>
@@ -376,6 +463,13 @@ export function ExportButton({ editor }: ExportButtonProps) {
                     <meta charset="UTF-8">
                     <title>Documento ABNT</title>
                     <style>
+                        @font-face {
+                            font-family: 'Times New Roman';
+                            src: local('Times New Roman');
+                            font-weight: normal;
+                            font-style: normal;
+                        }
+                        
                         @page {
                             size: A4;
                             margin: 2cm 2cm 2cm 3cm;
@@ -390,11 +484,16 @@ export function ExportButton({ editor }: ExportButtonProps) {
                             padding: 0;
                             margin: 0;
                         }
+                        * {
+                            font-family: ${fontFamily};
+                        }
                         h1 { 
                             font-size: 20pt; 
                             margin-bottom: 0.5cm; 
                             text-align: center;
                             font-weight: bold;
+                            width: 100%;
+                            display: block;
                         }
                         h2 { 
                             font-size: 16pt; 
@@ -453,7 +552,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                     </style>
                 </head>
                 <body>
-                    ${content}
+                    ${processedContent}
                 </body>
                 </html>
             `;
@@ -472,11 +571,11 @@ export function ExportButton({ editor }: ExportButtonProps) {
                 fontSize: 12,
                 lineHeight: 1.5,
                 styleMap: [
-                    "h1 => h1:fresh",
-                    "h2 => h2:fresh",
-                    "h3 => h3:fresh",
-                    "h4 => h4:fresh",
-                    "p => p:fresh",
+                    "h1 => h1:fresh {text-align: center; font-size: 20pt;}",
+                    "h2 => h2:fresh {font-size: 16pt;}",
+                    "h3 => h3:fresh {font-size: 14pt;}",
+                    "h4 => h4:fresh {font-size: 12pt;}",
+                    "p => p:fresh {text-indent: 1.25cm; text-align: justify;}",
                     "ul => ul:fresh",
                     "ol => ol:fresh",
                     "blockquote => blockquote:fresh",
