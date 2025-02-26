@@ -27,7 +27,40 @@ export function ExportButton({ editor }: ExportButtonProps) {
             const html2canvas = (await import('html2canvas')).default;
 
             // Obter o conteúdo HTML do editor
-            const content = editor.getHTML();
+            let content = editor.getHTML();
+
+            // Pré-processar o conteúdo para garantir que os títulos estejam centralizados
+            // e que a fonte seja aplicada corretamente
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(content, 'text/html');
+
+            // Aplicar estilos a todos os elementos
+            const allElements = doc.querySelectorAll('*');
+            allElements.forEach(el => {
+                // Aplicar fonte a todos os elementos
+                (el as HTMLElement).style.fontFamily = 'Times New Roman, Times, serif';
+
+                // Centralizar títulos h1
+                if (el.tagName === 'H1') {
+                    (el as HTMLElement).style.textAlign = 'center';
+                    (el as HTMLElement).style.width = '100%';
+                    (el as HTMLElement).style.display = 'block';
+                    (el as HTMLElement).style.fontSize = '20pt';
+                    (el as HTMLElement).style.fontWeight = 'bold';
+                    (el as HTMLElement).setAttribute('align', 'center');
+                }
+
+                // Aplicar estilos específicos para outros elementos
+                if (el.tagName === 'P') {
+                    (el as HTMLElement).style.textAlign = 'justify';
+                    (el as HTMLElement).style.textIndent = '1.25cm';
+                    (el as HTMLElement).style.fontSize = '12pt';
+                    (el as HTMLElement).style.lineHeight = '1.5';
+                }
+            });
+
+            // Atualizar o conteúdo com as modificações
+            content = new XMLSerializer().serializeToString(doc);
 
             // Criar um elemento temporário para renderizar o conteúdo
             const tempDiv = document.createElement('div');
@@ -38,7 +71,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
             tempDiv.style.width = '210mm'; // Largura A4
             tempDiv.style.padding = '2cm 2cm 2cm 3cm';
             tempDiv.style.backgroundColor = '#ffffff';
-            tempDiv.style.fontFamily = fontFamily;
+            tempDiv.style.fontFamily = 'Times New Roman, Times, serif';
             tempDiv.style.fontSize = '12pt';
             tempDiv.style.lineHeight = '1.5';
             tempDiv.style.textAlign = 'justify';
@@ -57,7 +90,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                 }
                 
                 .abnt-export-container {
-                    font-family: ${fontFamily} !important;
+                    font-family: 'Times New Roman', Times, serif !important;
                     font-size: 12pt !important;
                     line-height: 1.5 !important;
                     text-align: justify !important;
@@ -68,7 +101,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                     box-sizing: border-box !important;
                 }
                 .abnt-export-container * {
-                    font-family: ${fontFamily} !important;
+                    font-family: 'Times New Roman', Times, serif !important;
                 }
                 .abnt-export-container h1 {
                     font-size: 20pt !important;
@@ -76,6 +109,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                     margin-bottom: 0.5cm !important;
                     text-align: center !important;
                     width: 100% !important;
+                    display: block !important;
                 }
                 .abnt-export-container h2 {
                     font-size: 16pt !important;
@@ -146,20 +180,21 @@ export function ExportButton({ editor }: ExportButtonProps) {
             headings.forEach((heading) => {
                 const htmlHeading = heading as HTMLElement;
                 if (heading.tagName === 'H1') {
-                    htmlHeading.setAttribute('style', `font-size: 20pt !important; text-align: center !important; font-family: ${fontFamily} !important; font-weight: bold !important; width: 100% !important; display: block !important;`);
+                    htmlHeading.setAttribute('style', `font-size: 20pt !important; text-align: center !important; font-family: 'Times New Roman', Times, serif !important; font-weight: bold !important; width: 100% !important; display: block !important;`);
+                    htmlHeading.setAttribute('align', 'center');
                 } else if (heading.tagName === 'H2') {
-                    htmlHeading.setAttribute('style', `font-size: 16pt !important; font-family: ${fontFamily} !important; font-weight: bold !important;`);
+                    htmlHeading.setAttribute('style', `font-size: 16pt !important; font-family: 'Times New Roman', Times, serif !important; font-weight: bold !important;`);
                 } else if (heading.tagName === 'H3') {
-                    htmlHeading.setAttribute('style', `font-size: 14pt !important; font-family: ${fontFamily} !important; font-weight: bold !important;`);
+                    htmlHeading.setAttribute('style', `font-size: 14pt !important; font-family: 'Times New Roman', Times, serif !important; font-weight: bold !important;`);
                 } else if (heading.tagName === 'H4') {
-                    htmlHeading.setAttribute('style', `font-size: 12pt !important; font-family: ${fontFamily} !important; font-weight: bold !important;`);
+                    htmlHeading.setAttribute('style', `font-size: 12pt !important; font-family: 'Times New Roman', Times, serif !important; font-weight: bold !important;`);
                 }
             });
 
             const paragraphs = tempDiv.querySelectorAll('p');
             paragraphs.forEach((p) => {
                 const htmlP = p as HTMLElement;
-                htmlP.setAttribute('style', `text-indent: 1.25cm !important; text-align: justify !important; font-family: ${fontFamily} !important; font-size: 12pt !important; line-height: 1.5 !important;`);
+                htmlP.setAttribute('style', `text-indent: 1.25cm !important; text-align: justify !important; font-family: 'Times New Roman', Times, serif !important; font-size: 12pt !important; line-height: 1.5 !important;`);
             });
 
             // Método alternativo para exportar PDF
@@ -175,11 +210,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                 });
 
                 // Adicionar fonte Times New Roman ao PDF
-                if (fontFamily.includes('Times New Roman')) {
-                    doc.setFont('times', 'normal');
-                } else if (fontFamily.includes('Arial')) {
-                    doc.setFont('helvetica', 'normal');
-                }
+                doc.setFont('times', 'normal');
 
                 // Configurar margens ABNT (3cm esquerda, 2cm demais lados)
                 const margin = {
@@ -190,7 +221,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                 };
 
                 // Aguardar um momento para garantir que os estilos sejam aplicados
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 1000));
 
                 // Usar html2canvas com configurações otimizadas
                 const canvas = await html2canvas(tempDiv, {
@@ -205,7 +236,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                         // Aplicar estilos adicionais ao clone
                         const clonedElement = clonedDoc.querySelector('.abnt-export-container') as HTMLElement;
                         if (clonedElement) {
-                            clonedElement.style.fontFamily = fontFamily;
+                            clonedElement.style.fontFamily = 'Times New Roman, Times, serif';
                             clonedElement.style.fontSize = '12pt';
                             clonedElement.style.lineHeight = '1.5';
                             clonedElement.style.textAlign = 'justify';
@@ -214,7 +245,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                             const allElements = clonedElement.querySelectorAll('*');
                             allElements.forEach((el) => {
                                 const htmlEl = el as HTMLElement;
-                                htmlEl.style.fontFamily = fontFamily;
+                                htmlEl.style.fontFamily = 'Times New Roman, Times, serif';
 
                                 if (el.tagName === 'H1') {
                                     htmlEl.style.textAlign = 'center';
@@ -222,6 +253,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                                     htmlEl.style.fontWeight = 'bold';
                                     htmlEl.style.width = '100%';
                                     htmlEl.style.display = 'block';
+                                    htmlEl.setAttribute('align', 'center');
                                 }
                             });
                         }
@@ -326,7 +358,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                                     margin: 2cm 2cm 2cm 3cm;
                                 }
                                 body {
-                                    font-family: ${fontFamily};
+                                    font-family: 'Times New Roman', Times, serif;
                                     font-size: 12pt;
                                     line-height: 1.5;
                                     text-align: justify;
@@ -336,7 +368,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                                     margin: 0;
                                 }
                                 * {
-                                    font-family: ${fontFamily};
+                                    font-family: 'Times New Roman', Times, serif;
                                 }
                                 h1 { 
                                     font-size: 20pt; 
@@ -439,21 +471,40 @@ export function ExportButton({ editor }: ExportButtonProps) {
             const HTMLtoDOCX = htmlToDocx.default || htmlToDocx;
 
             // Obter o conteúdo HTML do editor
-            const content = editor.getHTML();
+            let content = editor.getHTML();
 
-            // Processar o conteúdo para garantir que os títulos estejam centralizados
-            let processedContent = content;
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = content;
+            // Pré-processar o conteúdo para garantir que os títulos estejam centralizados
+            // e que a fonte seja aplicada corretamente
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(content, 'text/html');
 
-            // Centralizar todos os h1
-            const h1Elements = tempDiv.querySelectorAll('h1');
-            h1Elements.forEach(h1 => {
-                h1.setAttribute('style', 'text-align: center; width: 100%; display: block;');
-                h1.setAttribute('align', 'center');
+            // Aplicar estilos a todos os elementos
+            const allElements = doc.querySelectorAll('*');
+            allElements.forEach(el => {
+                // Aplicar fonte a todos os elementos
+                (el as HTMLElement).style.fontFamily = 'Times New Roman, Times, serif';
+
+                // Centralizar títulos h1
+                if (el.tagName === 'H1') {
+                    (el as HTMLElement).style.textAlign = 'center';
+                    (el as HTMLElement).style.width = '100%';
+                    (el as HTMLElement).style.display = 'block';
+                    (el as HTMLElement).style.fontSize = '20pt';
+                    (el as HTMLElement).style.fontWeight = 'bold';
+                    (el as HTMLElement).setAttribute('align', 'center');
+                }
+
+                // Aplicar estilos específicos para outros elementos
+                if (el.tagName === 'P') {
+                    (el as HTMLElement).style.textAlign = 'justify';
+                    (el as HTMLElement).style.textIndent = '1.25cm';
+                    (el as HTMLElement).style.fontSize = '12pt';
+                    (el as HTMLElement).style.lineHeight = '1.5';
+                }
             });
 
-            processedContent = tempDiv.innerHTML;
+            // Atualizar o conteúdo com as modificações
+            content = new XMLSerializer().serializeToString(doc);
 
             // Criar um HTML completo com estilos ABNT mais detalhados
             const htmlContent = `
@@ -475,7 +526,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                             margin: 2cm 2cm 2cm 3cm;
                         }
                         body {
-                            font-family: ${fontFamily};
+                            font-family: 'Times New Roman', Times, serif;
                             font-size: 12pt;
                             line-height: 1.5;
                             text-align: justify;
@@ -485,7 +536,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                             margin: 0;
                         }
                         * {
-                            font-family: ${fontFamily};
+                            font-family: 'Times New Roman', Times, serif;
                         }
                         h1 { 
                             font-size: 20pt; 
@@ -552,7 +603,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                     </style>
                 </head>
                 <body>
-                    ${processedContent}
+                    ${content}
                 </body>
                 </html>
             `;
@@ -567,22 +618,22 @@ export function ExportButton({ editor }: ExportButtonProps) {
                     left: 850, // 3cm em twips (850 = 3cm)
                 },
                 title: 'Documento ABNT',
-                font: fontFamily.split(',')[0].trim().replace(/['"]+/g, ''),
+                font: 'Times New Roman',
                 fontSize: 12,
                 lineHeight: 1.5,
                 styleMap: [
-                    "h1 => h1:fresh {text-align: center; font-size: 20pt;}",
-                    "h2 => h2:fresh {font-size: 16pt;}",
-                    "h3 => h3:fresh {font-size: 14pt;}",
-                    "h4 => h4:fresh {font-size: 12pt;}",
-                    "p => p:fresh {text-indent: 1.25cm; text-align: justify;}",
-                    "ul => ul:fresh",
-                    "ol => ol:fresh",
-                    "blockquote => blockquote:fresh",
-                    "table => table:fresh",
-                    "tr => tr:fresh",
-                    "td => td:fresh",
-                    "th => th:fresh"
+                    "h1 => h1:fresh {text-align: center; font-size: 20pt; font-family: 'Times New Roman';}",
+                    "h2 => h2:fresh {font-size: 16pt; font-family: 'Times New Roman';}",
+                    "h3 => h3:fresh {font-size: 14pt; font-family: 'Times New Roman';}",
+                    "h4 => h4:fresh {font-size: 12pt; font-family: 'Times New Roman';}",
+                    "p => p:fresh {text-indent: 1.25cm; text-align: justify; font-family: 'Times New Roman';}",
+                    "ul => ul:fresh {font-family: 'Times New Roman';}",
+                    "ol => ol:fresh {font-family: 'Times New Roman';}",
+                    "blockquote => blockquote:fresh {font-family: 'Times New Roman';}",
+                    "table => table:fresh {font-family: 'Times New Roman';}",
+                    "tr => tr:fresh {font-family: 'Times New Roman';}",
+                    "td => td:fresh {font-family: 'Times New Roman';}",
+                    "th => th:fresh {font-family: 'Times New Roman';}"
                 ],
                 table: { row: { cantSplit: true } },
                 footer: false,
