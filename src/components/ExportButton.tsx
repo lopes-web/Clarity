@@ -99,6 +99,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                     padding: 2cm 2cm 2cm 3cm !important;
                     width: 210mm !important; /* Largura A4 */
                     box-sizing: border-box !important;
+                    margin: 0 auto !important; /* Centralizar o container */
                 }
                 .abnt-export-container * {
                     font-family: 'Times New Roman', Times, serif !important;
@@ -110,6 +111,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                     text-align: center !important;
                     width: 100% !important;
                     display: block !important;
+                    margin-left: -0.5cm !important; /* Compensar a diferença de margem */
                 }
                 .abnt-export-container h2 {
                     font-size: 16pt !important;
@@ -180,7 +182,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
             headings.forEach((heading) => {
                 const htmlHeading = heading as HTMLElement;
                 if (heading.tagName === 'H1') {
-                    htmlHeading.setAttribute('style', `font-size: 20pt !important; text-align: center !important; font-family: 'Times New Roman', Times, serif !important; font-weight: bold !important; width: 100% !important; display: block !important;`);
+                    htmlHeading.setAttribute('style', `font-size: 20pt !important; text-align: center !important; font-family: 'Times New Roman', Times, serif !important; font-weight: bold !important; width: 100% !important; display: block !important; margin-left: -0.5cm !important;`);
                     htmlHeading.setAttribute('align', 'center');
                 } else if (heading.tagName === 'H2') {
                     htmlHeading.setAttribute('style', `font-size: 16pt !important; font-family: 'Times New Roman', Times, serif !important; font-weight: bold !important;`);
@@ -213,11 +215,12 @@ export function ExportButton({ editor }: ExportButtonProps) {
                 doc.setFont('times', 'normal');
 
                 // Configurar margens ABNT (3cm esquerda, 2cm demais lados)
+                // Ajustamos a margem esquerda para 25mm em vez de 30mm para compensar visualmente
                 const margin = {
                     top: 20,
                     right: 20,
                     bottom: 20,
-                    left: 30
+                    left: 25 // Reduzido de 30mm para 25mm para melhor centralização visual
                 };
 
                 // Aguardar um momento para garantir que os estilos sejam aplicados
@@ -377,6 +380,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                                     font-weight: bold;
                                     width: 100%;
                                     display: block;
+                                    margin-left: -0.5cm; /* Compensar a diferença de margem */
                                 }
                                 h2 { 
                                     font-size: 16pt; 
@@ -545,6 +549,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                             font-weight: bold;
                             width: 100%;
                             display: block;
+                            margin-left: -0.5cm; /* Compensar a diferença de margem */
                         }
                         h2 { 
                             font-size: 16pt; 
@@ -622,7 +627,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
                 fontSize: 12,
                 lineHeight: 1.5,
                 styleMap: [
-                    "h1 => h1:fresh {text-align: center; font-size: 20pt; font-family: 'Times New Roman';}",
+                    "h1 => h1:fresh {text-align: center; font-size: 20pt; font-family: 'Times New Roman'; margin-left: -0.5cm;}", // Compensar a diferença de margem
                     "h2 => h2:fresh {font-size: 16pt; font-family: 'Times New Roman';}",
                     "h3 => h3:fresh {font-size: 14pt; font-family: 'Times New Roman';}",
                     "h4 => h4:fresh {font-size: 12pt; font-family: 'Times New Roman';}",
