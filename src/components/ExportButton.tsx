@@ -24,6 +24,7 @@ export function ExportButton({ editor }: ExportButtonProps) {
         try {
             // Importação dinâmica do jsPDF
             const { default: jsPDF } = await import('jspdf');
+            const html2canvas = (await import('html2canvas')).default;
 
             // Obter o conteúdo HTML do editor
             const content = editor.getHTML();
@@ -114,136 +115,242 @@ export function ExportButton({ editor }: ExportButtonProps) {
             document.head.appendChild(style);
             document.body.appendChild(tempDiv);
 
-            // Aplicar estilos diretamente aos elementos
+            // Aplicar estilos diretamente aos elementos usando setAttribute
             const headings = tempDiv.querySelectorAll('h1, h2, h3, h4');
-            headings.forEach(heading => {
+            headings.forEach((heading) => {
+                const htmlHeading = heading as HTMLElement;
                 if (heading.tagName === 'H1') {
-                    heading.style.fontSize = '20pt';
-                    heading.style.textAlign = 'center';
+                    htmlHeading.setAttribute('style', `font-size: 20pt; text-align: center; font-family: ${fontFamily}; font-weight: bold;`);
                 } else if (heading.tagName === 'H2') {
-                    heading.style.fontSize = '16pt';
+                    htmlHeading.setAttribute('style', `font-size: 16pt; font-family: ${fontFamily}; font-weight: bold;`);
                 } else if (heading.tagName === 'H3') {
-                    heading.style.fontSize = '14pt';
+                    htmlHeading.setAttribute('style', `font-size: 14pt; font-family: ${fontFamily}; font-weight: bold;`);
                 } else if (heading.tagName === 'H4') {
-                    heading.style.fontSize = '12pt';
+                    htmlHeading.setAttribute('style', `font-size: 12pt; font-family: ${fontFamily}; font-weight: bold;`);
                 }
-                heading.style.fontFamily = fontFamily;
-                heading.style.fontWeight = 'bold';
             });
 
             const paragraphs = tempDiv.querySelectorAll('p');
-            paragraphs.forEach(p => {
-                p.style.textIndent = '1.25cm';
-                p.style.textAlign = 'justify';
-                p.style.fontFamily = fontFamily;
-                p.style.fontSize = '12pt';
-                p.style.lineHeight = '1.5';
+            paragraphs.forEach((p) => {
+                const htmlP = p as HTMLElement;
+                htmlP.setAttribute('style', `text-indent: 1.25cm; text-align: justify; font-family: ${fontFamily}; font-size: 12pt; line-height: 1.5;`);
             });
 
-            // Inicializa o documento PDF
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4',
-                compress: true,
-                putOnlyUsedFonts: true,
-                floatPrecision: 16
-            });
+            // Método alternativo para exportar PDF
+            try {
+                // Inicializa o documento PDF
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4',
+                    compress: true,
+                    putOnlyUsedFonts: true,
+                    floatPrecision: 16
+                });
 
-            // Configurar margens ABNT (3cm esquerda, 2cm demais lados)
-            const margin = {
-                top: 20,
-                right: 20,
-                bottom: 20,
-                left: 30
-            };
+                // Configurar margens ABNT (3cm esquerda, 2cm demais lados)
+                const margin = {
+                    top: 20,
+                    right: 20,
+                    bottom: 20,
+                    left: 30
+                };
 
-            // Usar html2canvas para renderizar o HTML em uma imagem
-            const html2canvas = (await import('html2canvas')).default;
-            const canvas = await html2canvas(tempDiv, {
-                scale: 2, // Melhor qualidade
-                useCORS: true,
-                logging: false,
-                allowTaint: true,
-                backgroundColor: '#ffffff',
-                imageTimeout: 15000,
-                letterRendering: true,
-                foreignObjectRendering: true
-            });
+                // Usar html2canvas com configurações otimizadas
+                const canvas = await html2canvas(tempDiv, {
+                    scale: 2, // Melhor qualidade
+                    useCORS: true,
+                    logging: false,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    imageTimeout: 15000,
+                    foreignObjectRendering: false // Desativado para evitar problemas de renderização
+                });
 
-            // Converter canvas para imagem
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                // Converter canvas para imagem
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
 
-            // Calcular dimensões para manter a proporção
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
-            const imgWidth = pageWidth - margin.left - margin.right;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                // Calcular dimensões para manter a proporção
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const imgWidth = pageWidth - margin.left - margin.right;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-            // Se a imagem for maior que a altura da página, dividir em várias páginas
-            if (imgHeight > pageHeight - margin.top - margin.bottom) {
-                let remainingHeight = canvas.height;
-                let currentPosition = 0;
+                // Se a imagem for maior que a altura da página, dividir em várias páginas
+                if (imgHeight > pageHeight - margin.top - margin.bottom) {
+                    let remainingHeight = canvas.height;
+                    let currentPosition = 0;
 
-                while (remainingHeight > 0) {
-                    // Calcular altura para esta página
-                    const pageImgHeight = Math.min(
-                        (pageHeight - margin.top - margin.bottom) * (canvas.width / imgWidth),
-                        remainingHeight
-                    );
+                    while (remainingHeight > 0) {
+                        // Calcular altura para esta página
+                        const pageImgHeight = Math.min(
+                            (pageHeight - margin.top - margin.bottom) * (canvas.width / imgWidth),
+                            remainingHeight
+                        );
 
-                    // Criar um canvas temporário para esta parte da imagem
-                    const tempCanvas = document.createElement('canvas');
-                    tempCanvas.width = canvas.width;
-                    tempCanvas.height = pageImgHeight;
-                    const ctx = tempCanvas.getContext('2d');
+                        // Criar um canvas temporário para esta parte da imagem
+                        const tempCanvas = document.createElement('canvas');
+                        tempCanvas.width = canvas.width;
+                        tempCanvas.height = pageImgHeight;
+                        const ctx = tempCanvas.getContext('2d');
 
-                    // Desenhar parte da imagem original
-                    ctx.drawImage(
-                        canvas,
-                        0, currentPosition, canvas.width, pageImgHeight,
-                        0, 0, canvas.width, pageImgHeight
-                    );
+                        if (ctx) {
+                            // Desenhar parte da imagem original
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                            ctx.drawImage(
+                                canvas,
+                                0, currentPosition, canvas.width, pageImgHeight,
+                                0, 0, canvas.width, pageImgHeight
+                            );
 
-                    // Adicionar ao PDF
-                    const pageImgData = tempCanvas.toDataURL('image/jpeg', 1.0);
+                            // Adicionar ao PDF
+                            const pageImgData = tempCanvas.toDataURL('image/jpeg', 1.0);
 
-                    if (currentPosition > 0) {
-                        doc.addPage();
+                            if (currentPosition > 0) {
+                                doc.addPage();
+                            }
+
+                            doc.addImage(
+                                pageImgData,
+                                'JPEG',
+                                margin.left,
+                                margin.top,
+                                imgWidth,
+                                (pageImgHeight * imgWidth) / canvas.width
+                            );
+                        }
+
+                        // Atualizar posição e altura restante
+                        currentPosition += pageImgHeight;
+                        remainingHeight -= pageImgHeight;
                     }
-
+                } else {
+                    // Se couber em uma página, adicionar diretamente
                     doc.addImage(
-                        pageImgData,
+                        imgData,
                         'JPEG',
                         margin.left,
                         margin.top,
                         imgWidth,
-                        (pageImgHeight * imgWidth) / canvas.width
+                        imgHeight
                     );
-
-                    // Atualizar posição e altura restante
-                    currentPosition += pageImgHeight;
-                    remainingHeight -= pageImgHeight;
                 }
-            } else {
-                // Se couber em uma página, adicionar diretamente
-                doc.addImage(
-                    imgData,
-                    'JPEG',
-                    margin.left,
-                    margin.top,
-                    imgWidth,
-                    imgHeight
-                );
+
+                // Salvar o PDF
+                doc.save('documento-abnt.pdf');
+                toast.success('Documento exportado como PDF com sucesso!');
+            } catch (pdfError) {
+                console.error('Erro ao gerar PDF:', pdfError);
+
+                // Método alternativo se o primeiro falhar
+                try {
+                    // Criar um link para download do HTML
+                    const htmlBlob = new Blob([`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <meta charset="UTF-8">
+                            <title>Documento ABNT</title>
+                            <style>
+                                @page {
+                                    size: A4;
+                                    margin: 2cm 2cm 2cm 3cm;
+                                }
+                                body {
+                                    font-family: ${fontFamily};
+                                    font-size: 12pt;
+                                    line-height: 1.5;
+                                    text-align: justify;
+                                    color: #000;
+                                    background-color: #fff;
+                                    padding: 2cm 2cm 2cm 3cm;
+                                    margin: 0;
+                                }
+                                h1 { 
+                                    font-size: 20pt; 
+                                    margin-bottom: 0.5cm; 
+                                    text-align: center;
+                                    font-weight: bold;
+                                }
+                                h2 { 
+                                    font-size: 16pt; 
+                                    margin-top: 0.5cm; 
+                                    margin-bottom: 0.5cm; 
+                                    font-weight: bold;
+                                }
+                                h3 { 
+                                    font-size: 14pt; 
+                                    margin-top: 0.5cm; 
+                                    margin-bottom: 0.5cm; 
+                                    font-weight: bold;
+                                }
+                                h4 { 
+                                    font-size: 12pt; 
+                                    margin-top: 0.5cm; 
+                                    margin-bottom: 0.3cm; 
+                                    font-weight: bold;
+                                }
+                                p { 
+                                    text-indent: 1.25cm; 
+                                    margin-bottom: 0.5cm; 
+                                    text-align: justify;
+                                }
+                                blockquote {
+                                    font-size: 10pt;
+                                    line-height: 1.0;
+                                    margin-left: 4cm;
+                                    margin-right: 0;
+                                    padding-left: 0;
+                                    border-left: none;
+                                    margin-top: 0.5cm;
+                                    margin-bottom: 0.5cm;
+                                }
+                                ul, ol {
+                                    margin-top: 0.5cm;
+                                    margin-bottom: 0.5cm;
+                                    padding-left: 1.25cm;
+                                }
+                                table {
+                                    border-collapse: collapse;
+                                    width: 100%;
+                                    margin-top: 0.5cm;
+                                    margin-bottom: 0.5cm;
+                                }
+                                th, td {
+                                    border: 1px solid #000;
+                                    padding: 0.2cm;
+                                    font-size: 10pt;
+                                }
+                                img {
+                                    display: block;
+                                    margin: 0.5cm auto;
+                                    max-width: 100%;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            ${content}
+                        </body>
+                        </html>
+                    `], { type: 'text/html' });
+
+                    const htmlUrl = URL.createObjectURL(htmlBlob);
+                    const link = document.createElement('a');
+                    link.href = htmlUrl;
+                    link.download = 'documento-abnt.html';
+                    link.click();
+
+                    toast.success('Documento exportado como HTML. Por favor, abra no navegador e use a função de impressão para gerar um PDF.');
+                } catch (htmlError) {
+                    console.error('Erro ao gerar HTML:', htmlError);
+                    toast.error('Não foi possível exportar o documento. Tente novamente.');
+                }
             }
 
             // Remover o elemento temporário e o estilo
             document.body.removeChild(tempDiv);
             document.head.removeChild(style);
-
-            // Salvar o PDF
-            doc.save('documento-abnt.pdf');
-            toast.success('Documento exportado como PDF com sucesso!');
         } catch (error) {
             console.error('Erro ao exportar PDF:', error);
             toast.error('Erro ao exportar PDF. Tente novamente.');
