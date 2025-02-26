@@ -1,0 +1,164 @@
+/* Estilos ABNT para o Editor */
+
+/* Configurações gerais do documento */
+.ProseMirror {
+    /* Margens conforme ABNT (3cm esquerda, 2cm demais lados) */
+    padding: 2cm 2cm 2cm 3cm;
+    /* Fonte Times New Roman ou Arial */
+    font-family: 'Times New Roman', Times, serif;
+    /* Tamanho da fonte 12pt */
+    font-size: 12pt;
+    /* Texto justificado */
+    text-align: justify;
+    /* Espaçamento entre linhas 1.5 */
+    line-height: 1.5;
+    /* Cor preta */
+    color: #000;
+    /* Fundo branco */
+    background-color: #fff;
+    /* Tamanho A4 */
+    max-width: 21cm;
+    margin: 0 auto;
+}
+
+/* Títulos */
+.ProseMirror h1 {
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    margin-bottom: 1.5cm !important;
+    text-transform: uppercase !important;
+}
+
+.ProseMirror h2 {
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    margin-top: 1.5cm !important;
+    margin-bottom: 0.5cm !important;
+    text-transform: uppercase !important;
+}
+
+.ProseMirror h3 {
+    font-size: 12pt !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    margin-top: 1cm !important;
+    margin-bottom: 0.5cm !important;
+}
+
+.ProseMirror h4 {
+    font-size: 12pt !important;
+    font-weight: bold !important;
+    text-align: left !important;
+    margin-top: 0.5cm !important;
+    margin-bottom: 0.3cm !important;
+}
+
+/* Parágrafos */
+.ProseMirror p {
+    text-indent: 1.25cm !important; /* Recuo de primeira linha */
+    margin-bottom: 0.5cm !important;
+}
+
+/* Citações longas (mais de 3 linhas) */
+.ProseMirror blockquote {
+    font-size: 10pt !important;
+    line-height: 1.0 !important;
+    margin-left: 4cm !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    border-left: none !important;
+    margin-top: 0.5cm !important;
+    margin-bottom: 0.5cm !important;
+}
+
+/* Listas */
+.ProseMirror ul, 
+.ProseMirror ol {
+    margin-top: 0.5cm !important;
+    margin-bottom: 0.5cm !important;
+    padding-left: 1.25cm !important;
+}
+
+/* Tabelas */
+.ProseMirror table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    margin-top: 0.5cm !important;
+    margin-bottom: 0.5cm !important;
+}
+
+.ProseMirror table caption {
+    font-size: 10pt !important;
+    text-align: left !important;
+    margin-bottom: 0.2cm !important;
+    font-weight: bold !important;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+    border: 1px solid #000 !important;
+    padding: 0.2cm !important;
+    font-size: 10pt !important;
+}
+
+.ProseMirror th {
+    font-weight: bold !important;
+    background-color: #f0f0f0 !important;
+}
+
+/* Figuras e imagens */
+.ProseMirror img {
+    display: block !important;
+    margin: 0.5cm auto !important;
+    max-width: 100% !important;
+}
+
+.ProseMirror figure {
+    margin-top: 0.5cm !important;
+    margin-bottom: 0.5cm !important;
+}
+
+.ProseMirror figcaption {
+    font-size: 10pt !important;
+    text-align: center !important;
+    margin-top: 0.2cm !important;
+}
+
+/* Referências */
+.ProseMirror .references {
+    margin-top: 2cm !important;
+}
+
+.ProseMirror .references h2 {
+    text-align: center !important;
+    margin-bottom: 1cm !important;
+}
+
+.ProseMirror .references p {
+    text-indent: 0 !important;
+    padding-left: 1.25cm !important;
+    text-align: left !important;
+    margin-bottom: 0.5cm !important;
+    /* Recuo de 1.25cm a partir da segunda linha (hanging indent) */
+    text-indent: -1.25cm !important;
+    padding-left: 1.25cm !important;
+}
+
+/* Notas de rodapé */
+.ProseMirror .footnote {
+    font-size: 10pt !important;
+    line-height: 1.0 !important;
+    margin-top: 0.3cm !important;
+    border-top: 1px solid #000 !important;
+    padding-top: 0.2cm !important;
+}
+
+/* Numeração de páginas */
+.ProseMirror .page-number {
+    position: absolute !important;
+    top: 2cm !important;
+    right: 2cm !important;
+    font-size: 12pt !important;
+} 

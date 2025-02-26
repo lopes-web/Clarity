@@ -33,6 +33,7 @@ import {
     Palette,
     Command,
     Highlighter,
+    FileText,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import {
@@ -47,6 +48,9 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Separator } from './ui/separator';
 import { toast } from 'sonner';
 import { HighlightColorPicker } from './HighlightColorPicker';
+
+// Importar os estilos ABNT
+import '@/styles/abnt.css';
 
 interface RichTextEditorProps {
     content: string;
@@ -89,6 +93,15 @@ export function RichTextEditor({
             onEditorReady(editor);
         }
     }, [editor, onEditorReady]);
+
+    // Aplicar estilos ABNT por padrão
+    useEffect(() => {
+        if (editor) {
+            // Aplicar configurações ABNT
+            editor.chain().focus().setFontFamily('Times New Roman, Times, serif').run();
+            editor.chain().focus().setTextAlign('justify').run();
+        }
+    }, [editor]);
 
     const addImage = useCallback(() => {
         const url = window.prompt('URL da imagem:');
@@ -257,42 +270,8 @@ export function RichTextEditor({
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => editor.chain().focus().setTextAlign('left').run()}
-                        className={cn(editor.isActive({ textAlign: 'left' }) && 'bg-muted')}
-                    >
-                        <AlignLeft className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().setTextAlign('center').run()}
-                        className={cn(editor.isActive({ textAlign: 'center' }) && 'bg-muted')}
-                    >
-                        <AlignCenter className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().setTextAlign('right').run()}
-                        className={cn(editor.isActive({ textAlign: 'right' }) && 'bg-muted')}
-                    >
-                        <AlignRight className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().setTextAlign('justify').run()}
-                        className={cn(editor.isActive({ textAlign: 'justify' }) && 'bg-muted')}
-                    >
-                        <AlignJustify className="h-4 w-4" />
-                    </Button>
-
-                    <Separator orientation="vertical" className="h-8" />
-
-                    <Button
-                        variant="ghost"
-                        size="sm"
                         onClick={addLink}
+                        className={cn(editor.isActive('link') && 'bg-muted')}
                     >
                         <LinkIcon className="h-4 w-4" />
                     </Button>
@@ -310,6 +289,51 @@ export function RichTextEditor({
                     >
                         <TableIcon className="h-4 w-4" />
                     </Button>
+
+                    <Separator orientation="vertical" className="h-8" />
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className={cn(
+                                    editor.isActive({ textAlign: 'left' }) && 'bg-muted',
+                                    editor.isActive({ textAlign: 'center' }) && 'bg-muted',
+                                    editor.isActive({ textAlign: 'right' }) && 'bg-muted',
+                                    editor.isActive({ textAlign: 'justify' }) && 'bg-muted',
+                                )}
+                            >
+                                {editor.isActive({ textAlign: 'left' }) && <AlignLeft className="h-4 w-4" />}
+                                {editor.isActive({ textAlign: 'center' }) && <AlignCenter className="h-4 w-4" />}
+                                {editor.isActive({ textAlign: 'right' }) && <AlignRight className="h-4 w-4" />}
+                                {editor.isActive({ textAlign: 'justify' }) && <AlignJustify className="h-4 w-4" />}
+                                {!editor.isActive({ textAlign: 'left' }) &&
+                                    !editor.isActive({ textAlign: 'center' }) &&
+                                    !editor.isActive({ textAlign: 'right' }) &&
+                                    !editor.isActive({ textAlign: 'justify' }) &&
+                                    <AlignLeft className="h-4 w-4" />}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => editor.chain().focus().setTextAlign('left').run()}>
+                                <AlignLeft className="mr-2 h-4 w-4" />
+                                Alinhar à esquerda
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => editor.chain().focus().setTextAlign('center').run()}>
+                                <AlignCenter className="mr-2 h-4 w-4" />
+                                Centralizar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => editor.chain().focus().setTextAlign('right').run()}>
+                                <AlignRight className="mr-2 h-4 w-4" />
+                                Alinhar à direita
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => editor.chain().focus().setTextAlign('justify').run()}>
+                                <AlignJustify className="mr-2 h-4 w-4" />
+                                Justificar
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     <Separator orientation="vertical" className="h-8" />
 
@@ -332,147 +356,26 @@ export function RichTextEditor({
                 </div>
             )}
 
-            <EditorContextMenu editor={editor}>
-                <EditorContent
-                    editor={editor}
-                    className={cn(
-                        'prose max-w-none dark:prose-invert',
-                        isFocusMode && 'prose-lg',
-                        readOnly && 'pointer-events-none',
-                        '[&_*]:outline-none',
-                        'px-6',
-                        'h-[calc(100%-4rem)] overflow-y-auto',
-                        'prose-headings:font-normal',
-                        'prose-h1:[font-size:2em] prose-h1:mb-4',
-                        'prose-h2:[font-size:1.5em] prose-h2:mb-3',
-                        'prose-h3:[font-size:1.25em] prose-h3:mb-2',
-                        'prose-p:my-3',
-                        'prose-blockquote:border-l-2 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic',
-                        'prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:font-mono prose-code:text-sm',
-                        'prose-img:rounded-lg',
-                        'prose-table:border prose-table:border-border',
-                        'prose-th:border prose-th:border-border prose-th:p-2 prose-th:bg-muted',
-                        'prose-td:border prose-td:border-border prose-td:p-2',
-                        'prose-ul:my-2 prose-ul:list-disc prose-ul:pl-6',
-                        'prose-ol:my-2 prose-ol:list-decimal prose-ol:pl-6',
-                        '[&_input[type=checkbox]]:h-4 [&_input[type=checkbox]]:w-4 [&_input[type=checkbox]]:mt-1.5 [&_input[type=checkbox]]:cursor-pointer',
-                        '[&_label]:flex [&_label]:items-start [&_label]:gap-2 [&_label]:flex-1',
-                        '[&_label>div]:flex-1',
-                        '[&_.is-checked>label>div]:text-muted-foreground [&_.is-checked>label>div]:line-through'
-                    )}
-                    style={{
-                        fontSize: `${fontSize}px`,
-                        fontFamily,
-                    }}
-                />
-            </EditorContextMenu>
-
-            {editor && !readOnly && (
-                <BubbleMenu
-                    editor={editor}
-                    tippyOptions={{ duration: 100 }}
-                    className="flex items-center gap-1 rounded-lg border bg-background p-1 shadow-md"
-                >
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().toggleBold().run()}
-                        className={cn(editor.isActive('bold') && 'bg-muted')}
-                    >
-                        <Bold className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().toggleItalic().run()}
-                        className={cn(editor.isActive('italic') && 'bg-muted')}
-                    >
-                        <Italic className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().toggleUnderline().run()}
-                        className={cn(editor.isActive('underline') && 'bg-muted')}
-                    >
-                        <UnderlineIcon className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().toggleStrike().run()}
-                        className={cn(editor.isActive('strike') && 'bg-muted')}
-                    >
-                        <Strikethrough className="h-4 w-4" />
-                    </Button>
-                    <HighlightColorPicker editor={editor} />
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={addLink}
-                        className={cn(editor.isActive('link') && 'bg-muted')}
-                    >
-                        <LinkIcon className="h-4 w-4" />
-                    </Button>
-                </BubbleMenu>
-            )}
-
-            {editor && !readOnly && (
-                <FloatingMenu
-                    editor={editor}
-                    tippyOptions={{ duration: 100 }}
-                    className="flex items-center gap-1 rounded-lg border bg-background p-1 shadow-md"
-                >
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                        className={cn(editor.isActive('heading', { level: 1 }) && 'bg-muted')}
-                    >
-                        <Heading1 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                        className={cn(editor.isActive('heading', { level: 2 }) && 'bg-muted')}
-                    >
-                        <Heading2 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().toggleBulletList().run()}
-                        className={cn(editor.isActive('bulletList') && 'bg-muted')}
-                    >
-                        <List className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                        className={cn(editor.isActive('orderedList') && 'bg-muted')}
-                    >
-                        <ListOrdered className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => editor.chain().focus().toggleTaskList().run()}
-                        className={cn(editor.isActive('taskList') && 'bg-muted')}
-                    >
-                        <CheckSquare className="h-4 w-4" />
-                    </Button>
-                </FloatingMenu>
-            )}
-
-            {editor && !readOnly && (
+            {showCommandMenu && (
                 <EditorCommandMenu
                     editor={editor}
                     open={showCommandMenu}
                     onOpenChange={setShowCommandMenu}
                 />
             )}
+
+            <EditorContextMenu editor={editor}>
+                <EditorContent
+                    editor={editor}
+                    className={cn(
+                        'prose dark:prose-invert max-w-none min-h-[calc(100vh-12rem)] focus:outline-none'
+                    )}
+                    style={{
+                        fontFamily: 'Times New Roman, Times, serif',
+                        fontSize: '12pt',
+                    }}
+                />
+            </EditorContextMenu>
         </div>
     );
 } 

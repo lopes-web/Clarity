@@ -26,9 +26,8 @@ export function EditorSettings() {
     } = useNotesStore();
 
     const fontFamilies = [
-        { label: 'Sistema', value: 'system-ui' },
-        { label: 'Serif', value: 'serif' },
-        { label: 'Mono', value: 'monospace' },
+        { label: 'Times New Roman', value: 'Times New Roman, Times, serif' },
+        { label: 'Arial', value: 'Arial, sans-serif' },
     ];
 
     return (
@@ -67,20 +66,8 @@ export function EditorSettings() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="font-size">Tamanho da fonte: {fontSize}px</Label>
-                        <Slider
-                            id="font-size"
-                            min={12}
-                            max={24}
-                            step={1}
-                            value={[fontSize]}
-                            onValueChange={([value]) => setFontSize(value)}
-                        />
-                    </div>
-
-                    <div className="space-y-2">
                         <Label>Fonte</Label>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-2 gap-2">
                             {fontFamilies.map((font) => (
                                 <Button
                                     key={font.value}

@@ -71,7 +71,7 @@ export const useNotesStore = create<NotesState>()(
             isFocusMode: false,
             autoSaveInterval: 5000, // 5 segundos
             fontSize: 16,
-            fontFamily: 'system-ui',
+            fontFamily: 'Times New Roman, Times, serif',
 
             // Ações síncronas
             setNotes: (notes) => set({ notes }),
