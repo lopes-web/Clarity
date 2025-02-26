@@ -34,6 +34,8 @@ import {
     Command,
     Highlighter,
     FileText,
+    Download,
+    FileDown,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import {
@@ -128,6 +130,105 @@ export function RichTextEditor({
                 .run();
         }
     }, [editor]);
+
+    // Função para exportar o conteúdo para PDF/Word
+    const exportDocument = useCallback((format: 'pdf' | 'docx') => {
+        if (!editor) return;
+
+        // Obter o conteúdo HTML do editor
+        const content = editor.getHTML();
+
+        // Criar um elemento temporário para o conteúdo
+        const tempElement = document.createElement('div');
+        tempElement.innerHTML = content;
+
+        // Criar um novo documento HTML com os estilos ABNT incorporados
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Documento ABNT</title>
+                <style>
+                    @page {
+                        size: A4;
+                        margin: 2cm 2cm 2cm 3cm;
+                    }
+                    body {
+                        font-family: ${fontFamily};
+                        font-size: 12pt;
+                        line-height: 1.5;
+                        text-align: justify;
+                        color: #000;
+                        background-color: #fff;
+                    }
+                    h1 { font-size: 18pt; margin-bottom: 0.5cm; }
+                    h2 { font-size: 16pt; margin-top: 0.5cm; margin-bottom: 0.5cm; }
+                    h3 { font-size: 14pt; margin-top: 0.5cm; margin-bottom: 0.5cm; }
+                    h4 { font-size: 12pt; margin-top: 0.5cm; margin-bottom: 0.3cm; }
+                    p { text-indent: 1.25cm; margin-bottom: 0.5cm; }
+                    blockquote {
+                        font-size: 10pt;
+                        line-height: 1.0;
+                        margin-left: 4cm;
+                        margin-right: 0;
+                        padding-left: 0;
+                        border-left: none;
+                        margin-top: 0.5cm;
+                        margin-bottom: 0.5cm;
+                    }
+                    ul, ol {
+                        margin-top: 0.5cm;
+                        margin-bottom: 0.5cm;
+                        padding-left: 1.25cm;
+                    }
+                    table {
+                        border-collapse: collapse;
+                        width: 100%;
+                        margin-top: 0.5cm;
+                        margin-bottom: 0.5cm;
+                    }
+                    th, td {
+                        border: 1px solid #000;
+                        padding: 0.2cm;
+                        font-size: 10pt;
+                    }
+                    img {
+                        display: block;
+                        margin: 0.5cm auto;
+                        max-width: 100%;
+                    }
+                </style>
+            </head>
+            <body>
+                ${content}
+            </body>
+            </html>
+        `;
+
+        // Criar um Blob com o conteúdo HTML
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+
+        // Criar um URL para o Blob
+        const url = URL.createObjectURL(blob);
+
+        // Criar um link para download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `documento-abnt.${format === 'pdf' ? 'html' : 'html'}`;
+
+        // Adicionar o link ao documento e clicar nele
+        document.body.appendChild(a);
+        a.click();
+
+        // Remover o link do documento
+        document.body.removeChild(a);
+
+        // Liberar o URL
+        URL.revokeObjectURL(url);
+
+        toast.success(`Documento exportado como ${format.toUpperCase()}`);
+    }, [editor, fontFamily]);
 
     if (!editor) {
         return null;
@@ -331,6 +432,31 @@ export function RichTextEditor({
                             <DropdownMenuItem onClick={() => editor.chain().focus().setTextAlign('justify').run()}>
                                 <AlignJustify className="mr-2 h-4 w-4" />
                                 Justificar
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <Separator orientation="vertical" className="h-8" />
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="gap-2"
+                            >
+                                <FileDown className="h-4 w-4" />
+                                Exportar
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => exportDocument('pdf')}>
+                                <FileDown className="mr-2 h-4 w-4" />
+                                Exportar como PDF
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => exportDocument('docx')}>
+                                <FileDown className="mr-2 h-4 w-4" />
+                                Exportar como Word
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
