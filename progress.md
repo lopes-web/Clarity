@@ -30,6 +30,12 @@ Clarity é um sistema de gestão acadêmica moderno e intuitivo, projetado para 
    - Recompensas por metas alcançadas
    - Feedback visual de progresso
 
+5. **Editor de Texto com Normas ABNT**
+   - Editor rico com formatação completa
+   - Exportação para PDF e Word com formatação ABNT
+   - Configuração de margens, fontes e espaçamentos conforme ABNT
+   - Centralização visual de títulos e formatação profissional
+
 ### Tecnologias Utilizadas
 
 - **Frontend**: React, TypeScript, TailwindCSS, Shadcn/UI
@@ -91,7 +97,7 @@ Clarity é um sistema de gestão acadêmica moderno e intuitivo, projetado para 
 - Menu de contexto ✅
 - Menu flutuante ✅
 - Menu de comandos ✅
-- Exportação para PDF e Word ✅
+- Exportação para PDF e Word com formatação ABNT ✅
 - Temas claro/escuro ✅
 - Modo foco ✅
 - Personalização de fonte e tamanho ✅
@@ -103,6 +109,16 @@ Clarity é um sistema de gestão acadêmica moderno e intuitivo, projetado para 
 - Duplicação de abas ✅
 - Reordenação de abas ✅
 - Menu de contexto para abas ✅
+
+### 3.4 Formatação ABNT
+- Margens conforme ABNT (3cm esquerda, 2cm demais lados) ✅
+- Fonte Times New Roman, tamanho 12pt ✅
+- Espaçamento entre linhas 1.5 ✅
+- Texto justificado ✅
+- Recuo de primeira linha 1.25cm ✅
+- Títulos com tamanhos diferenciados e centralizados ✅
+- Exportação para PDF com paginação automática ✅
+- Exportação para Word com estilos ABNT ✅
 
 ## 4. Sistema de Eventos/Tarefas
 
@@ -230,7 +246,7 @@ Clarity é um sistema de gestão acadêmica moderno e intuitivo, projetado para 
 - Sistema de notas e frequência
 - Editor de texto rico
 - Sistema de abas
-- Exportação para PDF e Word
+- Exportação para PDF e Word com formatação ABNT
 - Interface responsiva
 - Tema personalizado
 - Dashboard com métricas
@@ -252,19 +268,25 @@ Clarity é um sistema de gestão acadêmica moderno e intuitivo, projetado para 
 
 ### Últimas Atualizações
 
-1. **15/03/2024**
+1. **16/03/2024**
+   - Corrigido problema de centralização visual nas margens ABNT
+   - Ajustada a compensação de margens para melhor aparência visual
+   - Aprimorada a renderização de títulos centralizados
+   - Otimizada a exportação para PDF e Word
+
+2. **15/03/2024**
    - Correção na exportação para Word
    - Ajustes no sistema de abas
    - Melhorias na interface do editor
    - Correções de bugs no dashboard
 
-2. **14/03/2024**
+3. **14/03/2024**
    - Implementação do sistema de gamificação
    - Adição de conquistas e sistema de XP
    - Criação do componente de exibição de conquistas
    - Integração com banco de dados para tracking de progresso
 
-3. **13/03/2024**
+4. **13/03/2024**
    - Implementação do calendário acadêmico
    - Integração com Google Tasks
    - Sistema de autenticação
