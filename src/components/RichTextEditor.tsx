@@ -98,10 +98,10 @@ export function RichTextEditor({
     useEffect(() => {
         if (editor) {
             // Aplicar configurações ABNT
-            editor.chain().focus().setFontFamily('Times New Roman, Times, serif').run();
+            editor.chain().focus().setFontFamily(fontFamily).run();
             editor.chain().focus().setTextAlign('justify').run();
         }
-    }, [editor]);
+    }, [editor, fontFamily]);
 
     const addImage = useCallback(() => {
         const url = window.prompt('URL da imagem:');
@@ -135,7 +135,7 @@ export function RichTextEditor({
 
     return (
         <div className={cn(
-            'relative w-full bg-background p-4 h-[calc(100vh-8rem)]',
+            'relative w-full bg-background h-[calc(100vh-8rem)] overflow-auto',
             isDarkMode && 'dark',
             isFocusMode && 'prose-lg'
         )}>
@@ -368,10 +368,10 @@ export function RichTextEditor({
                 <EditorContent
                     editor={editor}
                     className={cn(
-                        'prose dark:prose-invert max-w-none min-h-[calc(100vh-12rem)] focus:outline-none'
+                        'prose dark:prose-invert focus:outline-none w-full'
                     )}
                     style={{
-                        fontFamily: 'Times New Roman, Times, serif',
+                        fontFamily: fontFamily,
                         fontSize: '12pt',
                     }}
                 />

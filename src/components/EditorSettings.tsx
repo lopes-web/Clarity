@@ -12,6 +12,8 @@ import {
 import { Slider } from './ui/slider';
 import { Label } from './ui/label';
 import { Switch } from './ui/switch';
+import { useEffect } from 'react';
+import { useEditor } from '@tiptap/react';
 
 export function EditorSettings() {
     const {
@@ -29,6 +31,17 @@ export function EditorSettings() {
         { label: 'Times New Roman', value: 'Times New Roman, Times, serif' },
         { label: 'Arial', value: 'Arial, sans-serif' },
     ];
+
+    // Função para alternar a fonte e aplicar imediatamente
+    const handleFontChange = (fontValue: string) => {
+        setFontFamily(fontValue);
+
+        // Encontrar todos os editores na página e aplicar a nova fonte
+        const editors = document.querySelectorAll('.ProseMirror');
+        editors.forEach(editor => {
+            editor.setAttribute('style', `font-family: ${fontValue} !important`);
+        });
+    };
 
     return (
         <DropdownMenu>
@@ -73,7 +86,7 @@ export function EditorSettings() {
                                     key={font.value}
                                     variant={fontFamily === font.value ? 'default' : 'outline'}
                                     size="sm"
-                                    onClick={() => setFontFamily(font.value)}
+                                    onClick={() => handleFontChange(font.value)}
                                     className="w-full"
                                     style={{ fontFamily: font.value }}
                                 >

@@ -16,9 +16,12 @@
     color: #000;
     /* Fundo branco */
     background-color: #fff;
-    /* Tamanho A4 */
-    max-width: 21cm;
-    margin: 0 auto;
+    /* Remover limitação de largura para usar todo o espaço disponível */
+    width: 100%;
+    min-height: calc(100vh - 12rem);
+    box-sizing: border-box;
+    border: none;
+    outline: none;
 }
 
 /* Títulos */
@@ -33,7 +36,7 @@
 .ProseMirror h2 {
     font-size: 14pt !important;
     font-weight: bold !important;
-    text-align: left !important;
+    text-align: center !important; /* Alterado para centralizado conforme ABNT */
     margin-top: 1.5cm !important;
     margin-bottom: 0.5cm !important;
     text-transform: uppercase !important;
@@ -42,7 +45,7 @@
 .ProseMirror h3 {
     font-size: 12pt !important;
     font-weight: bold !important;
-    text-align: left !important;
+    text-align: center !important; /* Alterado para centralizado conforme ABNT */
     margin-top: 1cm !important;
     margin-bottom: 0.5cm !important;
 }
